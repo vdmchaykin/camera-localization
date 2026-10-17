@@ -107,6 +107,13 @@ def load_mask(data, cam):
 
 
 # ----------------------------------------------------------------------------- features
+FP16 = False                    # set by --fast-gpu: SuperPoint / DINOv2 under fp16 autocast
+
+
+def autocast():
+    return torch.autocast("cuda", dtype=torch.float16, enabled=FP16 and DEV == "cuda")
+
+
 class Features:
     def __init__(self, max_kp=1024, mp=False):
         self.sp = SuperPoint(max_num_keypoints=max_kp).eval().to(DEV)
@@ -115,6 +122,7 @@ class Features:
         except TypeError:
             self.lg = LightGlue(features="superpoint").eval().to(DEV)
         self.transform = None          # optional image degradation for stress tests
+        self.resize = 1024             # SuperPoint input: long image side in px
 
     @torch.no_grad()
     def extract(self, path, mask=None):
@@ -123,8 +131,10 @@ class Features:
             raise FileNotFoundError(path)
         if self.transform is not None:
             img = self.transform(img)
-        t = torch.from_numpy(img[:, :, ::-1].copy()).permute(2, 0, 1).float().div(255).to(DEV)
-        f = self.sp.extract(t)                   # keypoints are returned in original pixels
+        t = torch.from_numpy(img[:, :, ::-1].copy()).to(DEV).permute(2, 0, 1).float().div(255)
+        with autocast():
+            f = self.sp.extract(t, resize=self.resize)  # keypoints in original pixels
+        f = {k: (v.float() if torch.is_tensor(v) and v.is_floating_point() else v) for k, v in f.items()}
         kp = f["keypoints"][0].cpu().numpy()
         de = f["descriptors"][0].cpu().numpy()
         sc = f["keypoint_scores"][0].cpu().numpy()
@@ -148,13 +158,16 @@ class Features:
         x = torch.from_numpy(np.stack(imgs)).to(DEV)              # B,H,W,3 uint8 BGR
         x = x.permute(0, 3, 1, 2).float().div(255)
         gray = (0.114 * x[:, 0] + 0.587 * x[:, 1] + 0.299 * x[:, 2])[:, None]
-        s = 1024 / max(H, W)
+        s = self.resize / max(H, W)
         h2, w2 = (int(round(H * s)), int(round(W * s))) if s < 1 else (H, W)
         if (h2, w2) != (H, W):
             gray = torch.nn.functional.interpolate(gray, size=(h2, w2), mode="bilinear",
                                                    align_corners=False, antialias=True)
         try:
-            f = self.sp({"image": gray})
+            with autocast():
+                f = self.sp({"image": gray})
+            f = {k: (v.float() if torch.is_tensor(v) and v.is_floating_point() else v)
+                 for k, v in f.items()}
         except RuntimeError:                   # different keypoint counts cannot be stacked
             return [self.extract(im, m) for im, m in zip(imgs, masks)]
         sc_xy = torch.tensor([w2 / W, h2 / H], device=gray.device)
@@ -356,6 +369,7 @@ class Localizer:
             print("camera yaw offsets applied:", {c: round(v, 4) for c, v in offs.items()})
         self.z0 = float(np.median(self.maps[self.names[0]].kt.z))
         self.feats = feats or Features(o.max_kp, mp=getattr(o, "lg_mp", False))
+        self.feats.resize = getattr(o, "sp_resize", 1024)
         from concurrent.futures import ThreadPoolExecutor
         self.pool = ThreadPoolExecutor(8)       # JPEG decoding of all cameras in parallel
         self.prof = {} if getattr(o, "profile", False) else None
@@ -427,7 +441,8 @@ class Localizer:
         t = self._tick("read jpeg", t)
         qd = {}
         if self.dino is not None and cams:      # one batch for all cameras of this set
-            qd = dict(zip(cams, self.dino([imgs[c] for c in cams])))
+            with autocast():
+                qd = dict(zip(cams, self.dino([imgs[c] for c in cams])))
             t = self._tick("dino", t)
         if getattr(self.o, "sp_batch", False):
             qs = dict(zip(cams, self.feats.extract_batch([imgs[c] for c in cams],
@@ -471,7 +486,7 @@ class Localizer:
                     continue                      # else: prior is off, fall back to RANSAC
             try:
                 ok, rvec, tvec, inl = cv2.solvePnPRansac(
-                    X, n, np.eye(3), None, iterationsCount=300,
+                    X, n, np.eye(3), None, iterationsCount=getattr(self.o, "pnp_iters", 300),
                     reprojectionError=self.o.pnp_px / c.f, confidence=0.999,
                     flags=cv2.SOLVEPNP_SQPNP)
             except cv2.error:          # degenerate sample (e.g. near-duplicate points)
@@ -742,6 +757,13 @@ def async_lap(a, loc, odom, g, data, lap):
 
 
 def validate(a):
+    global FP16
+    if a.fast_gpu and DEV == "cuda":
+        torch.backends.cuda.matmul.allow_tf32 = True
+        torch.backends.cudnn.allow_tf32 = True
+        torch.backends.cudnn.benchmark = True        # picks the fastest conv kernels per shape
+        FP16 = True
+        print("fast GPU: TF32 + cudnn.benchmark, SuperPoint / DINOv2 in fp16")
     data = Path(a.data)
     loc = Localizer(data, a.map, a.cams, o=a)
     if a.no_query_masks:
@@ -1047,6 +1069,11 @@ if __name__ == "__main__":
     v.add_argument("--profile", action="store_true", help="time per stage of a camera fix")
     v.add_argument("--lg-mp", action="store_true", help="LightGlue in mixed precision (fp16)")
     v.add_argument("--sp-batch", action="store_true", help="SuperPoint on all cameras in one batch")
+    v.add_argument("--sp-resize", type=int, default=1024,
+                   help="long side (px) of the image SuperPoint sees; the map was built at 1024")
+    v.add_argument("--pnp-iters", type=int, default=300, help="RANSAC iterations per camera")
+    v.add_argument("--fast-gpu", action="store_true",
+                   help="TF32 + cudnn.benchmark, SuperPoint and DINOv2 under fp16 autocast")
     v.add_argument("--pnp-prior-gate", type=float, default=0.0,
                    help="px; >0: keep matches consistent with the filter prior and skip RANSAC "
                         "(falls back to RANSAC if too few agree)")
