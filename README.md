@@ -22,6 +22,28 @@ Details: `report/method.html`.
 Coverage 100 % on all laps, real-time simulation (`--speed 1`).
 `evaluate.py` outputs: `v2/runs_cluster/*/evaluate.txt`.
 
+## Later versions (v3–v7)
+
+Each version is a subclass of the previous one in its own folder (`vN/my_loc_vN.py`); nothing outside the folder
+is changed, every change has an env flag for ablations. Details and results: `vN/README.md`, `v6/RESULTS.md`.
+
+| version | change |
+|---|---|
+| v3 | FP16 + `torch.compile` SuperPoint for the guided path, corrections back to back (~33 ms each) |
+| v5 | 1024 keypoints, dense guided search, keyframes from different passes |
+| v6 | defences for daylight (exposure normalisation, saturation mask, relaxed retry, drivable-area check, rate-limited global path) + synthetic sun stress test |
+| v7 | v6 without map points on bright blobs (development laps only, K3/K6 not run) |
+
+Held-out K3 / K6, synchronous mode (`LOC_SYNC=1`), RTX 5060 Ti:
+
+| version | K3 pos | K3 lat | K3 yaw° | K6 pos | K6 lat | K6 yaw° | ms per frame |
+|---|---|---|---|---|---|---|---|
+| v3 | 0.077 | 0.025 | 0.052 | 0.084 | 0.039 | 0.075 | 37 |
+| v5 | 0.072 | 0.025 | 0.050 | 0.082 | 0.045 | 0.082 | 57 |
+| v6 | 0.071 | 0.025 | 0.050 | 0.081 | 0.045 | 0.082 | 62 |
+
+v3 asynchronous (live) mode: 0.079 / 0.087 m. Run scripts: `v3/run_sync.sh`, `v3/run_val.sh`, `v6/run_val.sh`.
+
 ## Setup
 
 ```bash
@@ -45,6 +67,7 @@ python3 make_masks.py                       # car-body masks
 python3 db_build.py                         # features/db_<cam>.npz
 python3 global_desc.py                      # features/global_<cam>.npy (DINOv2)
 python3 v2/build_model.py                   # v2/model/
+python3 v6/build_light_table.py             # v6/model/ (v6, v7)
 # 3. run the localizer on a window (start, length in s from the bag start) and score it
 python3 sim/simulate.py --gt gt.csv --mcap $MCAP --localizer v2/my_loc_v2.py:Localizer \
         --speed 1 --start-s 523.4 --max-s 110.6 --no-gui --tag v2_val_K3
@@ -57,6 +80,7 @@ Validation runs as in the table: `v2/run_val.sh`, `v2/run_cluster.sh`.
 | path | content |
 |---|---|
 | `v2/` | final localizer (`my_loc_v2.py`), model artefacts (`model/`), run scripts, results |
+| `v3/`, `v5/`, `v6/`, `v7/` | later versions, each with run scripts and results (`runs/`, `runs_val/`) |
 | `sim/` | real-time simulator / scorer (`simulate.py`), v1 localizer (`my_loc.py`) |
 | `localize.py`, `track_filter.py`, `camera_model.py`, `car_state.py` | v1 localization, track EKF, camera model, allowed car-state fields |
 | `db_build.py`, `global_desc.py`, `extract_frames.py`, `make_masks.py` | map building |

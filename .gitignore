@@ -256,3 +256,9 @@ nohup.out
 # Notes / docs (only the root README goes to the repo)
 *.md
 !/README.md
+
+# per-version docs
+!/v*/README.md
+!/v*/RESULTS.md
+# derived from camera frames, rebuilt by v6/build_light_table.py
+v6/model/

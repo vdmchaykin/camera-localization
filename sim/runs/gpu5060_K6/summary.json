@@ -1,0 +1,99 @@
+{
+ "tag": "gpu5060_K6",
+ "mode": "B",
+ "localizer": "sim/my_loc.py:Localizer",
+ "speed": 1.0,
+ "state": "/constructor0/state_estimation",
+ "window_s": [
+  896.1,
+  1007.7
+ ],
+ "sets_in_window": 1116,
+ "poses": 1116,
+ "dropped": 0,
+ "evaluated": 1116,
+ "pos_rmse": 0.158025138563396,
+ "lat_rmse": 0.0847316071495311,
+ "lon_rmse": 0.13338852712223057,
+ "yaw_rmse_deg": 0.0821339134358247,
+ "pos_median": 0.11345809766287748,
+ "pos_p95": 0.30212156466604534,
+ "within_1m": 100.0,
+ "init_s": 3.5345855860505253,
+ "step_ms_mean": 0.524859289817285,
+ "step_ms_p95": 1.5066266932990402,
+ "step_ms_max": 1.9008169183507562,
+ "decode_ms_mean": 3.462328611853062,
+ "total_ms_mean": 3.987187901670347,
+ "total_ms_p95": 5.42345322901383,
+ "total_ms_max": 8.465869934298098,
+ "over_100ms": 0,
+ "localizer_stats": {
+  "mode": "async",
+  "car_state": true,
+  "init_s": 2.2,
+  "map_keyframes_allowed": 4300,
+  "relocalizations": 223,
+  "reloc_ms_mean": 221.6,
+  "reloc_ms_p95": 240.3,
+  "fuse_delay_ms_mean": 300.0,
+  "measurements": 223,
+  "failed": 0,
+  "accepted": 223,
+  "rejected": 0,
+  "recovered": 0
+ },
+ "worst": [
+  {
+   "t_s": 931.8,
+   "lap": "K6",
+   "stamp": 1791919088889055941,
+   "v_mps": 22.8,
+   "pos": 0.43,
+   "lat": 0.014,
+   "lon": -0.43,
+   "dyaw_deg": -0.054
+  },
+  {
+   "t_s": 1003.3,
+   "lap": "K6",
+   "stamp": 1791919160389960483,
+   "v_mps": 32.8,
+   "pos": 0.372,
+   "lat": 0.103,
+   "lon": -0.357,
+   "dyaw_deg": 0.092
+  },
+  {
+   "t_s": 937.3,
+   "lap": "K6",
+   "stamp": 1791919094389110865,
+   "v_mps": 15.0,
+   "pos": 0.354,
+   "lat": -0.292,
+   "lon": -0.201,
+   "dyaw_deg": -0.111
+  },
+  {
+   "t_s": 966.8,
+   "lap": "K6",
+   "stamp": 1791919123889498007,
+   "v_mps": 34.1,
+   "pos": 0.341,
+   "lat": 0.191,
+   "lon": -0.282,
+   "dyaw_deg": 0.187
+  },
+  {
+   "t_s": 897.8,
+   "lap": "K6",
+   "stamp": 1791919054888603743,
+   "v_mps": 35.4,
+   "pos": 0.333,
+   "lat": -0.047,
+   "lon": -0.33,
+   "dyaw_deg": -0.026
+  }
+ ],
+ "evaluate": "poses submitted        1116   evaluated 1116\ncoverage (1 s bins)    100.0 %   (>= 90 % to be ranked)\nposition RMSE  [m]     0.158   <- SCORE (lower is better)\nposition median/p95    0.113 / 0.302\nlateral RMSE   [m]     0.085\nlongitudinal RMSE [m]  0.133\nyaw RMSE     [deg]     0.082\nwithin 0.25 m          89.2 %\nwithin 0.50 m          100.0 %\nwithin 1.00 m          100.0 %\n"
+}

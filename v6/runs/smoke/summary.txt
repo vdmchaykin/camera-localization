@@ -1,0 +1,21 @@
+== smoke
+poses 250 / sets 250, dropped 0, evaluated 250
+pos RMSE 0.079 m  (median 0.045, p95 0.169)  lat RMSE 0.039  lon RMSE 0.069  yaw RMSE 0.111 deg  <1 m 100.0 %
+step ms mean 168.3 p95 187.1 max 196.7 | decode 4.2 | step+decode mean 172.4 p95 191.3 max 203.7, >100 ms: 250 | init 6.8 s
+localizer: {'mode': 'sync', 'car_state': True, 'init_s': 5.3, 'map_keyframes_allowed': 4300, 'relocalizations': 251, 'reloc_ms_mean': 71.0, 'reloc_ms_p95': 85.2, 'fuse_delay_ms_mean': 0.0, 'measurements': 250, 'failed': 0, 'accepted': 250, 'rejected': 0, 'recovered': 0, 'flags': {'guided': True, 'batch': True, 'calib': True, 'corner': True}, 'guided': 250, 'guided_fail': 0, 'guided_ms_mean': 67.0, 'guided_ms_p95': 84.5, 'guided_inliers_median': 676, 'global_': 0, 'global_ms_mean': nan, 'v3': {'fast_sp': True, 'compile': True, 'straight_period_s': 0.0}, 'v5': {'max_kp': 1024, 'dense': 1, 'n_kf': 3, 'dense_sim': 0.75, 'dense_margin': 0.03, 'kp_corr_median': 984, 'dense_corr_median': 297, 'frames_with_dense': 250}, 'v6': {'expo': True, 'sat': True, 'relax_on': True, 'bounds': True, 'global_': True, 'gamma_median': 2.101, 'gamma_p5': 1.554, 'relax': 0, 'relax_ok': 0, 'bounds_rejected': 0, 'global_skipped_to_guided': 0, 'cams_skipped_saturated': 68}, 'stress': {'modes': ['day', 'glare', 'shadow'], 'base': 'v6/my_loc_v6.py:Localizer', 'sun_az_deg': 120.0, 'sun_el_deg': 20.0, 'stress_ms_mean': 100.9}}
+worst moments:
+  t=  817.8 s K5  v= 11.7 m/s  pos 0.30  lat -0.25  lon +0.18  yaw -0.47 deg
+  t=  803.6 s K5  v= 19.9 m/s  pos 0.16  lat +0.02  lon +0.16  yaw -0.01 deg
+  t=  811.3 s K5  v= 20.0 m/s  pos 0.10  lat +0.07  lon -0.07  yaw -0.09 deg
+  t=  822.8 s K5  v= 20.3 m/s  pos 0.09  lat -0.05  lon -0.08  yaw -0.01 deg
+evaluate.py (GT window of this run):
+poses submitted        250   evaluated 250
+coverage (1 s bins)    100.0 %   (>= 90 % to be ranked)
+position RMSE  [m]     0.079   <- SCORE (lower is better)
+position median/p95    0.045 / 0.169
+lateral RMSE   [m]     0.039
+longitudinal RMSE [m]  0.069
+yaw RMSE     [deg]     0.111
+within 0.25 m          99.2 %
+within 0.50 m          100.0 %
+within 1.00 m          100.0 %

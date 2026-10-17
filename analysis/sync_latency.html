@@ -1,0 +1,498 @@
+<title>Синхронный режим и задержка</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one reading column of a timing report; each figure is a logic-analyzer style timeline with its own transport. */
+:root {
+  --bg: #f4f6f9; --surface: #ffffff; --ink: #18202c; --muted: #596377; --rule: #d8dde6; --tick: #9aa3b2;
+  --v3: #2350c8; --v3-soft: rgba(35, 80, 200, .14);
+  --vlad: #b06a00; --vlad-soft: rgba(176, 106, 0, .14);
+  --bad: #c2352b; --bad-soft: rgba(194, 53, 43, .10); --good: #1d7a4b; --good-soft: rgba(29, 122, 75, .10);
+  --road: #e3e7ee; --lane: #c7ceda;
+  --f-display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --f-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0e1218; --surface: #151b24; --ink: #e6e9ef; --muted: #9aa3b4; --rule: #283040; --tick: #5d6678;
+  --v3: #7f9dff; --v3-soft: rgba(127, 157, 255, .18); --vlad: #f0a63a; --vlad-soft: rgba(240, 166, 58, .18);
+  --bad: #ff6f62; --bad-soft: rgba(255, 111, 98, .14); --good: #4fc68b; --good-soft: rgba(79, 198, 139, .14);
+  --road: #1c232e; --lane: #323b4b; color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #0e1218; --surface: #151b24; --ink: #e6e9ef; --muted: #9aa3b4; --rule: #283040; --tick: #5d6678;
+  --v3: #7f9dff; --v3-soft: rgba(127, 157, 255, .18); --vlad: #f0a63a; --vlad-soft: rgba(240, 166, 58, .18);
+  --bad: #ff6f62; --bad-soft: rgba(255, 111, 98, .14); --good: #4fc68b; --good-soft: rgba(79, 198, 139, .14);
+  --road: #1c232e; --lane: #323b4b; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 400 1.0625rem/1.55 var(--f-body); }
+.wrap { max-width: 980px; margin: 0 auto; padding-block: 40px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 48px; }
+h1, h2 { font-family: var(--f-display); font-weight: 600; letter-spacing: .005em; text-wrap: balance; margin: 0; line-height: 1.05; }
+h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); }
+h2 { font-size: clamp(1.6rem, 3.6vw, 2.1rem); }
+p { margin: 0; max-width: 68ch; }
+.eyebrow { font: 600 .78rem/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+header { display: grid; gap: 14px; }
+.lead { font-size: 1.2rem; color: var(--ink); }
+.mono { font-family: var(--f-mono); font-size: .92em; }
+code { font-family: var(--f-mono); font-size: .88em; background: var(--surface); border: 1px solid var(--rule); border-radius: 4px; padding: 0 4px; }
+
+.verdicts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.verdict { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 16px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.verdict p { font-size: .98rem; }
+.chip { justify-self: start; font: 600 .72rem/1 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; padding: 5px 8px; border-radius: 99px; }
+.chip.good { background: var(--good-soft); color: var(--good); }
+.chip.bad { background: var(--bad-soft); color: var(--bad); }
+.chip.warn { background: var(--vlad-soft); color: var(--vlad); }
+
+section { display: grid; gap: 16px; }
+.fig { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 14px; display: grid; gap: 12px; min-width: 0; }
+.fig canvas { width: 100%; display: block; }
+.transport { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+.seg button, .btn { font: 600 .82rem/1 var(--f-mono); color: var(--ink); background: transparent; border: 0; padding: 8px 10px; cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--rule); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+.btn { border: 1px solid var(--rule); border-radius: 6px; min-width: 6.2em; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--v3); outline-offset: 2px; }
+.clock { font: 600 .9rem/1 var(--f-mono); color: var(--muted); font-variant-numeric: tabular-nums; margin-left: auto; }
+.scrub { flex: 1 1 200px; min-width: 0; accent-color: var(--v3); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: .88rem; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 14px; height: 10px; border-radius: 2px; display: inline-block; }
+.readout { display: grid; grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr)); gap: 10px; }
+.ro { border-top: 3px solid var(--c); padding-top: 8px; display: grid; gap: 2px; min-width: 0; }
+.ro b { font: 600 .82rem/1.25 var(--f-body); color: var(--muted); }
+.ro .v { font: 600 1.25rem/1.2 var(--f-mono); font-variant-numeric: tabular-nums; }
+.ro .s { font: 400 .8rem/1.3 var(--f-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.ro .v.alarm { color: var(--bad); }
+.note { font-size: .9rem; color: var(--muted); }
+
+.tablewrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: .95rem; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font: 600 .74rem/1.2 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+tr:last-child td { border-bottom: 0; }
+td .chip { margin-bottom: 4px; display: inline-block; }
+footer { font-size: .85rem; color: var(--muted); display: grid; gap: 6px; }
+
+@media (max-width: 720px) {
+  .verdicts { grid-template-columns: minmax(0, 1fr); }
+  .readout { grid-template-columns: minmax(0, 1fr); }
+  .clock { margin-left: 0; }
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">camloc · K3 / K6 · RTX 5060 Ti и RTX 5090</div>
+    <h1>Синхронный режим и задержка</h1>
+    <p class="lead"><code>evaluate.py</code> сравнивает позу с GT в момент съёмки кадра, а не в момент, когда поза готова. Задержку он не видит. Ниже показано, как это выглядит для v3 и для <code>final</code> Влада.</p>
+  </header>
+
+  <div class="verdicts">
+    <div class="verdict"><span class="chip good">правила соблюдены</span>
+      <p>Обе синхронные версии причинные: поза для кадра t строится только по кадрам со временем ≤ t и помечена временем этого кадра.</p></div>
+    <div class="verdict"><span class="chip good">v3: проверено вживую</span>
+      <p><code>simulate.py --speed 1</code>: кадры приходят в реальном времени, пропущено 0. Поза готова через 32 мс (максимум 94).</p></div>
+    <div class="verdict"><span class="chip warn">final: только офлайн</span>
+      <p><code>featmap.py</code> обрабатывает каждый кадр с диска, сколько бы это ни заняло. На 5060 Ti очередь растёт до 40 с за круг.</p></div>
+  </div>
+
+  <section id="sync">
+    <h2>Синхронно: от кадра до позы</h2>
+    <p>Камера снимает кадр каждые 100 мс. Синхронный метод выдаёт позу только после того, как посчитана поправка. Если поправка дольше 100 мс, следующий кадр ждёт.</p>
+    <div class="fig">
+      <div class="transport">
+        <button class="btn" id="s-play" type="button">Пауза</button>
+        <span class="seg" id="s-speed" role="group" aria-label="Скорость">
+          <button type="button" data-v="0.2" aria-pressed="true">×0.2</button><button type="button" data-v="1" aria-pressed="false">×1</button><button type="button" data-v="10" aria-pressed="false">×10</button>
+        </span>
+        <span class="seg" id="s-mode" role="group" aria-label="Режим проверки">
+          <button type="button" data-v="offline" aria-pressed="true">Офлайн, как featmap.py</button><button type="button" data-v="live" aria-pressed="false">Вживую, как simulate.py</button>
+        </span>
+        <input class="scrub" id="s-scrub" type="range" min="0" max="110600" step="100" value="6000" aria-label="Время на круге">
+        <span class="clock" id="s-clock">t = 6.0 с</span>
+      </div>
+      <canvas id="s-canvas" data-h="340" aria-label="Временная диаграмма синхронных методов"></canvas>
+      <div class="legend">
+        <span><i class="sw" style="background:var(--tick)"></i>кадр снят</span>
+        <span><i class="sw" style="background:var(--ink);opacity:.55"></i>обработка (широкий блок = поправка от камер)</span>
+        <span><i class="sw" style="background:var(--ink);border-radius:99px;width:10px"></i>поза выдана</span>
+        <span><i class="sw" style="border:1px solid var(--tick);background:transparent"></i>кадр ждёт в очереди</span>
+        <span>× кадр пропущен</span>
+      </div>
+      <div class="readout" id="s-read" style="--cols:3"></div>
+      <p class="note">Время обработки взято из логов: v3 — 32 мс на каждом кадре; final на 5090 — ~230 мс на каждом 3-м кадре; final на 5060 Ti — ~360 мс на каждом 3-м кадре (среднее 118 мс на кадр). Переключите на ×10 и посмотрите, как растёт очередь на 5060 Ti. В режиме «вживую» лишние кадры выбрасываются, как в <code>simulate.py</code>, и точность уже не та, что в офлайне.</p>
+    </div>
+  </section>
+
+  <section id="road">
+    <h2>Где машина, когда поза готова</h2>
+    <p>Те же задержки в метрах: на прямой со скоростью 35 м/с. Сплошной контур — где машина на самом деле. Закрашенная машина — где она была в момент съёмки кадра, то есть то, что получает потребитель позы.</p>
+    <div class="fig">
+      <canvas id="r-canvas" data-h="300" aria-label="Отставание выданной позы в метрах"></canvas>
+      <p class="note"><code>evaluate.py</code> видит не эти метры, а ошибку позы относительно GT в момент съёмки: около 0.08 м у обеих синхронных версий. У асинхронных поза выдаётся почти сразу (0.3–0.6 мс) по модели движения, а поправка от камер приходит позже (см. ниже).</p>
+    </div>
+  </section>
+
+  <section id="async">
+    <h2>Асинхронно: поза сразу, поправка позже</h2>
+    <p>Поза выдаётся на каждом кадре сразу, по прогнозу фильтра. Поправка считается в фоне. Когда она готова, фильтр на следующем кадре откатывается к моменту съёмки, применяет поправку и заново прогоняет движение до текущего момента. Поэтому задержка поправки кратна 100 мс: у v3 поправка готова за 33 мс и применяется на следующем кадре (100 мс), у Влада на 5060 Ti — за ~360 мс и применяется через 400 мс, а пока он считает, остальные кадры поправку не получают.</p>
+    <div class="fig">
+      <div class="transport">
+        <button class="btn" id="a-play" type="button">Пауза</button>
+        <span class="seg" id="a-speed" role="group" aria-label="Скорость">
+          <button type="button" data-v="0.2" aria-pressed="true">×0.2</button><button type="button" data-v="1" aria-pressed="false">×1</button><button type="button" data-v="10" aria-pressed="false">×10</button>
+        </span>
+        <input class="scrub" id="a-scrub" type="range" min="0" max="110600" step="100" value="4000" aria-label="Время на круге">
+        <span class="clock" id="a-clock">t = 4.0 с</span>
+      </div>
+      <canvas id="a-canvas" data-h="420" aria-label="Временная диаграмма асинхронных методов"></canvas>
+      <div class="legend">
+        <span><i class="sw" style="background:var(--tick)"></i>кадр снят, поза выдана сразу</span>
+        <span><i class="sw" style="background:var(--ink);opacity:.55"></i>поправка считается в фоне</span>
+        <span>↶ поправка применена: откат к моменту кадра</span>
+        <span>нижняя линия: ошибка между поправками (схема)</span>
+      </div>
+      <div class="readout" id="a-read" style="--cols:3"></div>
+      <p class="note">Линия ошибки схематичная: она показывает только то, что ошибка растёт, пока поправки нет, и после поправки не падает до нуля, потому что поправка уже устарела. Реальные числа: v3 асинхр. 0.079 / 0.087 м; Влад живой 0.082 / 0.090 на 5090 и 0.096 / 0.103 на 5060 Ti (K3 / K6).</p>
+    </div>
+  </section>
+
+  <section id="rules">
+    <h2>Правила по пунктам</h2>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Правило</th><th>Откуда</th><th>v3 синхр.</th><th>Влад final (синхр.)</th></tr></thead>
+        <tbody>
+          <tr><td>Поза в момент t использует только кадры со временем ≤ t</td><td>README датасета</td>
+            <td><span class="chip good">да</span><br>поправка для кадра t считается внутри <code>step(t)</code></td>
+            <td><span class="chip good">да</span><br>поправка на кадре k по кадрам k</td></tr>
+          <tr><td><code>timestamp_ns</code> = время съёмки кадра, по которому посчитана поза</td><td>README датасета</td>
+            <td><span class="chip good">да</span></td><td><span class="chip good">да</span></td></tr>
+          <tr><td>Хотя бы одна поза в секунду (покрытие ≥ 90%)</td><td>README датасета</td>
+            <td><span class="chip good">100%</span></td><td><span class="chip good">100%</span></td></tr>
+          <tr><td>Из <code>state_estimation</code> только поля движения, без позы GT</td><td>INTRO, слайд 10 (по <code>car_state.py</code>)</td>
+            <td><span class="chip good">да</span><br><code>vx</code>, <code>vy</code>, <code>wz</code></td>
+            <td><span class="chip good">да</span><br><code>vx_mps</code>, <code>vy_mps</code>, <code>wz_radps</code></td></tr>
+          <tr><td>Реальное время: поза не позже периода камеры</td><td>в README нет; если есть, то на слайдах INTRO</td>
+            <td><span class="chip good">выдержано</span><br>проверено воспроизведением в реальном времени, 32 мс</td>
+            <td><span class="chip bad">не проверялось</span><br>оценено задним числом; на 5090 поза до ~350 мс, на 5060 Ti отставание до 40 с</td></tr>
+          <tr><td>Отложенные круги K3 / K6 только для финальной проверки</td><td>правила проекта (<code>v2/README.md</code>)</td>
+            <td><span class="chip warn">2 запуска</span><br>асинхр. и синхр. варианты, без подбора параметров</td>
+            <td><span class="chip warn">подбор</span><br><code>--q-lat 0.03</code> выбран по лучшему прогону на K3 / K6</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <p>Источники: <code>v3/runs/v3sync_val_K3|K6/summary.txt</code>, <code>v3/runs/v3_val_K3|K6/summary.txt</code>, <code>v4_byVlad/…/tools/final_sync_masks.log</code>, <code>final_async_masks.log</code>, скриншот таблицы Влада (RTX 5090), <code>v4_byVlad/handoff/…/README.md</code>.</p>
+    <p>Время обработки в анимациях моделируется по этим логам: средние значения и разброс взяты оттуда, отдельные кадры случайные.</p>
+  </footer>
+</div>
+
+<script>
+(() => {
+  const N = 1106, P = 100, LAP = (N - 1) * P;            // K3: 1106 frames at 10 Hz
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const tok = () => { const s = getComputedStyle(document.documentElement); return k => s.getPropertyValue(k).trim(); };
+
+  function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  const between = (r, lo, hi) => lo + (hi - lo) * r();
+
+  // ---------- lane models (precomputed for a whole lap)
+  function syncOffline(seed, fixEvery, pFix, pOther) {          // featmap.py validate: FIFO, nothing dropped
+    const r = rng(seed), fr = []; let free = 0;
+    for (let k = 0; k < N; k++) {
+      const a = k * P, fix = k % fixEvery === 0, p = fix ? pFix(r) : pOther(r);
+      const st = Math.max(a, free), fin = st + p; free = fin;
+      fr.push({ a, st, fin, out: fin, fix, drop: false });
+    }
+    return fr;
+  }
+  function syncLive(seed, fixEvery, pFix, pOther) {             // simulate.py --speed 1: take the newest set, drop older
+    const r = rng(seed), fr = Array.from({ length: N }, (_, k) => ({ a: k * P, drop: true }));
+    let T = 0, last = -1, cnt = 0;
+    while (true) {
+      let j = Math.min(N - 1, Math.floor(T / P + 1e-9));
+      if (j <= last) { j = last + 1; if (j >= N) break; T = Math.max(T, j * P); }
+      const fix = cnt++ % fixEvery === 0, p = fix ? pFix(r) : pOther(r);
+      fr[j] = { a: j * P, st: T, fin: T + p, out: T + p, fix, drop: false };
+      last = j; T += p;
+      if (j === N - 1) break;
+    }
+    return fr;
+  }
+  function asyncModel(seed, pFix) {                             // background worker, fused at the next step()
+    const r = rng(seed), fr = []; let pending = -1;
+    for (let k = 0; k < N; k++) {
+      const a = k * P, f = { a, out: a + 0.5, fix: false };
+      fr.push(f);
+      if (pending >= 0 && fr[pending].fin <= a) { fr[pending].applied = a; pending = -1; }
+      if (pending < 0) { f.fix = true; f.st = a; f.fin = a + pFix(r); pending = k; }
+    }
+    return fr;
+  }
+  const v3p = r => r() < 0.01 ? between(r, 60, 94) : between(r, 29, 37);
+  const tiny = r => between(r, 0.5, 1.5);
+  const f5090 = r => r() < 0.08 ? between(r, 300, 350) : between(r, 205, 250);
+  const f5060 = r => r() < 0.05 ? between(r, 400, 442) : between(r, 330, 390);
+  const a5090 = r => r() < 0.06 ? between(r, 300, 420) : between(r, 190, 280);
+  const a5060 = r => r() < 0.05 ? between(r, 400, 436) : between(r, 330, 390);
+
+  const syncLanes = mode => {
+    const m = mode === 'live' ? syncLive : syncOffline;
+    return [
+      { name: 'v3 синхр.', gpu: 'RTX 5060 Ti', col: '--v3', fr: syncLive(11, 1, v3p, v3p) },
+      { name: 'Влад final', gpu: 'RTX 5090', col: '--vlad', fr: m(22, 3, f5090, tiny) },
+      { name: 'Влад final', gpu: 'RTX 5060 Ti', col: '--vlad', fr: m(33, 3, f5060, tiny) },
+    ];
+  };
+  const asyncLanes = [
+    { name: 'v3 асинхр.', gpu: 'RTX 5060 Ti', col: '--v3', fr: asyncModel(44, v3p) },
+    { name: 'Влад живой', gpu: 'RTX 5090', col: '--vlad', fr: asyncModel(55, a5090) },
+    { name: 'Влад живой', gpu: 'RTX 5060 Ti', col: '--vlad', fr: asyncModel(66, a5060) },
+  ];
+  for (const L of asyncLanes) L.fixes = L.fr.filter(f => f.applied !== undefined);
+
+  // ---------- helpers
+  const fmtMs = ms => ms >= 1000 ? (ms / 1000).toFixed(1) + ' с' : Math.round(ms) + ' мс';
+  function lastOut(fr, now) {                     // newest processed frame whose pose is out by `now`
+    for (let k = Math.min(N - 1, Math.floor(now / P)); k >= 0; k--) { const f = fr[k]; if (!f.drop && f.out <= now) return f; }
+    return null;
+  }
+
+  function setupCanvas(cv) {
+    const h = +cv.dataset.h;                                   // logical height, never rewritten
+    cv.style.height = h + 'px';
+    let lastW = -1;
+    const fit = () => { const d = devicePixelRatio || 1, w = Math.max(1, cv.clientWidth);
+      if (w === lastW && cv.width === Math.round(w * d)) return;
+      lastW = w; cv.width = Math.round(w * d); cv.height = Math.round(h * d);
+      cv.getContext('2d').setTransform(d, 0, 0, d, 0, 0); };
+    fit(); if (window.ResizeObserver) new ResizeObserver(fit).observe(cv);
+    return () => { fit(); return Math.max(1, cv.clientWidth); };
+  }
+
+  function transport(prefix, initial, onFrame) {
+    const st = { now: initial, speed: 0.2, playing: !reduce };
+    const play = document.getElementById(prefix + '-play'), scrub = document.getElementById(prefix + '-scrub'),
+          clock = document.getElementById(prefix + '-clock');
+    const label = () => { play.textContent = st.playing ? 'Пауза' : 'Пуск'; };
+    play.addEventListener('click', () => { st.playing = !st.playing; label(); });
+    document.querySelectorAll('#' + prefix + '-speed button').forEach(b => b.addEventListener('click', () => {
+      st.speed = +b.dataset.v; b.parentNode.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b)); }));
+    scrub.addEventListener('input', () => { st.now = +scrub.value; });
+    label();
+    let last = performance.now(), lastUi = 0;
+    st.tick = t => {
+      const dt = Math.min(100, t - last); last = t;
+      if (st.playing) { st.now += dt * st.speed; if (st.now > LAP) st.now = 2000; }
+      if (t - lastUi > 90) { lastUi = t; scrub.value = Math.round(st.now); clock.textContent = 't = ' + (st.now / 1000).toFixed(1) + ' с'; }
+      onFrame(st.now, t - lastUi === 0);
+    };
+    return st;
+  }
+
+  // ---------- figure 1: synchronous timelines
+  const sCv = document.getElementById('s-canvas'), sW = setupCanvas(sCv);
+  let sMode = 'offline', sL = syncLanes(sMode);
+  document.querySelectorAll('#s-mode button').forEach(b => b.addEventListener('click', () => {
+    sMode = b.dataset.v; sL = syncLanes(sMode);
+    b.parentNode.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b)); }));
+  const sRead = document.getElementById('s-read');
+  sRead.innerHTML = [0, 1, 2].map(i => `<div class="ro" id="sr${i}"><b></b><span class="v"></span><span class="s"></span></div>`).join('');
+
+  function drawTimeline(cv, width, lanes, now, laneH, kind) {
+    const c = cv.getContext('2d'), T = tok(), H = +cv.dataset.h;
+    c.clearRect(0, 0, width, H);
+    const left = 8, right = width - 8, plotW = right - left;
+    const W = width < 560 ? 1300 : 2400;                       // visible window, ms
+    const t0 = now - W * 0.92, x = t => left + (t - t0) / W * plotW, nowX = x(now);
+    c.font = '600 11px ' + T('--f-mono');
+    // grid: 100 ms camera period
+    for (let k = Math.ceil(t0 / P); k * P <= now + W * 0.08; k++) {
+      const gx = x(k * P); c.fillStyle = T('--rule'); c.fillRect(Math.round(gx), 18, 1, H - 26);
+    }
+    lanes.forEach((L, i) => {
+      const y0 = 26 + i * laneH, col = T(L.col), tickY = y0 + 22, blockY = y0 + 42;
+      c.fillStyle = T('--ink'); c.font = '600 13px ' + T('--f-body'); c.textAlign = 'left';
+      c.fillText(L.name, left, y0 + 4);
+      const nw = c.measureText(L.name).width;
+      c.fillStyle = T('--muted'); c.font = '400 12px ' + T('--f-mono'); c.fillText(L.gpu, left + nw + 8, y0 + 4);
+      const kNow = Math.min(N - 1, Math.floor(now / P));
+      // frames captured inside the window
+      for (let k = Math.max(0, Math.ceil(t0 / P)); k <= kNow; k++) {
+        const f = L.fr[k], fx = x(f.a);
+        if (f.drop) {
+          const decided = (k + 1) * P <= now;
+          if (decided) { c.strokeStyle = T('--tick'); c.lineWidth = 1.5; c.beginPath();
+            c.moveTo(fx - 4, tickY - 4); c.lineTo(fx + 4, tickY + 4); c.moveTo(fx + 4, tickY - 4); c.lineTo(fx - 4, tickY + 4); c.stroke(); }
+          else { c.strokeStyle = T('--tick'); c.lineWidth = 1; c.strokeRect(fx - 1.5, tickY - 7, 3, 14); }
+          continue;
+        }
+        if (kind === 'sync' && f.st > now) { c.strokeStyle = T('--tick'); c.lineWidth = 1; c.strokeRect(fx - 1.5, tickY - 7, 3, 14); continue; }
+        c.fillStyle = T('--tick'); c.fillRect(fx - 1.5, tickY - 7, 3, 14);
+        if (kind === 'async') { c.fillStyle = col; c.beginPath(); c.arc(fx + 1, tickY + 11, 2.2, 0, 7); c.fill(); }
+      }
+      // processing blocks (search back far enough for queued lanes)
+      let kStart = Math.max(0, Math.floor(t0 / P) - 1);
+      if (kind === 'sync') { while (kStart > 0 && (L.fr[kStart].drop || L.fr[kStart].fin > t0)) kStart--; }
+      for (let k = kStart; k <= kNow; k++) {
+        const f = L.fr[k]; if (f.drop || f.st === undefined) continue;
+        if (f.fin < t0 || f.st > now) continue;
+        const bx0 = x(Math.max(f.st, t0)), bx1 = x(Math.min(f.fin, now));
+        const h = f.fix ? 12 : 4;
+        c.fillStyle = col; c.globalAlpha = f.fix ? 0.85 : 0.5;
+        c.fillRect(bx0, blockY - h / 2, Math.max(1.5, bx1 - bx0), h); c.globalAlpha = 1;
+        if (kind === 'sync' && f.out <= now) {
+          const ox = x(f.out), ax = x(f.a);
+          c.strokeStyle = col; c.globalAlpha = 0.45; c.lineWidth = 1; c.beginPath();
+          c.moveTo(Math.max(ax, left), tickY + 7); c.lineTo(ox, blockY - 2); c.stroke(); c.globalAlpha = 1;
+          c.fillStyle = col; c.beginPath(); c.arc(ox, blockY, 3.4, 0, 7); c.fill();
+        }
+      }
+      if (kind === 'sync') {
+        const lo = lastOut(L.fr, now);
+        if (lo && lo.a < t0) {
+          c.fillStyle = T('--bad'); c.font = '600 12px ' + T('--f-mono'); c.textAlign = 'left';
+          c.fillText((width < 560 ? '← кадр снят ' : '← последняя поза — по кадру, снятому ') + fmtMs(now - lo.a) + ' назад', left, blockY + 22);
+        }
+      }
+      if (kind === 'async') {
+        // corrections: arc from the moment they are applied back to their capture time
+        for (const f of L.fixes) {
+          if (f.applied > now || f.applied < t0 - 600) continue;
+          const ax = x(f.a), px = x(f.applied), top = blockY - 30;
+          c.strokeStyle = col; c.lineWidth = 1.6; c.beginPath();
+          c.moveTo(px, blockY - 6); c.bezierCurveTo(px, top, ax, top, ax, tickY + 8); c.stroke();
+          c.fillStyle = col; c.beginPath(); c.moveTo(ax, tickY + 8); c.lineTo(ax - 4, tickY + 15); c.lineTo(ax + 4, tickY + 15); c.fill();
+        }
+        // schematic error: grows with the age of the newest applied correction
+        const ey = y0 + laneH - 14, eh = 44;
+        c.strokeStyle = T('--rule'); c.lineWidth = 1; c.beginPath(); c.moveTo(left, ey); c.lineTo(right, ey); c.stroke();
+        c.strokeStyle = col; c.lineWidth = 1.6; c.beginPath();
+        let j = 0; const fx = L.fixes;
+        for (let px = left; px <= Math.min(nowX, right); px += 2) {
+          const t = t0 + (px - left) / plotW * W;
+          while (j + 1 < fx.length && fx[j + 1].applied <= t) j++;
+          const age = fx[j] && fx[j].applied <= t ? t - fx[j].a : t;
+          const e = Math.min(eh, 4 + age * 0.05);
+          px === left ? c.moveTo(px, ey - e) : c.lineTo(px, ey - e);
+        }
+        c.stroke();
+      }
+    });
+    // now cursor
+    c.strokeStyle = T('--ink'); c.lineWidth = 1.5; c.beginPath(); c.moveTo(nowX, 12); c.lineTo(nowX, H - 6); c.stroke();
+    c.fillStyle = T('--ink'); c.font = '600 11px ' + T('--f-mono'); c.textAlign = 'center'; c.fillText('сейчас', nowX, 10);
+    // scale bar: 100 ms
+    c.textAlign = 'left'; c.fillStyle = T('--muted');
+    const sbx = left, sby = H - 6; c.fillRect(sbx, sby - 2, x(t0 + P) - x(t0), 2); c.fillText('100 мс', sbx + x(t0 + P) - x(t0) + 6, sby + 2);
+  }
+
+  function syncReadout(now) {
+    sL.forEach((L, i) => {
+      const el = document.getElementById('sr' + i), lo = lastOut(L.fr, now), kNow = Math.min(N - 1, Math.floor(now / P));
+      let queued = 0, dropped = 0;
+      for (let k = 0; k <= kNow; k++) { const f = L.fr[k]; if (f.drop) { if ((k + 1) * P <= now) dropped++; } else if (f.st > now) queued++; }
+      const lag = lo ? lo.out - lo.a : 0;
+      let worst = lag;                              // worst pose latency over the last 3 s of output
+      for (let k = lo ? Math.round(lo.a / P) : -1; k >= 0; k--) { const f = L.fr[k]; if (f.drop) continue; if (f.out < now - 3000) break; worst = Math.max(worst, f.out - f.a); }
+      el.style.setProperty('--c', `var(${L.col})`);
+      el.querySelector('b').textContent = L.name + ' · ' + L.gpu;
+      const v = el.querySelector('.v'); v.textContent = 'задержка позы до ' + fmtMs(worst); v.classList.toggle('alarm', worst > 1000);
+      el.querySelector('.s').textContent = `сейчас ${fmtMs(lag)} · в очереди ${queued} · пропущено ${dropped}`;
+    });
+  }
+  const sT = transport('s', 6000, now => { drawTimeline(sCv, sW(), sL, now, 100, 'sync'); });
+
+  // ---------- figure 3: asynchronous timelines
+  const aCv = document.getElementById('a-canvas'), aW = setupCanvas(aCv);
+  const aRead = document.getElementById('a-read');
+  aRead.innerHTML = [0, 1, 2].map(i => `<div class="ro" id="ar${i}"><b></b><span class="v"></span><span class="s"></span></div>`).join('');
+  function asyncReadout(now) {
+    asyncLanes.forEach((L, i) => {
+      const el = document.getElementById('ar' + i); let n = 0, sum = 0, nf = 0;
+      for (const f of L.fixes) { if (f.applied > now) break; n++; sum += f.applied - f.a; }
+      const kNow = Math.min(N - 1, Math.floor(now / P)) + 1;
+      el.style.setProperty('--c', `var(${L.col})`);
+      el.querySelector('b').textContent = L.name + ' · ' + L.gpu;
+      el.querySelector('.v').textContent = 'поправка через ' + (n ? fmtMs(sum / n) : '—');
+      el.querySelector('.s').textContent = `поза за 0.3–0.6 мс · поправок ${n ? Math.round(100 * n / kNow) : 0}% кадров`;
+    });
+  }
+  const aT = transport('a', 4000, now => { drawTimeline(aCv, aW(), asyncLanes, now, 128, 'async'); });
+
+  // ---------- figure 2: road, metres behind at 35 m/s
+  const rCv = document.getElementById('r-canvas'), rW = setupCanvas(rCv);
+  const V = 35;                                              // m/s
+  const roadRows = [
+    { name: 'v3 синхр.', gpu: '5060 Ti', col: '--v3', lat: t => 32 + 3 * Math.sin(t / 170) },
+    { name: 'Влад final', gpu: '5090', col: '--vlad', lat: t => [230, 131, 32][Math.floor(t / 300) % 3] },
+    { name: 'Влад final', gpu: '5060 Ti', col: '--vlad', lat: t => 360 + 0.207 * (t % 110600) },
+    { name: 'v3 асинхр.', gpu: '5060 Ti', col: '--v3', lat: () => 0.6, note: 'поправка от камер старше на 100 мс' },
+    { name: 'Влад живой', gpu: '5090', col: '--vlad', lat: () => 0.3, note: 'поправка от камер старше на ~300 мс' },
+  ];
+  function drawRoad(t) {
+    const width = rW(), c = rCv.getContext('2d'), T = tok(), H = +rCv.dataset.h;
+    c.clearRect(0, 0, width, H);
+    const narrow = width < 560, labelW = narrow ? 0 : 150, left = 8 + labelW, right = width - 70;
+    const carX = right - 12, maxM = 14, mpx = (carX - left - 20) / maxM;
+    const rowH = (H - 36) / roadRows.length;
+    // road surface
+    c.fillStyle = T('--road'); c.fillRect(left, 8, right - left + 20, rowH * roadRows.length);
+    // moving dashes
+    const dashOff = ((t / 1000) * V * mpx * 0.2) % 40;
+    c.fillStyle = T('--lane');
+    for (let r = 1; r < roadRows.length; r++) { const y = 8 + r * rowH;
+      for (let xx = right + 20 - dashOff; xx > left; xx -= 40) c.fillRect(Math.max(left, xx - 20), y - 1, Math.min(20, xx - left), 2); }
+    // metre scale
+    c.font = '400 11px ' + T('--f-mono'); c.fillStyle = T('--muted'); c.textAlign = 'center';
+    for (let m = 0; m <= maxM; m += 2) { const xx = carX - m * mpx; c.fillRect(xx, 8 + rowH * roadRows.length, 1, 5); c.fillText(m + ' м', xx, H - 10); }
+    roadRows.forEach((R, i) => {
+      const y = 8 + i * rowH + rowH / 2, col = T(R.col), lat = R.lat(t), d = V * lat / 1000;
+      if (narrow) { c.font = '600 11px ' + T('--f-body'); c.textAlign = 'left'; c.fillStyle = T('--ink'); c.fillText(R.name + ' · ' + R.gpu, left + 4, y - rowH / 2 + 12); }
+      else { c.font = '600 13px ' + T('--f-body'); c.textAlign = 'left'; c.fillStyle = T('--ink'); c.fillText(R.name, 8, y - 2);
+        c.font = '400 12px ' + T('--f-mono'); c.fillStyle = T('--muted'); c.fillText(R.gpu, 8, y + 13); }
+      const carW = 22, carH = Math.min(12, rowH * 0.32), cy = narrow ? y + 5 : y;
+      // true car: outline
+      c.strokeStyle = T('--ink'); c.lineWidth = 1.5; c.strokeRect(carX - carW / 2, cy - carH / 2, carW, carH);
+      // reported pose
+      const gx = carX - d * mpx;
+      if (gx < left + carW) {
+        c.fillStyle = T('--bad'); c.font = '600 12px ' + T('--f-mono'); c.textAlign = 'left';
+        c.fillText('← ' + (d >= 1000 ? (d / 1000).toFixed(2) + ' км' : Math.round(d) + ' м') + ' позади (отставание ' + fmtMs(lat) + ')', left + 4, cy + 4);
+      } else {
+        c.fillStyle = col; c.globalAlpha = 0.85; c.fillRect(gx - carW / 2, cy - carH / 2, carW, carH); c.globalAlpha = 1;
+        if (d > 0.4) { c.strokeStyle = col; c.setLineDash([3, 3]); c.beginPath(); c.moveTo(gx + carW / 2, cy); c.lineTo(carX - carW / 2, cy); c.stroke(); c.setLineDash([]); }
+        if (R.note && !narrow) { c.fillStyle = T('--muted'); c.font = '400 12px ' + T('--f-body'); c.textAlign = 'right'; c.fillText(R.note, carX - carW, cy + 4); }
+      }
+      c.textAlign = 'left'; c.fillStyle = T('--ink'); c.font = '600 12px ' + T('--f-mono');
+      c.fillText(d >= 1000 ? (d / 1000).toFixed(1) + ' км' : d < 0.1 ? d.toFixed(2) + ' м' : d.toFixed(1) + ' м', right + 22, cy + 4);
+    });
+  }
+
+  // ---------- loop
+  let rt = 2000, rLast = performance.now(), uiT = 0;
+  function frame(t) {
+    try {
+      sT.tick(t); aT.tick(t);
+      if (!reduce) rt += Math.min(100, t - rLast); rLast = t;
+      drawRoad(rt);
+      if (t - uiT > 120) { uiT = t; syncReadout(sT.now); asyncReadout(aT.now); }
+    } catch (e) { console.error(e); }
+    requestAnimationFrame(frame);
+  }
+  syncReadout(sT.now); asyncReadout(aT.now);
+  requestAnimationFrame(frame);
+})();
+</script>

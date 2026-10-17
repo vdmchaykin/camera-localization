@@ -1,0 +1,127 @@
+{
+ "tag": "smoke",
+ "mode": "B",
+ "localizer": "v5/my_loc_v5.py:Localizer",
+ "speed": 0.0,
+ "state": "/constructor0/state_estimation",
+ "window_s": [
+  185.5,
+  215.5
+ ],
+ "sets_in_window": 300,
+ "poses": 300,
+ "dropped": 0,
+ "evaluated": 300,
+ "pos_rmse": 0.15602900734008995,
+ "lat_rmse": 0.030531219467169503,
+ "lon_rmse": 0.1530127307428417,
+ "yaw_rmse_deg": 0.04664366957996986,
+ "pos_median": 0.15450925059550774,
+ "pos_p95": 0.2150812300690792,
+ "within_1m": 100.0,
+ "init_s": 4.895191392977722,
+ "step_ms_mean": 44.020212941104546,
+ "step_ms_p95": 46.14623077795841,
+ "step_ms_max": 65.66862703766674,
+ "decode_ms_mean": 3.5043664827632406,
+ "total_ms_mean": 47.524579423867785,
+ "total_ms_p95": 51.051896752323955,
+ "total_ms_max": 74.5019530877471,
+ "over_100ms": 0,
+ "localizer_stats": {
+  "mode": "sync",
+  "car_state": true,
+  "init_s": 3.5,
+  "map_keyframes_allowed": 4300,
+  "relocalizations": 301,
+  "reloc_ms_mean": 46.6,
+  "reloc_ms_p95": 45.8,
+  "fuse_delay_ms_mean": 0.0,
+  "measurements": 300,
+  "failed": 0,
+  "accepted": 300,
+  "rejected": 0,
+  "recovered": 0,
+  "flags": {
+   "guided": true,
+   "batch": true,
+   "calib": true,
+   "corner": true
+  },
+  "guided": 300,
+  "guided_fail": 0,
+  "guided_ms_mean": 43.6,
+  "guided_ms_p95": 45.8,
+  "guided_inliers_median": 716,
+  "global_": 0,
+  "global_ms_mean": NaN,
+  "v3": {
+   "fast_sp": true,
+   "compile": true,
+   "straight_period_s": 0.0
+  },
+  "v5": {
+   "max_kp": 1024,
+   "dense": 1,
+   "n_kf": 3,
+   "dense_sim": 0.75,
+   "dense_margin": 0.03,
+   "kp_corr_median": 923,
+   "dense_corr_median": 322,
+   "frames_with_dense": 300
+  }
+ },
+ "worst": [
+  {
+   "t_s": 191.9,
+   "lap": "K1",
+   "stamp": 1791918348979527189,
+   "v_mps": 6.4,
+   "pos": 0.242,
+   "lat": -0.033,
+   "lon": 0.24,
+   "dyaw_deg": -0.056
+  },
+  {
+   "t_s": 213.3,
+   "lap": "K1",
+   "stamp": 1791918370379802782,
+   "v_mps": 6.7,
+   "pos": 0.211,
+   "lat": 0.024,
+   "lon": 0.209,
+   "dyaw_deg": 0.048
+  },
+  {
+   "t_s": 208.2,
+   "lap": "K1",
+   "stamp": 1791918365279719458,
+   "v_mps": 9.1,
+   "pos": 0.174,
+   "lat": 0.032,
+   "lon": 0.171,
+   "dyaw_deg": 0.047
+  },
+  {
+   "t_s": 198.1,
+   "lap": "K1",
+   "stamp": 1791918355179599874,
+   "v_mps": 8.2,
+   "pos": 0.156,
+   "lat": -0.02,
+   "lon": 0.155,
+   "dyaw_deg": 0.021
+  },
+  {
+   "t_s": 186.9,
+   "lap": "K1",
+   "stamp": 1791918343979441928,
+   "v_mps": 6.4,
+   "pos": 0.112,
+   "lat": -0.006,
+   "lon": 0.112,
+   "dyaw_deg": -0.035
+  }
+ ],
+ "evaluate": "poses submitted        300   evaluated 300\ncoverage (1 s bins)    96.8 %   (>= 90 % to be ranked)\nposition RMSE  [m]     0.156   <- SCORE (lower is better)\nposition median/p95    0.154 / 0.215\nlateral RMSE   [m]     0.031\nlongitudinal RMSE [m]  0.153\nyaw RMSE     [deg]     0.047\nwithin 0.25 m          100.0 %\nwithin 0.50 m          100.0 %\nwithin 1.00 m          100.0 %\n"
+}

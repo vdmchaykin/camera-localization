@@ -1,0 +1,22 @@
+== v5_K6
+poses 1116 / sets 1116, dropped 0, evaluated 1116
+pos RMSE 0.082 m  (median 0.057, p95 0.173)  lat RMSE 0.045  lon RMSE 0.068  yaw RMSE 0.082 deg  <1 m 100.0 %
+step ms mean 53.0 p95 66.2 max 80.0 | decode 4.3 | step+decode mean 57.4 p95 70.8 max 123.6, >100 ms: 1 | init 4.8 s
+localizer: {'mode': 'sync', 'car_state': True, 'init_s': 3.4, 'map_keyframes_allowed': 4300, 'relocalizations': 1117, 'reloc_ms_mean': 53.3, 'reloc_ms_p95': 65.8, 'fuse_delay_ms_mean': 0.0, 'measurements': 1116, 'failed': 0, 'accepted': 1116, 'rejected': 0, 'recovered': 0, 'flags': {'guided': True, 'batch': True, 'calib': True, 'corner': True}, 'guided': 1116, 'guided_fail': 0, 'guided_ms_mean': 52.5, 'guided_ms_p95': 65.7, 'guided_inliers_median': 1188, 'global_': 0, 'global_ms_mean': nan, 'v3': {'fast_sp': True, 'compile': True, 'straight_period_s': 0.0}, 'v5': {'max_kp': 1024, 'dense': 1, 'n_kf': 3, 'dense_sim': 0.75, 'dense_margin': 0.03, 'kp_corr_median': 1491, 'dense_corr_median': 510, 'frames_with_dense': 1116}}
+worst moments:
+  t=  996.0 s K6  v= 16.1 m/s  pos 0.26  lat +0.26  lon -0.01  yaw +0.07 deg
+  t=  897.4 s K6  v= 35.3 m/s  pos 0.24  lat +0.01  lon -0.24  yaw +0.05 deg
+  t=  937.3 s K6  v= 15.0 m/s  pos 0.22  lat -0.20  lon -0.08  yaw -0.16 deg
+  t= 1007.2 s K6  v= 40.5 m/s  pos 0.17  lat +0.04  lon -0.17  yaw -0.02 deg
+  t=  929.2 s K6  v=  8.6 m/s  pos 0.15  lat +0.10  lon +0.11  yaw -0.20 deg
+evaluate.py (GT window of this run):
+poses submitted        1116   evaluated 1116
+coverage (1 s bins)    100.0 %   (>= 90 % to be ranked)
+position RMSE  [m]     0.082   <- SCORE (lower is better)
+position median/p95    0.057 / 0.173
+lateral RMSE   [m]     0.045
+longitudinal RMSE [m]  0.068
+yaw RMSE     [deg]     0.082
+within 0.25 m          99.9 %
+within 0.50 m          100.0 %
+within 1.00 m          100.0 %

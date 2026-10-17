@@ -1,0 +1,22 @@
+== v6_K6
+poses 1116 / sets 1116, dropped 0, evaluated 1116
+pos RMSE 0.081 m  (median 0.057, p95 0.175)  lat RMSE 0.045  lon RMSE 0.068  yaw RMSE 0.082 deg  <1 m 100.0 %
+step ms mean 57.8 p95 70.8 max 79.0 | decode 4.3 | step+decode mean 62.1 p95 75.3 max 128.5, >100 ms: 1 | init 4.9 s
+localizer: {'mode': 'sync', 'car_state': True, 'init_s': 3.5, 'map_keyframes_allowed': 4300, 'relocalizations': 1117, 'reloc_ms_mean': 58.2, 'reloc_ms_p95': 70.4, 'fuse_delay_ms_mean': 0.0, 'measurements': 1116, 'failed': 0, 'accepted': 1116, 'rejected': 0, 'recovered': 0, 'flags': {'guided': True, 'batch': True, 'calib': True, 'corner': True}, 'guided': 1116, 'guided_fail': 0, 'guided_ms_mean': 57.4, 'guided_ms_p95': 70.3, 'guided_inliers_median': 1102, 'global_': 0, 'global_ms_mean': nan, 'v3': {'fast_sp': True, 'compile': True, 'straight_period_s': 0.0}, 'v5': {'max_kp': 1024, 'dense': 1, 'n_kf': 3, 'dense_sim': 0.75, 'dense_margin': 0.03, 'kp_corr_median': 1402, 'dense_corr_median': 473, 'frames_with_dense': 1116}, 'v6': {'expo': True, 'sat': True, 'relax_on': True, 'bounds': True, 'global_': True, 'gamma_median': 1.011, 'gamma_p5': 0.808, 'relax': 0, 'relax_ok': 0, 'bounds_rejected': 0, 'global_skipped_to_guided': 0, 'cams_skipped_saturated': 0}}
+worst moments:
+  t=  996.0 s K6  v= 16.1 m/s  pos 0.26  lat +0.26  lon -0.01  yaw +0.09 deg
+  t=  897.4 s K6  v= 35.3 m/s  pos 0.24  lat +0.01  lon -0.24  yaw +0.05 deg
+  t=  937.3 s K6  v= 15.0 m/s  pos 0.22  lat -0.21  lon -0.08  yaw -0.16 deg
+  t= 1007.2 s K6  v= 40.5 m/s  pos 0.18  lat +0.05  lon -0.17  yaw -0.03 deg
+  t=  928.0 s K6  v=  3.0 m/s  pos 0.15  lat +0.04  lon +0.14  yaw +0.03 deg
+evaluate.py (GT window of this run):
+poses submitted        1116   evaluated 1116
+coverage (1 s bins)    100.0 %   (>= 90 % to be ranked)
+position RMSE  [m]     0.081   <- SCORE (lower is better)
+position median/p95    0.057 / 0.175
+lateral RMSE   [m]     0.045
+longitudinal RMSE [m]  0.068
+yaw RMSE     [deg]     0.082
+within 0.25 m          99.9 %
+within 0.50 m          100.0 %
+within 1.00 m          100.0 %
