@@ -218,3 +218,23 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ---- Heavy data (not tracked) ----
+*.mcap
+*.zip
+*.tar.gz
+*.h5
+*.npz
+*.parquet
+*.mp4
+*.pth
+*.ckpt
+c0_*/tools/maps/
+c0_*/tools/data/images/
+c0_*/tools/data/sam3/
+c0_*/tools/data/sam3_video/
+c0_*/tools/data/masks/
+c0_*/tools/data/borders_debug/
+# experiment outputs
+*.csv
+!c0_*/tools/results.csv
