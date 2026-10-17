@@ -1,0 +1,6 @@
+err 0.056 m, inliers 880
+  resize       mean     0.6 ms  p95     0.7 ms
+  superpoint   mean    93.6 ms  p95   139.9 ms
+  match+solve  mean    12.5 ms  p95    15.2 ms
+  solve        mean     0.0 ms  p95     0.0 ms
+  total        mean   106.8 ms  p95   152.4 ms

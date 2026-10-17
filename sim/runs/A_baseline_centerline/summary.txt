@@ -1,0 +1,20 @@
+== A_baseline_centerline
+poses 11942 / sets 11942, dropped 0, evaluated 11942
+pos RMSE 526.870 m  (median 394.297, p95 986.382)  lat RMSE 321.661  lon RMSE 417.284  yaw RMSE 102.463 deg  <1 m 0.0 %
+worst moments:
+  t=  731.0 s K4  v= 15.3 m/s  pos 1168.92  lat +939.34  lon -695.71  yaw -117.84 deg
+  t=  883.1 s K5  v= 18.3 m/s  pos 1153.83  lat +898.94  lon -723.35  yaw -102.91 deg
+  t=  666.7 s K4  v= 19.7 m/s  pos 1146.02  lat +680.08  lon +922.41  yaw +71.89 deg
+  t=  736.0 s K4  v= 16.7 m/s  pos 1069.41  lat +368.27  lon +1004.00  yaw -164.21 deg
+  t=  661.7 s K4  v= 13.0 m/s  pos 1067.50  lat +482.96  lon -952.00  yaw -174.80 deg
+evaluate.py (GT window of this run):
+poses submitted        11942   evaluated 11942
+coverage (1 s bins)    100.0 %   (>= 90 % to be ranked)
+position RMSE  [m]     526.870   <- SCORE (lower is better)
+position median/p95    394.297 / 986.382
+lateral RMSE   [m]     321.661
+longitudinal RMSE [m]  417.284
+yaw RMSE     [deg]     102.463
+within 0.25 m          0.0 %
+within 0.50 m          0.0 %
+within 1.00 m          0.0 %

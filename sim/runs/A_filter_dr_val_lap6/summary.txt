@@ -1,0 +1,20 @@
+== A_filter_dr_val_lap6
+poses 1115 / sets 1115, dropped 0, evaluated 1115
+pos RMSE 12.794 m  (median 6.002, p95 25.934)  lat RMSE 10.146  lon RMSE 7.795  yaw RMSE 1.397 deg  <1 m 9.1 %
+worst moments:
+  t=  997.7 s K6  v= 17.1 m/s  pos 26.96  lat +5.74  lon -26.34  yaw -2.30 deg
+  t=  992.7 s K6  v= 19.1 m/s  pos 24.93  lat -22.96  lon -9.70  yaw -1.82 deg
+  t= 1002.7 s K6  v= 29.8 m/s  pos 23.33  lat +23.10  lon -3.27  yaw -2.44 deg
+  t=  987.7 s K6  v= 30.2 m/s  pos 21.93  lat -19.47  lon -10.07  yaw -1.83 deg
+  t=  982.7 s K6  v= 34.3 m/s  pos 17.25  lat -15.36  lon -7.85  yaw -1.87 deg
+evaluate.py (GT window of this run):
+poses submitted        1115   evaluated 1115
+coverage (1 s bins)    100.0 %   (>= 90 % to be ranked)
+position RMSE  [m]     12.794   <- SCORE (lower is better)
+position median/p95    6.002 / 25.934
+lateral RMSE   [m]     10.146
+longitudinal RMSE [m]  7.795
+yaw RMSE     [deg]     1.397
+within 0.25 m          1.9 %
+within 0.50 m          5.0 %
+within 1.00 m          9.1 %

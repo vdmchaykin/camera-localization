@@ -1,0 +1,23 @@
+track_filter.py (EKF x, y, yaw, speed scale k, yaw-rate bias bw), 2026-10-16 ~23:00
+predict: whitelisted car state vx_mps, vy_mps (body frame, side slip!), wz_radps, every message <= t
+update: PnP pose from fl+fr only (results/single_dev_flfr.csv), every 10th camera set = 1 Hz;
+        min 30 inliers, chi2 gate 16, noise scaled sqrt(100/inliers)
+start: GT pose at lap start (stands in for the first pose of the run)
+noise tuned on dev laps 1, 5 with a 3x3x2 grid (plateau), chosen Q_POS_T 0.1, Q_POS_D 0.01, Q_YAW_T 0.004
+               RMSE   median/p95     lateral  longit.  yaw     <1 m
+lap 1          0.194  0.152 / 0.334  0.103    0.165    0.102°  100 %
+lap 5          0.265  0.128 / 0.659  0.139    0.225    0.109°  100 %
+dead reckoning (same laps, no updates): RMSE 11.2 / 10.3 m
+history: predicting with v_mps along the heading (no side slip) + small process noise gave 1.17 / 1.22 m
+caveat: evaluated on the same dev laps used for the noise grid; held-out laps 3, 6 not touched yet
+
+v2 (2026-10-16 23:25): lap 5 with fl+fr+cl had lateral 0.181 m: at 846-847 s two biased PnP poses (yaw ~0.5°)
+were accepted, the filter yaw drifted and then three correct 1000+ inlier poses were rejected by the gate.
+Fix: R_YAW 0.15° -> 0.30°, inlier scaling floored at 0.7 (>200 inliers no longer increases trust),
+recovery rule (two consecutive rejected measurements with the same innovation widen P; never triggered here).
+               fl+fr RMSE/lat     fl+fr+cl RMSE/lat
+lap 1  old     0.194 / 0.103      0.149 / 0.073
+lap 1  v2      0.205 / 0.115      0.160 / 0.076
+lap 5  old     0.265 / 0.139      0.233 / 0.181
+lap 5  v2      0.273 / 0.155      0.178 / 0.118
+Not a cl calibration problem: single-shot fl+fr+cl lateral mean -0.03 m, std 0.15 m (fl+fr: std 0.73 m).

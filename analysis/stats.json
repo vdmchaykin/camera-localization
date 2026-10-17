@@ -1,0 +1,530 @@
+{
+ "track": {
+  "centerline_length_m": 2998.4,
+  "left_len_m": 2957.8,
+  "right_len_m": 3056.9,
+  "width_m": {
+   "min": 11.25,
+   "median": 13.58,
+   "max": 20.45
+  },
+  "z_range_m": [
+   -5.38,
+   10.17
+  ]
+ },
+ "start_line_xy": [
+  -96.6,
+  697.5
+ ],
+ "racing_line_length_m": 2979.0,
+ "laps": [
+  {
+   "lap": 0,
+   "t_start": 0.0,
+   "t_end": 185.5,
+   "duration_s": 185.5,
+   "complete": false,
+   "v_max": 14.9,
+   "v_mean": 8.9,
+   "pit_s": 95.8,
+   "stopped_s": 4.6
+  },
+  {
+   "lap": 1,
+   "t_start": 185.5,
+   "t_end": 365.6,
+   "duration_s": 180.1,
+   "complete": true,
+   "v_max": 30.1,
+   "v_mean": 16.5,
+   "pit_s": 0.0,
+   "stopped_s": 0.0
+  },
+  {
+   "lap": 2,
+   "t_start": 365.6,
+   "t_end": 523.4,
+   "duration_s": 157.8,
+   "complete": true,
+   "v_max": 28.3,
+   "v_mean": 19.2,
+   "pit_s": 0.0,
+   "stopped_s": 4.7
+  },
+  {
+   "lap": 3,
+   "t_start": 523.4,
+   "t_end": 634.0,
+   "duration_s": 110.6,
+   "complete": true,
+   "v_max": 35.5,
+   "v_mean": 26.9,
+   "pit_s": 0.0,
+   "stopped_s": 0.0
+  },
+  {
+   "lap": 4,
+   "t_start": 634.0,
+   "t_end": 752.2,
+   "duration_s": 118.2,
+   "complete": true,
+   "v_max": 35.5,
+   "v_mean": 25.1,
+   "pit_s": 0.0,
+   "stopped_s": 0.0
+  },
+  {
+   "lap": 5,
+   "t_start": 752.2,
+   "t_end": 896.1,
+   "duration_s": 143.9,
+   "complete": true,
+   "v_max": 35.4,
+   "v_mean": 20.7,
+   "pit_s": 0.0,
+   "stopped_s": 0.0
+  },
+  {
+   "lap": 6,
+   "t_start": 896.1,
+   "t_end": 1007.7,
+   "duration_s": 111.5,
+   "complete": true,
+   "v_max": 40.3,
+   "v_mean": 26.6,
+   "pit_s": 0.0,
+   "stopped_s": 1.7
+  },
+  {
+   "lap": 7,
+   "t_start": 1007.7,
+   "t_end": 1120.7,
+   "duration_s": 113.0,
+   "complete": true,
+   "v_max": 40.3,
+   "v_mean": 26.2,
+   "pit_s": 0.0,
+   "stopped_s": 1.1
+  },
+  {
+   "lap": 8,
+   "t_start": 1120.7,
+   "t_end": 1194.4,
+   "duration_s": 73.7,
+   "complete": false,
+   "v_max": 30.3,
+   "v_mean": 17.0,
+   "pit_s": 27.9,
+   "stopped_s": 2.8
+  }
+ ],
+ "stops": [
+  [
+   0.0,
+   4.6
+  ],
+  [
+   413.7,
+   418.4
+  ],
+  [
+   925.7,
+   927.3
+  ],
+  [
+   1036.2,
+   1037.3
+  ],
+  [
+   1191.6,
+   1194.4
+  ]
+ ],
+ "pit_intervals": [
+  [
+   0.0,
+   95.8
+  ],
+  [
+   1166.5,
+   1194.4
+  ]
+ ],
+ "off_track_share": 0.0001,
+ "dynamics": {
+  "v_mps": {
+   "min": 0.0,
+   "p50": 18.63,
+   "max": 40.3
+  },
+  "ax_mps2": {
+   "min": -13.61,
+   "p50": -0.02,
+   "max": 9.07
+  },
+  "ay_mps2": {
+   "min": -10.07,
+   "p50": 0.08,
+   "max": 11.89
+  },
+  "wz_radps": {
+   "min": -0.58,
+   "p50": 0.0,
+   "max": 0.8
+  },
+  "roll_rad": {
+   "min": -0.04,
+   "p50": -0.02,
+   "max": 0.03
+  },
+  "pitch_rad": {
+   "min": -0.04,
+   "p50": 0.0,
+   "max": 0.04
+  },
+  "z_m": {
+   "min": -5.36,
+   "p50": 2.06,
+   "max": 10.04
+  },
+  "dpsi_deg_track": {
+   "p5": -8.98,
+   "p95": 8.98
+  }
+ },
+ "gt": {
+  "n": 126680,
+  "dt_ms_median": 9.52,
+  "dt_ms_max": 37.8,
+  "gaps_gt_50ms": 0,
+  "gap_total_s": 0.0,
+  "gaps": [],
+  "duplicated_stamps": 0
+ },
+ "tf_vs_se": {
+  "same_stamp_share": 0.9991,
+  "dpos_m_p50": 0.0,
+  "dpos_m_max": 0.601,
+  "dyaw_deg_max": 0.024
+ },
+ "se_status_1": [
+  [
+   0.0,
+   4.3
+  ]
+ ],
+ "cameras": {
+  "fl": {
+   "n": 11944,
+   "dt_ms_median": 100.0,
+   "dt_ms_max": 100.0,
+   "drops": 0,
+   "drop_at_s": [],
+   "offset_to_fl_ms": {
+    "p50": 0.0,
+    "p1": 0.0,
+    "p99": 0.0
+   },
+   "log_latency_ms": {
+    "p50": 42.6,
+    "p99": 57.7
+   },
+   "jpeg_kb_median": 114.0
+  },
+  "fr": {
+   "n": 11944,
+   "dt_ms_median": 100.0,
+   "dt_ms_max": 100.1,
+   "drops": 0,
+   "drop_at_s": [],
+   "offset_to_fl_ms": {
+    "p50": 0.0,
+    "p1": -0.02,
+    "p99": 0.02
+   },
+   "log_latency_ms": {
+    "p50": 41.9,
+    "p99": 57.0
+   },
+   "jpeg_kb_median": 56.3
+  },
+  "cl": {
+   "n": 11944,
+   "dt_ms_median": 100.0,
+   "dt_ms_max": 100.0,
+   "drops": 0,
+   "drop_at_s": [],
+   "offset_to_fl_ms": {
+    "p50": 0.0,
+    "p1": -0.02,
+    "p99": 0.02
+   },
+   "log_latency_ms": {
+    "p50": 42.3,
+    "p99": 57.6
+   },
+   "jpeg_kb_median": 66.5
+  },
+  "cr": {
+   "n": 11944,
+   "dt_ms_median": 100.0,
+   "dt_ms_max": 100.0,
+   "drops": 0,
+   "drop_at_s": [],
+   "offset_to_fl_ms": {
+    "p50": 0.0,
+    "p1": -0.02,
+    "p99": 0.02
+   },
+   "log_latency_ms": {
+    "p50": 42.0,
+    "p99": 58.5
+   },
+   "jpeg_kb_median": 66.4
+  },
+  "rl": {
+   "n": 11944,
+   "dt_ms_median": 100.0,
+   "dt_ms_max": 100.0,
+   "drops": 0,
+   "drop_at_s": [],
+   "offset_to_fl_ms": {
+    "p50": 0.0,
+    "p1": -0.02,
+    "p99": 0.02
+   },
+   "log_latency_ms": {
+    "p50": 41.2,
+    "p99": 54.3
+   },
+   "jpeg_kb_median": 117.0
+  },
+  "rr": {
+   "n": 11944,
+   "dt_ms_median": 100.0,
+   "dt_ms_max": 100.0,
+   "drops": 0,
+   "drop_at_s": [],
+   "offset_to_fl_ms": {
+    "p50": 0.0,
+    "p1": -0.02,
+    "p99": 0.03
+   },
+   "log_latency_ms": {
+    "p50": 42.0,
+    "p99": 57.4
+   },
+   "jpeg_kb_median": 64.4
+  },
+  "r": {
+   "n": 11939,
+   "dt_ms_median": 100.0,
+   "dt_ms_max": 204.2,
+   "drops": 5,
+   "drop_at_s": [
+    348.7,
+    502.0,
+    592.1,
+    821.0,
+    825.9
+   ],
+   "offset_to_fl_ms": {
+    "p50": 0.0,
+    "p1": -0.02,
+    "p99": 0.02
+   },
+   "log_latency_ms": {
+    "p50": 42.4,
+    "p99": 55.6
+   },
+   "jpeg_kb_median": 123.8
+  }
+ },
+ "calibration": {
+  "fl": {
+   "fx": 2601.2,
+   "fy": 2589.9,
+   "fy_over_fx": 0.996,
+   "hfov_deg": 32.3,
+   "vfov_deg": 16.0,
+   "yaw_deg": 4.77,
+   "pitch_down_deg": 2.18,
+   "roll_deg": -0.47,
+   "xyz": [
+    0.942,
+    0.197,
+    0.339
+   ],
+   "D": [
+    -0.3914,
+    0.1222,
+    -0.0069,
+    -0.0012,
+    0.0
+   ]
+  },
+  "fr": {
+   "fx": 1349.9,
+   "fy": 1165.8,
+   "fy_over_fx": 0.864,
+   "hfov_deg": 58.3,
+   "vfov_deg": 34.7,
+   "yaw_deg": -5.87,
+   "pitch_down_deg": 1.64,
+   "roll_deg": -0.14,
+   "xyz": [
+    0.946,
+    -0.16,
+    0.344
+   ],
+   "D": [
+    -0.3972,
+    0.2006,
+    0.0005,
+    -0.0009,
+    0.0
+   ]
+  },
+  "cl": {
+   "fx": 797.0,
+   "fy": 692.0,
+   "fy_over_fx": 0.868,
+   "hfov_deg": 86.8,
+   "vfov_deg": 55.5,
+   "yaw_deg": 65.75,
+   "pitch_down_deg": -1.2,
+   "roll_deg": 0.59,
+   "xyz": [
+    0.474,
+    0.245,
+    0.345
+   ],
+   "D": [
+    -0.2951,
+    0.0717,
+    0.0014,
+    0.0019,
+    0.0
+   ]
+  },
+  "cr": {
+   "fx": 743.9,
+   "fy": 644.0,
+   "fy_over_fx": 0.866,
+   "hfov_deg": 90.7,
+   "vfov_deg": 59.0,
+   "yaw_deg": -56.23,
+   "pitch_down_deg": 3.08,
+   "roll_deg": -0.44,
+   "xyz": [
+    0.474,
+    -0.245,
+    0.345
+   ],
+   "D": [
+    -0.2977,
+    0.0783,
+    0.0036,
+    0.001,
+    0.0
+   ]
+  },
+  "rl": {
+   "fx": 1514.5,
+   "fy": 1513.7,
+   "fy_over_fx": 0.999,
+   "hfov_deg": 52.9,
+   "vfov_deg": 27.0,
+   "yaw_deg": 119.09,
+   "pitch_down_deg": -0.67,
+   "roll_deg": 0.37,
+   "xyz": [
+    0.151,
+    0.12,
+    0.42
+   ],
+   "D": [
+    -0.3419,
+    0.1455,
+    -0.0006,
+    -0.0008,
+    0.0
+   ]
+  },
+  "rr": {
+   "fx": 831.5,
+   "fy": 721.5,
+   "fy_over_fx": 0.868,
+   "hfov_deg": 84.3,
+   "vfov_deg": 53.5,
+   "yaw_deg": -117.53,
+   "pitch_down_deg": -1.87,
+   "roll_deg": -0.05,
+   "xyz": [
+    0.151,
+    -0.12,
+    0.42
+   ],
+   "D": [
+    -0.2361,
+    0.0401,
+    0.009,
+    0.0002,
+    0.0
+   ]
+  },
+  "r": {
+   "fx": 1491.1,
+   "fy": 1491.8,
+   "fy_over_fx": 1.0,
+   "hfov_deg": 53.6,
+   "vfov_deg": 27.4,
+   "yaw_deg": -178.13,
+   "pitch_down_deg": -0.34,
+   "roll_deg": 0.41,
+   "xyz": [
+    -2.28,
+    -0.0,
+    0.07
+   ],
+   "D": [
+    -0.3375,
+    0.1275,
+    -0.0015,
+    -0.0009,
+    0.0
+   ]
+  }
+ },
+ "brightness": {
+  "fl": {
+   "mean_gray": 72.7,
+   "saturated_share": 0.0002
+  },
+  "fr": {
+   "mean_gray": 84.1,
+   "saturated_share": 0.001
+  },
+  "cl": {
+   "mean_gray": 67.0,
+   "saturated_share": 0.0031
+  },
+  "cr": {
+   "mean_gray": 78.8,
+   "saturated_share": 0.0033
+  },
+  "rl": {
+   "mean_gray": 72.7,
+   "saturated_share": 0.0021
+  },
+  "rr": {
+   "mean_gray": 78.3,
+   "saturated_share": 0.0022
+  },
+  "r": {
+   "mean_gray": 64.2,
+   "saturated_share": 0.0013
+  }
+ }
+}

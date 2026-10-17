@@ -1,0 +1,6 @@
+DINOv2 ViT-S/14 retrieval, leave-lap-out on dev laps 1,2,4,5,7 (every 5th set, n=1428);
+map = keyframes every 4 m excluding query lap and held-out laps 3,6. Distance = GT distance query -> retrieved keyframe.
+all 7 cams (sum of cosine): top1 median 1.1 m, <10 m 97.9 %, <25 m 100.0 %, >100 m 0.0 % | best of 3 <10 m 98.3 %
+single cams top1 <10 m: fl 83.3, fr 93.1, cl 94.6, cr 95.4, rl 90.7, rr 95.9, r 81.9 %
+fl+fr+r+rl: <10 m 96.3 %, <25 m 99.9 %
+(2026-10-16 22:12)

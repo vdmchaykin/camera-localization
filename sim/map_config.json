@@ -1,0 +1,14 @@
+{
+ "note": "Map subset for evaluation on THIS recording only (the map was built from it). exclude_windows_ns: keyframes of held-out laps K3, K6 (+-5 s, from analysis/laps.csv), as in results/FROZEN_CONFIG.txt. self_exclude_s: keyframes closer in time than this to the query are not used, so a frame never matches its own pass (laps take >= 110 s). For the hidden test run use exclude_windows_ns = [] and self_exclude_s = 0 (sim/map_config_test.json).",
+ "exclude_windows_ns": [
+  [
+   1791918675514146048,
+   1791918796114146048
+  ],
+  [
+   1791919048214146048,
+   1791919169814146048
+  ]
+ ],
+ "self_exclude_s": 100.0
+}

@@ -1,0 +1,22 @@
+== v1_K5
+poses 1439 / sets 1439, dropped 0, evaluated 1439
+pos RMSE 0.175 m  (median 0.133, p95 0.328)  lat RMSE 0.112  lon RMSE 0.134  yaw RMSE 0.101 deg  <1 m 100.0 %
+step ms mean 2.8 p95 11.6 max 23.8 | decode 16.5 | step+decode mean 19.3 p95 28.8 max 41.4, >100 ms: 0 | init 8.5 s
+localizer: {'mode': 'async', 'car_state': True, 'init_s': 4.6, 'map_keyframes_allowed': 4300, 'relocalizations': 208, 'reloc_ms_mean': 630.9, 'reloc_ms_p95': 731.8, 'fuse_delay_ms_mean': 689.4, 'measurements': 208, 'failed': 0, 'accepted': 208, 'rejected': 0, 'recovered': 0}
+worst moments:
+  t=  860.6 s K5  v= 31.3 m/s  pos 0.53  lat +0.52  lon -0.11  yaw +0.28 deg
+  t=  851.9 s K5  v= 34.6 m/s  pos 0.47  lat +0.34  lon -0.33  yaw +0.28 deg
+  t=  891.7 s K5  v= 34.7 m/s  pos 0.44  lat +0.14  lon -0.42  yaw +0.15 deg
+  t=  757.4 s K5  v= 17.0 m/s  pos 0.43  lat -0.06  lon +0.43  yaw -0.01 deg
+  t=  814.1 s K5  v= 22.5 m/s  pos 0.37  lat +0.23  lon -0.29  yaw +0.20 deg
+evaluate.py (GT window of this run):
+poses submitted        1439   evaluated 1439
+coverage (1 s bins)    100.0 %   (>= 90 % to be ranked)
+position RMSE  [m]     0.175   <- SCORE (lower is better)
+position median/p95    0.133 / 0.328
+lateral RMSE   [m]     0.112
+longitudinal RMSE [m]  0.134
+yaw RMSE     [deg]     0.101
+within 0.25 m          86.9 %
+within 0.50 m          99.8 %
+within 1.00 m          100.0 %

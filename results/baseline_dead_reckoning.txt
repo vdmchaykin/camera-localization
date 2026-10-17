@@ -1,0 +1,10 @@
+poses submitted        11943   evaluated 11943
+coverage (1 s bins)    100.0 %   (>= 90 % to be ranked)
+position RMSE  [m]     65.452   <- SCORE (lower is better)
+position median/p95    41.337 / 133.550
+lateral RMSE   [m]     50.468
+longitudinal RMSE [m]  41.677
+yaw RMSE     [deg]     8.649
+within 0.25 m          0.5 %
+within 0.50 m          0.6 %
+within 1.00 m          2.5 %

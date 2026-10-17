@@ -1,0 +1,1655 @@
+<title>Камлок Yas Marina</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: инженерный журнал — узкая колонка текста, широкие «стенды» с картой и графиками, липкое оглавление слева на десктопе */
+:root {
+  --bg: #f4f6f8;
+  --surface: #fcfcfb;
+  --ink: #12151a;
+  --ink-2: #4a5059;
+  --muted: #80858d;
+  --grid: #e1e4e8;
+  --axis: #c0c5cc;
+  --accent: #2a78d6;
+  --accent-ink: #1c5cab;
+  --accent-wash: rgba(42,120,214,.10);
+  --pit: #eb6834;
+  --pit-wash: rgba(235,104,52,.13);
+  --good: #0ca30c;
+  --good-ink: #006300;
+  --warn: #fab219;
+  --crit: #d03b3b;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4;
+  --border: rgba(11,11,11,.10);
+  --ramp: #b7d3f6,#86b6ef,#5598e7,#2a78d6,#1c5cab,#104281,#0d366b;
+  --f-display: "Unbounded", "IBM Plex Sans", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d0f12; --surface: #16191d; --ink: #eef0f2; --ink-2: #c0c4ca; --muted: #8a8f97;
+    --grid: #262a30; --axis: #3b4048; --accent: #3987e5; --accent-ink: #86b6ef; --accent-wash: rgba(57,135,229,.16);
+    --pit: #d95926; --pit-wash: rgba(217,89,38,.20); --good: #0ca30c; --good-ink: #0ca30c; --warn: #fab219; --crit: #e66767;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181;
+    --border: rgba(255,255,255,.10);
+    --ramp: #184f95,#1c5cab,#2a78d6,#3987e5,#6da7ec,#9ec5f4,#cde2fb;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d0f12; --surface: #16191d; --ink: #eef0f2; --ink-2: #c0c4ca; --muted: #8a8f97;
+  --grid: #262a30; --axis: #3b4048; --accent: #3987e5; --accent-ink: #86b6ef; --accent-wash: rgba(57,135,229,.16);
+  --pit: #d95926; --pit-wash: rgba(217,89,38,.20); --good: #0ca30c; --good-ink: #0ca30c; --warn: #fab219; --crit: #e66767;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181;
+  --border: rgba(255,255,255,.10);
+  --ramp: #184f95,#1c5cab,#2a78d6,#3987e5,#6da7ec,#9ec5f4,#cde2fb;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.shell { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 48px; padding-block: 40px 80px; }
+nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px); align-self: start; display: flex; flex-direction: column; gap: 2px; font-size: 13px; }
+nav.toc .lbl { font-family: var(--f-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+nav.toc a { color: var(--ink-2); text-decoration: none; padding: 4px 10px; border-left: 2px solid var(--grid); }
+nav.toc a:hover, nav.toc a:focus-visible { color: var(--accent-ink); border-left-color: var(--accent); outline: none; }
+main { min-width: 0; display: flex; flex-direction: column; gap: 64px; }
+@media (max-width: 900px) { .shell { grid-template-columns: minmax(0, 1fr); gap: 24px; padding-block: 24px 56px; } nav.toc { display: none; } }
+
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+h1 { font-family: var(--f-display); font-weight: 700; font-size: clamp(28px, 4.4vw, 46px); line-height: 1.08; letter-spacing: -.01em; }
+h2 { font-family: var(--f-display); font-weight: 500; font-size: 22px; line-height: 1.25; }
+h3 { font-size: 15px; font-weight: 600; }
+p { margin: 0; max-width: 68ch; }
+.eyebrow { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+section { display: flex; flex-direction: column; gap: 18px; scroll-margin-top: 24px; }
+.sec-head { display: flex; flex-direction: column; gap: 6px; }
+.lead { font-size: 17px; color: var(--ink-2); max-width: 64ch; }
+.mono, .num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+code { font-family: var(--f-mono); font-size: .9em; background: var(--accent-wash); padding: 1px 5px; border-radius: 4px; }
+
+/* hero */
+.hero { display: flex; flex-direction: column; gap: 22px; }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1px; background: var(--grid); border: 1px solid var(--grid); border-radius: 10px; overflow: hidden; }
+.fact { background: var(--surface); padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; }
+.fact b { font-family: var(--f-mono); font-size: 22px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.fact span { font-size: 12.5px; color: var(--muted); }
+.status-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--ink-2); white-space: nowrap; }
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; }
+.dot.done { background: var(--good); } .dot.run { background: var(--warn); } .dot.todo { background: transparent; border: 1.5px solid var(--muted); }
+
+/* panels */
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; min-width: 0; }
+.bench { display: grid; grid-template-columns: minmax(0, 400px) minmax(0, 1fr); gap: 18px; }
+@media (max-width: 760px) { .bench { grid-template-columns: minmax(0, 1fr); } }
+.side { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+#map { width: 100%; display: block; touch-action: pan-y; cursor: crosshair; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+button.tog { font: inherit; font-size: 12.5px; padding: 4px 11px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--ink-2); cursor: pointer; font-variant-numeric: tabular-nums; }
+button.tog:hover { border-color: var(--accent); color: var(--accent-ink); }
+button.tog[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+button.tog:focus-visible, button.play:focus-visible, input[type=range]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.readout { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 14px; }
+.readout div { display: flex; flex-direction: column; }
+.readout span { font-size: 11.5px; color: var(--muted); letter-spacing: .04em; }
+.readout b { font-family: var(--f-mono); font-weight: 500; font-size: 17px; font-variant-numeric: tabular-nums; }
+.scrub { display: flex; align-items: center; gap: 10px; }
+.scrub input { flex: 1; min-width: 0; accent-color: var(--accent); }
+button.play { font: inherit; font-size: 13px; padding: 5px 12px; border-radius: 8px; border: 1px solid var(--accent); background: var(--accent-wash); color: var(--accent-ink); cursor: pointer; white-space: nowrap; }
+.legend { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 12px; color: var(--ink-2); }
+.ramp { width: 120px; height: 8px; border-radius: 4px; }
+.sw { display: inline-block; width: 18px; height: 0; border-top: 2px solid var(--axis); vertical-align: middle; }
+.sw.pit { border-top: 2px dashed var(--pit); }
+.sq { display: inline-block; width: 9px; height: 9px; background: var(--ink); vertical-align: -1px; }
+.chart-wrap { position: relative; }
+.chart-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
+svg text { font-family: var(--f-mono); font-size: 10.5px; fill: var(--muted); }
+.tip { position: absolute; pointer-events: none; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 6px 9px; font-size: 12px; line-height: 1.45; box-shadow: 0 4px 14px rgba(0,0,0,.12); white-space: nowrap; color: var(--ink); }
+.tip .k { color: var(--muted); }
+.note { font-size: 13px; color: var(--muted); max-width: 70ch; }
+
+/* tables */
+.tbl-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+th { font-weight: 500; font-size: 12px; color: var(--muted); letter-spacing: .03em; background: var(--surface); }
+td.n, th.n { text-align: right; font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+tr:last-child td { border-bottom: 0; }
+tbody tr.click { cursor: pointer; }
+tbody tr.click:hover td { background: var(--accent-wash); }
+tbody tr.sel td { background: var(--accent-wash); }
+.bar { display: inline-block; height: 6px; border-radius: 0 3px 3px 0; background: var(--accent); vertical-align: middle; margin-left: 8px; }
+.tag { font-size: 11.5px; padding: 1px 7px; border-radius: 999px; background: var(--pit-wash); color: var(--ink-2); }
+
+/* cameras */
+.cam-bench { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 18px; }
+@media (max-width: 760px) { .cam-bench { grid-template-columns: minmax(0, 1fr); } }
+#camsvg { width: 100%; max-width: 300px; display: block; margin: 0 auto; }
+#camsvg .wedge { cursor: pointer; }
+#camsvg .wedge path { fill: var(--grid); stroke: var(--axis); stroke-width: .04; }
+#camsvg .wedge text { font-family: var(--f-mono); font-size: .62px; fill: var(--ink-2); }
+#camsvg .wedge.on path { fill: var(--accent-wash); stroke: var(--accent); stroke-width: .07; }
+#camsvg .wedge.on text { fill: var(--accent-ink); font-weight: 600; }
+#camsvg .car { fill: var(--surface); stroke: var(--ink-2); stroke-width: .05; }
+.frame { width: 100%; border-radius: 8px; display: block; background: var(--grid); aspect-ratio: 900 / 435; max-width: 100%; }
+.kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px 14px; }
+.kv div { display: flex; flex-direction: column; }
+.kv span { font-size: 11.5px; color: var(--muted); }
+.kv b { font-family: var(--f-mono); font-weight: 500; font-variant-numeric: tabular-nums; }
+.legend-proj { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--ink-2); }
+.legend-proj i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
+
+figure { margin: 0; display: flex; flex-direction: column; gap: 8px; }
+figure img { border-radius: 10px; border: 1px solid var(--border); }
+figcaption { font-size: 13px; color: var(--muted); max-width: 70ch; }
+.scroll-x { overflow-x: auto; border-radius: 10px; }
+.scroll-x img { max-width: none; width: 1400px; display: block; }
+
+ul.plain { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; max-width: 70ch; }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+.two > * { min-width: 0; }
+
+ol.pipeline { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0; counter-reset: st; }
+ol.pipeline li { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--grid); align-items: start; counter-increment: st; }
+ol.pipeline li::before { content: counter(st); font-family: var(--f-mono); font-size: 12px; color: var(--muted); border: 1px solid var(--axis); border-radius: 50%; width: 26px; height: 26px; display: grid; place-items: center; }
+ol.pipeline li:last-child { border-bottom: 0; }
+ol.pipeline .d { font-size: 13.5px; color: var(--ink-2); }
+.progress { height: 6px; background: var(--grid); border-radius: 3px; overflow: hidden; margin-top: 6px; max-width: 360px; }
+.progress i { display: block; height: 100%; background: var(--warn); border-radius: 0 3px 3px 0; }
+/* retrieval bars */
+.bars { display: flex; flex-direction: column; gap: 4px; }
+.bars button { all: unset; display: grid; grid-template-columns: 92px minmax(0, 1fr) 58px; align-items: center; gap: 10px; padding: 5px 8px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+.bars button:hover { background: var(--accent-wash); }
+.bars button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.bars button[aria-pressed="true"] { background: var(--accent-wash); }
+.bars button[aria-pressed="true"] .lab { color: var(--accent-ink); font-weight: 600; }
+.bars .lab { font-family: var(--f-mono); color: var(--ink-2); }
+.bars .track { height: 10px; background: var(--grid); border-radius: 0 4px 4px 0; position: relative; }
+.bars .fill { position: absolute; inset: 0 auto 0 0; background: var(--accent); border-radius: 0 4px 4px 0; }
+.bars .val { font-family: var(--f-mono); font-variant-numeric: tabular-nums; text-align: right; color: var(--ink); }
+#rmap { width: 100%; display: block; }
+.bins { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--ink-2); }
+.bins i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
+
+/* q&a */
+.qa-list { display: flex; flex-direction: column; gap: 8px; }
+.qa-group { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-top: 10px; }
+details.qa { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+details.qa summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; gap: 10px; align-items: baseline; padding: 11px 14px; }
+details.qa summary::-webkit-details-marker { display: none; }
+details.qa summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 10px; }
+details.qa summary .qn { font-family: var(--f-mono); font-size: 12px; color: var(--muted); }
+details.qa summary .qt { font-weight: 500; }
+details.qa summary .pills { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.pill { font-size: 11.5px; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--border); color: var(--ink-2); white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; }
+.pill.p1 { border-color: var(--crit); color: var(--ink); }
+.pill.p1::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--crit); }
+.pill.p2::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--warn); }
+.pill.p3::before { content: ""; width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid var(--muted); }
+.pill.ok { border-color: var(--good); }
+.qa-body { padding: 0 14px 14px 52px; display: flex; flex-direction: column; gap: 10px; font-size: 14px; color: var(--ink-2); }
+.qa-body p, .qa-body ul { margin: 0; }
+.qa-body ul { padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.qa-box { border-left: 2px solid var(--axis); padding: 4px 0 4px 12px; }
+.qa-box.ans { border-left-color: var(--good); }
+.qa-box span { display: block; font-size: 11.5px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+@media (max-width: 560px) { details.qa summary { grid-template-columns: 24px minmax(0, 1fr); } details.qa summary .pills { grid-column: 2; justify-content: flex-start; } .qa-body { padding-left: 14px; } }
+
+/* runtime stacked bars */
+.stack { display: flex; flex-direction: column; gap: 14px; }
+.srow { display: grid; grid-template-columns: minmax(0, 1fr) 74px; gap: 6px 12px; align-items: center; }
+.srow .sl { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 13px; }
+.srow .sl b { font-weight: 500; }
+.srow .sl span { color: var(--muted); font-family: var(--f-mono); font-size: 12px; }
+.sbar { display: flex; gap: 2px; height: 14px; }
+.sbar i { display: block; height: 100%; min-width: 2px; }
+.sbar i:last-child { border-radius: 0 4px 4px 0; }
+.srow .tot { font-family: var(--f-mono); font-variant-numeric: tabular-nums; text-align: right; }
+.srow.best .sl b { color: var(--accent-ink); }
+.swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+
+/* validation */
+.val-hero { border: 1px solid var(--accent); border-radius: 14px; padding: 22px; background: var(--surface); display: flex; flex-direction: column; gap: 18px; }
+.vtiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--grid); border: 1px solid var(--grid); border-radius: 10px; overflow: hidden; }
+.vtile { background: var(--surface); padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; }
+.vtile b { font-family: var(--f-mono); font-size: 26px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.vtile span { font-size: 12.5px; color: var(--muted); }
+.vtile em { font-style: normal; font-size: 12px; color: var(--good-ink); }
+@media (max-width: 620px) { .vtiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } .vtile b { font-size: 21px; } }
+.vmap-wrap { position: relative; }
+#vmap { width: 100%; display: block; touch-action: none; cursor: grab; border-radius: 8px; }
+#vmap.drag { cursor: grabbing; }
+.vmap-ctl { position: absolute; top: 8px; right: 8px; display: flex; flex-direction: column; gap: 4px; }
+.vmap-ctl button { font: inherit; width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--ink); cursor: pointer; font-size: 16px; line-height: 1; }
+.vmap-ctl button:focus-visible { outline: 2px solid var(--accent); }
+.vread { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 8px 12px; }
+.vread div { display: flex; flex-direction: column; }
+.vread span { font-size: 11.5px; color: var(--muted); }
+.vread b { font-family: var(--f-mono); font-weight: 500; font-variant-numeric: tabular-nums; }
+details.frozen summary { cursor: pointer; font-size: 13px; color: var(--ink-2); }
+details.frozen pre { font-family: var(--f-mono); font-size: 12px; white-space: pre-wrap; background: var(--bg); border-radius: 8px; padding: 10px 12px; margin: 8px 0 0; color: var(--ink-2); }
+
+footer { font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--grid); padding-top: 18px; }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="shell">
+  <nav class="toc" aria-label="Разделы">
+    <div class="lbl">Разделы</div>
+    <a href="#task">Задача</a>
+    <a href="#validation">Валидация</a>
+    <a href="#rules">Правила</a>
+    <a href="#track">Трек и заезд</a>
+    <a href="#laps">Круги</a>
+    <a href="#gt">GT и время</a>
+    <a href="#cams">Камеры</a>
+    <a href="#frames">Кадры и маски</a>
+    <a href="#baselines">Бейзлайны</a>
+    <a href="#retrieval">Поиск места</a>
+    <a href="#pose">Поза одного набора</a>
+    <a href="#filter">Фильтр</a>
+    <a href="#runtime">Время на кадр</a>
+    <a href="#step4">Шаг 4: прототип</a>
+    <a href="#qa">Вопросы к Q&amp;A</a>
+    <a href="#next">Выводы</a>
+  </nav>
+
+  <main>
+    <header class="hero" id="task">
+      <div class="eyebrow">National AI Hackathon 2026 · Constructor Labs · заезд c0_2026-10-13_22-53-42</div>
+      <h1>Где машина на треке, если смотреть только в камеры</h1>
+      <p class="lead">Нужно восстанавливать позу <code>base_link</code> в системе трека: x, y и курс, 10 раз в секунду, причинно. На вход идут семь камер, карта границ трека и данные о движении машины: скорость, ускорения, yaw rate. Ниже всё, что сделано на 16 октября: разбор данных, бейзлайны и первый прототип локализации по базе ключевых кадров.</p>
+      <div class="facts">
+        <div class="fact"><b>1194 с</b><span>длина заезда, ночь</span></div>
+        <div class="fact"><b>7 × 10 Гц</b><span>камер</span></div>
+        <div class="fact"><b>2979 м</b><span>гоночная линия, круг</span></div>
+        <div class="fact"><b>40.3 м/с</b><span>максимальная скорость</span></div>
+        <div class="fact"><b>0.11–0.12 м</b><span>RMSE фильтра: 7 камер, коррекция 2 раза в секунду</span></div>
+        <div class="fact"><b>70 / 30</b><span>метрики на тесте / жюри</span></div>
+      </div>
+      <div class="status-row" aria-label="Статус шагов">
+        <span class="chip"><i class="dot done"></i>Окружение и экспорт</span>
+        <span class="chip"><i class="dot done"></i>Анализ данных</span>
+        <span class="chip"><i class="dot done"></i>Бейзлайны</span>
+        <span class="chip"><i class="dot done"></i>Маски корпуса</span>
+        <span class="chip"><i class="dot done"></i>Поиск места</span>
+        <span class="chip"><i class="dot run"></i>3D-база</span>
+        <span class="chip"><i class="dot run"></i>Поза и фильтр</span>
+      </div>
+      <p class="note">Финальная оценка идёт на скрытом тестовом заезде. Он может быть быстрее и снят при другом освещении. Круги К3 и К6 отложены под валидацию: их нет в базе, и на них ничего не настраивается. Разработка идёт leave-lap-out на остальных кругах.</p>
+    </header>
+
+    <section id="validation">
+      <div class="sec-head">
+        <div class="eyebrow">Валидация · отложенные круги К3 и К6</div>
+        <h2>Итог на кругах, которых метод не видел</h2>
+        <p>К3 и К6 с самого начала не входили ни в базу, ни в настройку. Настройки зафиксированы до первого взгляда на эти круги. Позы выдаются на каждом кадре, 10 раз в секунду, коррекция раз в 0.5 с, оценка — официальным <code>evaluate.py</code>. Старт из GT-позы в начале круга вместо первой позы заезда, дальше всё причинно и без GT.</p>
+      </div>
+      <div class="val-hero">
+        <div class="vtiles" id="vtiles"></div>
+        <div class="tbl-wrap"><table id="vtbl">
+          <thead><tr><th>Вариант</th><th class="n">поз</th><th class="n">RMSE, м</th><th class="n">медиана / p95</th><th class="n">боковая</th><th class="n">продольная</th><th class="n">курс, °</th><th class="n">&lt; 0.25 м</th><th class="n">&lt; 0.5 м</th><th class="n">&lt; 1 м</th><th class="n">покрытие</th></tr></thead>
+          <tbody></tbody>
+        </table></div>
+        <details class="frozen"><summary>Зафиксированная настройка</summary><pre id="vfrozen"></pre></details>
+      </div>
+      <div class="bench">
+        <div class="panel side">
+          <div class="chart-head">
+            <div class="chips" id="vlap" role="group" aria-label="Круг"></div>
+            <div class="chips" id="vamp" role="group" aria-label="Усиление отклонения">
+              <button class="tog" type="button" data-a="1" aria-pressed="false">×1</button>
+              <button class="tog" type="button" data-a="20" aria-pressed="true">×20</button>
+              <button class="tog" type="button" data-a="100" aria-pressed="false">×100</button>
+            </div>
+          </div>
+          <div class="vmap-wrap"><canvas id="vmap" aria-label="Маршрут: GT и предсказание"></canvas>
+            <div class="vmap-ctl"><button type="button" id="vzin" aria-label="Приблизить">+</button><button type="button" id="vzout" aria-label="Отдалить">−</button><button type="button" id="vzreset" aria-label="Весь трек">⤢</button></div>
+          </div>
+          <div class="legend">
+            <span><i class="sw" style="border-top-color:var(--ink)"></i> GT</span>
+            <span><i class="swatch" style="background:var(--good)"></i>предсказание: до 0.25 м</span>
+            <span><i class="swatch" style="background:var(--warn)"></i>0.25–0.5 м</span>
+            <span><i class="swatch" style="background:var(--crit)"></i>больше 0.5 м</span>
+          </div>
+          <p class="note">Колесо или кнопки — зум, перетаскивание — сдвиг. Отклонение предсказания от GT можно усилить в 20 или 100 раз: иначе при ошибке около 0.1 м линии сливаются даже при сильном приближении.</p>
+        </div>
+        <div class="side">
+          <div class="panel side">
+            <h3>Где машина сейчас</h3>
+            <div class="vread" id="vread"></div>
+          </div>
+          <div class="panel">
+            <div class="chart-head">
+              <h3 id="vchart-title">Ошибка позиции по времени, м</h3>
+              <div class="chips" id="vmet" role="group" aria-label="Показатель">
+                <button class="tog" type="button" data-m="err" aria-pressed="true">полная</button>
+                <button class="tog" type="button" data-m="lat" aria-pressed="false">боковая</button>
+                <button class="tog" type="button" data-m="lon" aria-pressed="false">продольная</button>
+              </div>
+            </div>
+            <div class="chart-wrap" id="vcwrap"><svg id="vchart" role="img" aria-label="Ошибка по времени на отложенном круге"></svg><div class="tip" id="vctip" hidden></div></div>
+            <p class="note">Наведите на график — машина на карте переместится в этот момент. Клик приближает карту к этому месту. Метки внизу — коррекции PnP: зелёные приняты, красные отброшены.</p>
+          </div>
+          <div class="panel">
+            <h3>Доля поз ближе заданной ошибки</h3>
+            <div class="chart-wrap" id="vcdfwrap"><svg id="vcdf" role="img" aria-label="Распределение ошибки"></svg><div class="tip" id="vcdftip" hidden></div></div>
+            <div class="legend"><span><i class="swatch" style="background:var(--s1)"></i>К3</span><span><i class="swatch" style="background:var(--s2)"></i>К6</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="panel side">
+        <div class="chart-head">
+          <h3>Что видит машина: границы трека по GT и по предсказанию</h3>
+          <div class="chips" id="vframes" role="group" aria-label="Момент"></div>
+        </div>
+        <img class="frame" id="vimg" alt="Кадры камер с границами трека по GT и по предсказанной позе" style="aspect-ratio:auto">
+        <div class="kv" id="vimgkv"></div>
+        <p class="note">Зелёные кружки — границы трека, спроецированные по GT-позе, пурпурные точки — по предсказанной. Если точки лежат внутри кружков, ошибка не видна глазом. Для предсказанной позы высота, крен и тангаж взяты из GT, потому что метод выдаёт только x, y и курс. Камеры: fl, cl, cr, r.</p>
+      </div>
+    </section>
+
+    <section id="rules">
+      <div class="sec-head">
+        <div class="eyebrow">Правила по INTRO-презентации</div>
+        <h2>Что можно подавать на вход</h2>
+        <p>Презентация организаторов новее README из архива и в двух местах ему противоречит: данные о движении из <code>state_estimation</code> разрешены, и ответ можно сдавать в s, n. Мы сдаём x, y, курс (Option A), потому что <code>evaluate.py</code> поддерживает только этот формат.</p>
+      </div>
+      <div class="two">
+        <div class="panel side">
+          <h3><i class="dot done"></i> Разрешено</h3>
+          <ul class="plain">
+            <li>Изображения, <code>camera_info</code>, <code>/tf_static</code>, <code>track_bounds</code>.</li>
+            <li>Первая поза заезда.</li>
+            <li>Движение из <code>state_estimation</code> по явному списку в <code>car_state.py</code>: v, vx/vy/vz (в системе машины), wx/wy/wz, ускорения, скорости колёс, руль, педали.</li>
+          </ul>
+        </div>
+        <div class="panel side">
+          <h3><i class="dot" style="background:var(--pit)"></i> Запрещено, это дисквалификация</h3>
+          <ul class="plain">
+            <li><code>/tf</code>; поза из <code>state_estimation</code>: x, y, z, roll, pitch, yaw.</li>
+            <li>s, n и всё из <code>sn_map_state</code>, а также <code>pos_accuracy</code>.</li>
+            <li><code>yaw_vel_rad</code>. По названию похоже на yaw rate, но по данным это курс вектора скорости в <code>map</code>: корреляция с yaw 0.997. Исключено из списка.</li>
+            <li>Сомнительные поля (<code>beta_rad</code>, точности, статусы) не берём до Q&amp;A.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="two">
+        <div class="panel side">
+          <h3>Как оценивают</h3>
+          <ul class="plain">
+            <li>70 %: метрики на скрытом заезде — RMSE позиции, RMSE курса, доля поз в пределах 1 м и время на кадр. Каждая метрика нормируется по командам.</li>
+            <li>При равенстве выигрывает меньшая боковая ошибка.</li>
+            <li>30 %: жюри — обоснованность, код и воспроизводимость, презентация (не больше 5 минут и 6 слайдов), анализ отказов.</li>
+            <li>Нужно покрыть хотя бы 90 % секундных интервалов. Кадры пропускать нельзя: если коррекция не удалась, выдаём предсказание фильтра.</li>
+          </ul>
+        </div>
+        <div class="panel side">
+          <h3>Что сдавать и когда</h3>
+          <ul class="plain">
+            <li>CSV на тестовом заезде, git-репозиторий с кодом и весами, вывод <code>evaluate.py</code> на валидационных кругах.</li>
+            <li>Установка и одна команда, которая делает CSV из сырых данных. Код перезапустят на машине с одним GPU.</li>
+            <li>17–18 октября — рабочие дни и Q&amp;A, 19–20 октября смотрит жюри, 21 октября в 18:00 результаты.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="track">
+      <div class="sec-head">
+        <div class="eyebrow">Трек и траектория</div>
+        <h2>Семь полных кругов между выездом и заездом в боксы</h2>
+        <p>Карта и график связаны. Ведите курсор по любому из них, двигайте ползунок или выберите круг. Траектория окрашена по скорости, пунктир показывает пит-лейн, квадрат — линию старта.</p>
+      </div>
+      <div class="bench">
+        <div class="panel"><canvas id="map" aria-label="Карта трека с GT-траекторией"></canvas></div>
+        <div class="side">
+          <div class="panel side">
+            <div class="chips" id="lapchips" role="group" aria-label="Выбор круга"></div>
+            <div class="readout" aria-live="polite">
+              <div><span>время</span><b id="r-t">—</b></div>
+              <div><span>круг</span><b id="r-lap">—</b></div>
+              <div><span>скорость</span><b id="r-v">—</b></div>
+              <div><span>прогресс s</span><b id="r-s">—</b></div>
+              <div><span>смещение n</span><b id="r-n">—</b></div>
+              <div><span>курс</span><b id="r-yaw">—</b></div>
+            </div>
+            <div class="scrub">
+              <button class="play" id="play" type="button">▶ ×20</button>
+              <input type="range" id="slider" min="0" max="100" value="0" aria-label="Время в заезде">
+            </div>
+            <div class="legend">
+              <span>0</span><canvas class="ramp" id="ramp" width="120" height="8"></canvas><span>40 м/с</span>
+              <span><i class="sw"></i> границы трека</span>
+              <span><i class="sw pit"></i> пит-лейн</span>
+              <span><i class="sq"></i> старт</span>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="chart-head">
+              <h3 id="chart-title">Скорость, м/с</h3>
+              <div class="chips" id="metric" role="group" aria-label="Показатель">
+                <button class="tog" data-m="v" aria-pressed="true">скорость</button>
+                <button class="tog" data-m="n" aria-pressed="false">смещение n</button>
+                <button class="tog" data-m="s" aria-pressed="false">прогресс s</button>
+              </div>
+            </div>
+            <div class="chart-wrap" id="chartwrap"><svg id="chart" role="img" aria-label="График по времени"></svg><div class="tip" id="tip" hidden></div></div>
+            <p class="note" id="chart-note">Оранжевые полосы показывают пит-лейн, вертикальные линии — пересечение линии старта. Прогресс s и смещение n здесь считаются от нашей центральной линии трека, а не от официальной гоночной линии.</p>
+          </div>
+        </div>
+      </div>
+      <div class="two">
+        <ul class="plain">
+          <li>Ширина трека 11.3–20.5 м, медиана 13.6 м. Боковая ошибка в 1 м — это 7 % ширины.</li>
+          <li>Границы трёхмерные, перепад высот около 15 м. Плоская модель дороги верна только локально.</li>
+          <li>Вне границ трека (не считая пит-лейна) машина была 0.01 % времени. Значит, «машина на треке» — надёжное ограничение для фильтра.</li>
+        </ul>
+        <ul class="plain">
+          <li>Ускорения от −13.6 до +9.1 м/с², боковые ±12 м/с², скорость поворота до 0.8 рад/с.</li>
+          <li>Смещение n чаще всего в пределах ±5 м. Есть быстрая «змейка» для прогрева шин, поэтому боковое движение нужно наблюдать, а не предсказывать.</li>
+          <li>Угол к касательной трека p5/p95 = ±9°.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="laps">
+      <div class="sec-head">
+        <div class="eyebrow">Круги</div>
+        <h2>Темп кругов от 110 до 180 секунд</h2>
+        <p>Нажмите на строку, чтобы показать круг на карте. Круги считаются от официальной линии старта на длинной левой прямой. Её положение взято из GT в точке, где индекс гоночной линии сбрасывается в ноль; для анализа это допустимо.</p>
+      </div>
+      <div class="tbl-wrap"><table id="laptbl">
+        <thead><tr><th>Круг</th><th class="n">Начало, с</th><th class="n">Конец, с</th><th>Время, с</th><th class="n">v max</th><th class="n">v ср.</th><th class="n">Пит, с</th><th class="n">Стоял, с</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+      <p class="note">К0 — выезд из боксов, К8 — заезд в боксы. Полные круги длятся от 110.6 до 180.1 с, есть остановки прямо на треке (414, 926 и 1036 с). К3 и К6 отложены под валидацию: это самые быстрые круги, а тестовый заезд может быть быстрее.</p>
+    </section>
+
+    <section id="gt">
+      <div class="sec-head">
+        <div class="eyebrow">Ground truth и время</div>
+        <h2>Данные чистые, камеры синхронны</h2>
+      </div>
+      <div class="two">
+        <div class="panel side">
+          <h3>Ground truth</h3>
+          <ul class="plain">
+            <li><code>/tf</code> пишется на 106 Гц, шаг 9.5 мс, максимум 37.8 мс. Разрывов больше 50 мс нет, поэтому в оценку попадает каждая поза.</li>
+            <li><code>/tf</code> и <code>state_estimation</code> совпадают: 99.9 % общих меток времени, позиции равны.</li>
+            <li><code>se_status = 1</code> только в первые 4.3 с на стоянке. Поле <code>pos_accuracy</code> доходит до 148 и, судя по всему, не описывает точность позы.</li>
+            <li>Официальные s и n отсчитываются от гоночной линии длиной 2979 м. Это не центральная линия трека, и на вход их подавать нельзя.</li>
+          </ul>
+        </div>
+        <div class="panel side">
+          <h3>Камеры</h3>
+          <ul class="plain">
+            <li>В этом заезде все 7 камер синхронизированы аппаратно: метки времени внутри набора расходятся не больше чем на 0.03 мс. Но у каждого изображения своя метка, и на тесте может быть иначе (10 мс при 40 м/с — это 0.4 м). Поэтому код берёт метку каждой камеры отдельно.</li>
+            <li>Ровно 10 Гц. Пропущено только 5 одиночных кадров камеры <code>r</code>: 348.7, 502.0, 592.1, 821.0 и 825.9 с.</li>
+            <li>Запись отстаёт от экспозиции на 30–55 мс (медиана 42 мс). Для причинности используем только <code>header.stamp</code>.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="cams">
+      <div class="sec-head">
+        <div class="eyebrow">Камеры и калибровка</div>
+        <h2>Границы трека, спроецированные по GT-позе</h2>
+        <p>Выберите камеру на схеме и момент времени. Если экстринсики верны, точки ложатся на край асфальта у синей зоны выноса. Грубых ошибок нет, на <code>cr</code>, <code>rr</code> и <code>fr</code> заметны небольшие сдвиги.</p>
+      </div>
+      <div class="cam-bench">
+        <div class="panel side">
+          <svg id="camsvg" viewBox="-9 -9 18 18" role="group" aria-label="Схема камер, вид сверху"></svg>
+          <p class="note">Вид сверху, машина носом вверх. Сектор — горизонтальное поле зрения, радиус условный.</p>
+        </div>
+        <div class="panel side">
+          <div class="chart-head">
+            <h3 id="cam-title">fl</h3>
+            <div class="chips" id="camtime" role="group" aria-label="Момент времени"></div>
+          </div>
+          <img class="frame" id="camimg" alt="Кадр камеры с проекцией границ трека" src="img/proj_04_fl.jpg">
+          <div class="legend-proj">
+            <span><i style="background:#ff0000"></i>track_left</span>
+            <span><i style="background:#00ff00"></i>track_right</span>
+            <span><i style="background:#ff00ff"></i>pitlane_left</span>
+            <span><i style="background:#00ffff"></i>pitlane_right</span>
+          </div>
+          <div class="kv" id="camkv"></div>
+        </div>
+      </div>
+      <p class="note">У <code>fr</code>, <code>cl</code>, <code>cr</code> и <code>rr</code> fy/fx ≈ 0.87: пиксели неквадратные, поэтому интринсики берём из K целиком. По README yaw надёжен только у <code>r</code> и <code>rl</code>, roll и трансляции не калиброваны.</p>
+    </section>
+
+    <section id="frames">
+      <div class="sec-head">
+        <div class="eyebrow">Кадры и маски</div>
+        <h2>Ночь, но трек освещён</h2>
+        <p>Заборы, опоры света, трибуны, баннеры и разметка дают достаточно признаков. Мешают блики прожекторов, отражения на корпусе и другие машины на трассе: впереди часто видна красная.</p>
+      </div>
+      <figure>
+        <div class="scroll-x"><img src="img/contact.jpg" alt="Контакт-лист: семь камер, кадр каждые 180 секунд" loading="lazy"></div>
+        <figcaption>Контакт-лист: строки через 180 с, столбцы — камеры fl, fr, cl, cr, rl, rr, r. Листается вбок.</figcaption>
+      </figure>
+      <figure>
+        <img src="img/masks.jpg" alt="Маски корпуса машины для каждой камеры" loading="lazy">
+        <figcaption>Маски корпуса (красным) нарисованы полигонами по медианным кадрам. Маски по временной дисперсии не сработали: ровный асфальт тоже почти не меняется. Закрыто: fr 46 %, cr 44 %, cl 36 %, rr 33 %, fl 6 % (нос и пятно на стекле), rl и r по 1 %.</figcaption>
+      </figure>
+    </section>
+
+    <section id="baselines">
+      <div class="sec-head">
+        <div class="eyebrow">Проверка пайплайна</div>
+        <h2>Тривиальные бейзлайны</h2>
+        <p>Сабмит в метках времени камеры <code>fl</code>, 11 943 позы, покрытие 100 %. Оценка — официальным <code>evaluate.py</code>.</p>
+      </div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Вариант</th><th class="n">RMSE, м</th><th class="n">боковая, м</th><th class="n">продольная, м</th><th class="n">yaw, °</th><th class="n">&lt; 1 м</th></tr></thead>
+        <tbody>
+          <tr><td>GT, интерполированный в метки камер</td><td class="n">0.000</td><td class="n">0.000</td><td class="n">0.000</td><td class="n">0.000</td><td class="n">100 %</td></tr>
+          <tr><td>Стоит в первой позе</td><td class="n">528.4</td><td class="n">298.3</td><td class="n">436.2</td><td class="n">97.2</td><td class="n">0.4 %</td></tr>
+          <tr><td>По центральной линии, 20 м/с</td><td class="n">526.8</td><td class="n">321.6</td><td class="n">417.3</td><td class="n">102.5</td><td class="n">0.0 %</td></tr>
+          <tr class="sel"><td>Dead reckoning: v и yaw rate от первой позы</td><td class="n">65.5</td><td class="n">50.5</td><td class="n">41.7</td><td class="n">8.6</td><td class="n">2.5 %</td></tr>
+          <tr><td>Ориентир из README: GT + шум 0.3 м и 1°</td><td class="n">0.304</td><td class="n">0.300</td><td class="n">0.049</td><td class="n">1.007</td><td class="n">99.9 %</td></tr>
+        </tbody>
+      </table></div>
+      <p class="note">Скорость 20 м/с взята из GT, поэтому вариант с центральной линией проверяет только пайплайн. Dead reckoning — уже допустимый метод: он интегрирует разрешённые <code>v_mps</code> и <code>wz_radps</code> от первой позы, причинно.</p>
+      <div class="panel">
+        <div class="chart-head">
+          <h3 id="drift-title">Дрейф dead reckoning: ошибка позиции, м</h3>
+          <div class="chips" id="driftm" role="group" aria-label="Показатель дрейфа">
+            <button class="tog" type="button" data-m="pos" aria-pressed="true">позиция</button>
+            <button class="tog" type="button" data-m="yaw" aria-pressed="false">курс</button>
+          </div>
+        </div>
+        <div class="chart-wrap" id="driftwrap"><svg id="drift" role="img" aria-label="Дрейф dead reckoning в зависимости от горизонта"></svg><div class="tip" id="drifttip" hidden></div></div>
+        <div class="legend"><span><i class="sw" style="border-top-color:var(--accent)"></i> медиана</span><span><i class="ramp" style="width:18px;height:8px;display:inline-block;background:var(--accent-wash)"></i> до p90</span><span>400 случайных стартов на треке, поза в начале — из GT</span></div>
+        <p class="note">Модель движения сильная: курс почти не уплывает, позиция уходит примерно на метр за 10 секунд. Камерам остаётся поправлять позицию раз в 1–2 секунды, а не считать её на каждом кадре. Это экономит время на кадр, а время тоже входит в оценку.</p>
+      </div>
+    </section>
+
+    <section id="retrieval">
+      <div class="sec-head">
+        <div class="eyebrow">Поиск места · DINOv2</div>
+        <h2>Ближайший кадр базы находится почти всегда</h2>
+        <p>Для каждого набора кадров с кругов разработки ищем похожий ключевой кадр в базе, где нет ни текущего круга, ни отложенных К3 и К6. Ошибка — расстояние по GT между запросом и найденным кадром. Ключевые кадры идут через 4 м, поэтому медиана около 1 м близка к пределу. Нажмите на строку, чтобы увидеть промахи этой камеры на карте.</p>
+      </div>
+      <div class="bench">
+        <div class="panel"><div class="chart-wrap"><canvas id="rmap" aria-label="Карта ошибок поиска места"></canvas><div class="tip" id="rtip" hidden></div></div>
+          <div class="bins" id="bins">
+            <span><i style="background:var(--good)"></i>до 5 м</span>
+            <span><i style="background:var(--warn)"></i>5–10 м</span>
+            <span><i style="background:var(--crit)"></i>больше 10 м</span>
+          </div>
+        </div>
+        <div class="side">
+          <div class="panel side">
+            <div class="chart-head">
+              <h3 id="bars-title">Ближе 10 м, % запросов</h3>
+              <div class="chips" id="barm" role="group" aria-label="Показатель поиска">
+                <button class="tog" type="button" data-m="lt10" aria-pressed="true">&lt; 10 м</button>
+                <button class="tog" type="button" data-m="best3_lt10" aria-pressed="false">лучший из 3</button>
+                <button class="tog" type="button" data-m="median" aria-pressed="false">медиана</button>
+              </div>
+            </div>
+            <div class="bars" id="bars" role="group" aria-label="Камеры"></div>
+            <p class="note" id="rsum"></p>
+          </div>
+          <div class="panel side">
+            <h3>Что видно</h3>
+            <ul class="plain">
+              <li>Все 7 камер вместе: 97.9 % запросов ближе 10 м и 100 % ближе 25 м. Промахов дальше 100 м нет.</li>
+              <li>Все 30 промахов дальше 10 м приходятся на круг К2, в основном на верхнюю шпильку. Ошибка там 10–21 м, то есть путаница вдоль трека, а не с другим участком.</li>
+              <li>Лучшие одиночные камеры — боковые <code>rr</code>, <code>cr</code>, <code>cl</code>. Узкие <code>fl</code> и <code>r</code> смотрят вдоль трека и хуже различают соседние места.</li>
+              <li>В фильтре поиск можно ограничить окрестностью предсказания, тогда промахи вдоль трека отсекутся сами.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pose">
+      <div class="sec-head">
+        <div class="eyebrow">Поза одного набора кадров · PnP</div>
+        <h2>Точная поза по нескольким камерам</h2>
+        <p>Поза считается по камерам, для которых уже готова 3D-база. Для каждого запроса берутся три кадра базы от DINOv2, точки SuperPoint сопоставляются с 3D-точками базы через LightGlue, и PnP-RANSAC даёт позу. Круг запроса и отложенные К3 и К6 из базы исключены. Здесь фильтра нет: каждая точка — независимая оценка по одному набору кадров.</p>
+      </div>
+      <div class="chart-head">
+        <div class="chips" id="posecfg" role="group" aria-label="Набор камер"></div>
+        <span class="note">Переключите набор камер, чтобы сравнить.</span>
+      </div>
+      <div class="facts" id="posefacts"></div>
+      <div class="panel side">
+        <div class="scrub">
+          <label for="gate" class="note" style="white-space:nowrap">Принимать позу, если совпадений не меньше</label>
+          <input type="range" id="gate" min="0" max="200" step="5" value="0">
+          <b class="mono" id="gatev" style="min-width:3ch">0</b>
+        </div>
+        <p class="note">В фильтре слабые решения будут отбрасываться, а вместо них останется предсказание по скорости и yaw rate. Ползунок показывает, как порог меняет точность и долю принятых поз. Отброшенные точки на графиках показаны пустыми кружками.</p>
+      </div>
+      <ul class="plain">
+        <li>Третья камера <code>cl</code> заметно помогает. На трёх камерах медиана 0.11 м, RMSE 0.26 м, 98 % поз ближе 0.5 м и ни одного промаха дальше 5 м. На двух было 1.30 м RMSE и 6 промахов дальше 5 м.</li>
+        <li>На двух камерах (<code>fl</code> + <code>fr</code>) типичная поза тоже точная: медиана 0.15 м, курс 0.07°.</li>
+        <li>На двух камерах RMSE портят редкие промахи: 29 из 325 запросов дальше 1 м, 6 дальше 5 м. У них мало совпадений (медиана 52 против 216 у остальных), и ошибка в основном продольная: в 79 % случаев вдоль машины больше, чем поперёк.</li>
+        <li>На двух камерах порог в 100 совпадений оставляет 77 % поз с RMSE 0.35 м. Остальные кадры закроет предсказание фильтра, которое за секунду уходит всего на 0.1 м.</li>
+        <li>Промахи не привязаны к конкретному участку: на левой длинной прямой их столько же, сколько запросов. Боковые камеры дают больше совпадений, так что с остальными четырьмя камерами должно стать ещё лучше.</li>
+      </ul>
+      <div class="bench">
+        <div class="panel"><div class="chart-wrap"><canvas id="pmap" aria-label="Карта ошибок позы"></canvas><div class="tip" id="ptip" hidden></div></div>
+          <div class="bins">
+            <span><i style="background:var(--good)"></i>до 0.5 м</span>
+            <span><i style="background:var(--warn)"></i>0.5–1 м</span>
+            <span><i style="background:var(--crit)"></i>больше 1 м</span>
+            <span><i style="border:1.5px solid var(--muted)"></i>отброшено</span>
+          </div>
+        </div>
+        <div class="side">
+          <div class="panel">
+            <h3>Ошибка в системе машины, м</h3>
+            <div class="chart-wrap" id="sc1wrap"><svg id="sc1" role="img" aria-label="Боковая и продольная ошибка"></svg><div class="tip" id="sc1tip" hidden></div></div>
+            <p class="note">По горизонтали — вдоль машины (продольная), по вертикали — поперёк (боковая). Круги — 0.5 и 1 м. Точки за краем прижаты к границе.</p>
+          </div>
+          <div class="panel">
+            <h3>Ошибка и число совпадений</h3>
+            <div class="chart-wrap" id="sc2wrap"><svg id="sc2" role="img" aria-label="Ошибка позы против числа совпадений"></svg><div class="tip" id="sc2tip" hidden></div></div>
+            <p class="note">Ось совпадений логарифмическая. Вертикальная линия — текущий порог. Большие ошибки сидят слева, где совпадений мало.</p>
+          </div>
+        </div>
+      </div>
+      <div class="panel side">
+        <div class="chart-head">
+          <h3>Как выглядит сопоставление</h3>
+          <div class="chips" id="exchips" role="group" aria-label="Пример"></div>
+        </div>
+        <img class="frame" id="eximg" alt="Сопоставление точек запроса и кадра базы" style="aspect-ratio:auto">
+        <div class="kv" id="exkv"></div>
+        <p class="note">Слева кадр запроса, справа найденный кадр базы с другого круга. По строке на камеру, в порядке fl, fr, cl, cr, rl, rr, r для камер выбранного набора. Зелёные линии — совпадения, согласные с итоговой позой (ошибка проекции меньше 3 px), красные — отброшенные. Показан только первый из трёх кадров базы и не больше 140 линий на камеру.</p>
+      </div>
+    </section>
+
+    <section id="filter">
+      <div class="sec-head">
+        <div class="eyebrow">Фильтр · поза на каждом кадре</div>
+        <h2>Скорость машины плюс коррекция камерами 1–2 раза в секунду</h2>
+        <p>Фильтр Калмана ведёт позу по скорости и yaw rate машины и регулярно поправляет её позой из PnP. Слабые и противоречивые измерения он отбрасывает и в это время продолжает по предсказанию. Позы выдаются на каждом кадре, 10 раз в секунду, без пропусков. Оценка — официальным <code>evaluate.py</code> по каждому кругу. Старт из GT-позы в начале круга, дальше всё причинно и без GT. «Быстро» — настройка из раздела «Время на кадр»: 1 кандидат из базы и 512 точек.</p>
+      </div>
+      <div class="tbl-wrap"><table id="ftbl">
+        <thead><tr><th>Вариант</th><th>Круг</th><th class="n">RMSE, м</th><th class="n">медиана / p95</th><th class="n">боковая</th><th class="n">продольная</th><th class="n">курс, °</th><th class="n">&lt; 1 м</th><th class="n">измерений принято</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+      <div class="panel">
+        <div class="chart-head">
+          <h3 id="fchart-title">Ошибка позиции по времени, м</h3>
+          <div class="chips">
+            <span class="chips" id="fcfg" role="group" aria-label="Набор камер"></span>
+            <span class="chips" id="flap" role="group" aria-label="Круг"></span>
+            <span class="chips" id="fmet" role="group" aria-label="Показатель">
+              <button class="tog" type="button" data-m="err" aria-pressed="true">полная</button>
+              <button class="tog" type="button" data-m="lat" aria-pressed="false">боковая</button>
+              <button class="tog" type="button" data-m="lon" aria-pressed="false">продольная</button>
+            </span>
+          </div>
+        </div>
+        <div class="chart-wrap" id="fwrap"><svg id="fchart" role="img" aria-label="Ошибка фильтра по времени"></svg><div class="tip" id="ftip" hidden></div></div>
+        <div class="legend">
+          <span><i class="sw" style="border-top-color:var(--accent)"></i> ошибка фильтра</span>
+          <span><i class="dot" style="background:var(--good)"></i> измерение принято</span>
+          <span><i class="dot" style="background:var(--crit)"></i> отброшено</span>
+          <span>Значения выше 1.5 м прижаты к верху.</span>
+        </div>
+        <p class="note">Наведите на метку внизу, чтобы увидеть ошибку самого измерения: отброшенные почти всегда были плохими.</p>
+      </div>
+      <ul class="plain">
+        <li>Два исправления дали основной выигрыш. Первое: машина в повороте движется не строго вдоль продольной оси, поэтому нужно интегрировать обе составляющие скорости, <code>vx</code> и <code>vy</code>, а не одну <code>v</code> по курсу. Второе: шум процесса был слишком мал, и фильтр отбрасывал верные измерения. Вместе RMSE упал с 1.2 м до 0.19–0.27 м на двух камерах.</li>
+        <li>Третья камера заметно помогла: 0.160 / 0.178 м на К1 / К5. Пять и семь камер дают 0.149 / 0.165 и 0.148 / 0.160 м при коррекции раз в секунду, на семи камерах не отброшено ни одного измерения.</li>
+        <li>С тремя камерами на К5 сначала выросла боковая ошибка. Причина оказалась в фильтре, а не в калибровке <code>cl</code>: два неточных по курсу измерения подряд были приняты, после чего фильтр отбросил три правильных. Помогло более осторожное доверие к курсу из PnP (0.3° вместо 0.15°) и потолок доверия при большом числе совпадений.</li>
+        <li>Дальше точность упирается в дрейф между коррекциями: продольная ошибка — основная часть RMSE. Коррекция 2 раза в секунду даёт 0.123 / 0.113 м, боковая 0.050 / 0.068 м.</li>
+        <li>Фильтр сам оценивает поправку к скорости (около +0.4 %) и смещение yaw rate.</li>
+        <li>Шум процесса подобран сеткой на тех же кругах К1 и К5 (взята середина плато). Честная проверка будет на отложенных К3 и К6.</li>
+        <li>Время на кадр в быстрой настройке: 650 мс на коррекцию, то есть около 65 мс на кадр при коррекции раз в секунду и около 130 мс при двух. Сам фильтр почти ничего не стоит.</li>
+      </ul>
+    </section>
+
+    <section id="runtime">
+      <div class="sec-head">
+        <div class="eyebrow">Время на кадр · входит в оценку</div>
+        <h2>Втрое быстрее без потери точности</h2>
+        <p>Одна коррекция — это DINOv2 по семи кадрам, SuperPoint, сопоставление LightGlue с кадрами базы и PnP. Замер на 60 одинаковых запросах с К1 и К5, GPU GTX 1080 ничем больше не занят, DINOv2 считается на лету, как в настоящем прогоне. Справа — время одной коррекции; ниже под названием варианта — точность одиночной позы на тех же запросах.</p>
+      </div>
+      <div class="panel side">
+        <div class="legend" id="slegend"></div>
+        <div class="stack" id="stack"></div>
+        <p class="note">Почти всё время уходило на LightGlue: 3 кандидата × 7 камер = 21 сопоставление. Один кандидат вместо трёх и 512 точек вместо 1024 сокращают коррекцию с 1724 до 650 мс, а точность не падает: поиск и так почти всегда находит правильное место. Убирать камеры уже невыгодно — точность заметно хуже. Резерв на будущее: SuperPoint сейчас обрабатывает семь кадров по одному, а не пачкой.</p>
+      </div>
+      <div class="panel">
+        <div class="chart-head"><h3>Точность фильтра против времени на кадр</h3></div>
+        <div class="chart-wrap" id="towrap"><svg id="tochart" role="img" aria-label="RMSE фильтра против времени на кадр"></svg><div class="tip" id="totip" hidden></div></div>
+        <div class="legend">
+          <span><i class="swatch" style="background:var(--s1)"></i>круг К1</span>
+          <span><i class="swatch" style="background:var(--s2)"></i>круг К5</span>
+          <span>заполненные — быстрая настройка при коррекции раз в 2, 1 и 0.5 с; пустые — прежняя полная настройка раз в 1 с</span>
+        </div>
+        <p class="note">Время на кадр = время одной коррекции × частота коррекций / 10 кадров в секунду. Коррекция дважды в секунду даёт 0.11–0.12 м RMSE за ~130 мс на кадр. Как организаторы взвешивают время против точности, пока неизвестно (вопрос 9 в разделе Q&amp;A).</p>
+      </div>
+    </section>
+
+    <section id="step4">
+      <div class="sec-head">
+        <div class="eyebrow">Шаг 4 · в работе</div>
+        <h2>Прототип: фильтр на треке с коррекциями по базе кадров</h2>
+        <p>Предсказание делает модель движения по скорости и yaw rate. Коррекции дают камеры: по этому заезду строится 3D-карта признаков с GT-позами, и в ней находится абсолютная поза нового набора кадров. Организаторы предлагают тот же подход (методы 3a, 3b и 4 в презентации). Границы трека — второй источник коррекций, для бокового смещения и курса.</p>
+      </div>
+      <div class="panel">
+        <ol class="pipeline">
+          <li><div><h3>Кадры на диск</h3><div class="d">83 603 кадра, половинное разрешение 753×364, 3.2 ГБ, 2 минуты.</div></div><span class="chip"><i class="dot done"></i>готово</span></li>
+          <li><div><h3>Маски корпуса</h3><div class="d">Полигоны для 7 камер, используются и в поиске, и в признаках.</div></div><span class="chip"><i class="dot done"></i>готово</span></li>
+          <li><div><h3>Разрешённые данные о движении</h3><div class="d">Явный список полей в <code>car_state.py</code>, причинная выборка. Dead reckoning от первой позы проверен.</div></div><span class="chip"><i class="dot done"></i>готово</span></li>
+          <li><div><h3>Глобальные дескрипторы DINOv2 ViT-S/14</h3><div class="d">CLS + GeM по патчам, на каждый кадр каждой камеры. Около 3 минут на камеру.</div></div><span class="chip"><i class="dot done"></i>готово</span></li>
+          <li><div><h3>Поиск места leave-lap-out</h3><div class="d">97.9 % запросов ближе 10 м при поиске по всем камерам, подробности в разделе «Поиск места». Код: <code>retrieval_eval.py</code>.</div></div><span class="chip"><i class="dot done"></i>готово</span></li>
+          <li id="dbstep"><div><h3>3D-база ключевых кадров</h3><div class="d">5956 ключевых кадров через 4 м. SuperPoint + LightGlue с соседним кадром, триангуляция по GT-позам. При оценке кадры отложенных кругов К3 и К6 и текущего круга из базы исключаются.</div><div class="d mono dbcams"></div><div class="progress" aria-label="Прогресс сборки базы"><i style="width:0%"></i></div></div><span class="chip"><i class="dot run"></i>—</span></li>
+          <li><div><h3>Поза одного набора</h3><div class="d">Поиск по DINOv2 → совпадения 2D–3D по камерам → PnP-RANSAC → уточнение позы по всем камерам. На семи камерах медиана 0.08 м, RMSE 0.13 м, 100 % ближе 0.5 м.</div></div><span class="chip"><i class="dot done"></i>готово</span></li>
+          <li><div><h3>Причинный фильтр</h3><div class="d">Предсказание по vx, vy и yaw rate, коррекция позой PnP с отбраковкой и восстановлением. 0.11–0.12 м RMSE при коррекции 2 раза в секунду. Код: <code>track_filter.py</code>.</div></div><span class="chip"><i class="dot done"></i>работает</span></li>
+          <li><div><h3>Время на кадр</h3><div class="d">LightGlue занимал 73 % времени. Один кандидат из базы и 512 точек: 650 мс на коррекцию вместо 1724 мс без потери точности. Код: <code>bench_runtime.py</code>.</div></div><span class="chip"><i class="dot done"></i>замерено</span></li>
+          <li><div><h3>Сабмит и сдача</h3><div class="d">Одна команда из сырого mcap в CSV, замер времени на кадр, вывод <code>evaluate.py</code> на К3 и К6.</div></div><span class="chip"><i class="dot todo"></i>дальше</span></li>
+        </ol>
+      </div>
+      <div class="two">
+        <div class="side">
+          <h3>Настройка SuperPoint: точек / совпадений на кадр</h3>
+          <div class="tbl-wrap"><table>
+            <thead><tr><th>Настройка</th><th class="n">fl</th><th class="n">cl</th><th class="n">rl</th><th class="n">rr</th><th class="n">r</th></tr></thead>
+            <tbody>
+              <tr><td>порог 5e-4</td><td class="n">443/298</td><td class="n">402/225</td><td class="n">515/255</td><td class="n">489/163</td><td class="n">559/327</td></tr>
+              <tr><td>5e-4 + CLAHE</td><td class="n">539/338</td><td class="n">521/250</td><td class="n">597/295</td><td class="n">599/178</td><td class="n">620/347</td></tr>
+              <tr><td>2e-4</td><td class="n">625/384</td><td class="n">601/305</td><td class="n">778/333</td><td class="n">670/197</td><td class="n">748/422</td></tr>
+              <tr class="sel"><td>2e-4 + CLAHE (выбрано)</td><td class="n">750/436</td><td class="n">661/304</td><td class="n">892/380</td><td class="n">692/189</td><td class="n">826/433</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <div class="side">
+          <h3>Проверка триангуляции на 30 ключевых кадрах</h3>
+          <div class="tbl-wrap"><table>
+            <thead><tr><th>Камера</th><th class="n">точек/кадр</th><th class="n">медиана, px</th><th class="n">p90, px</th><th class="n">глубина, м</th></tr></thead>
+            <tbody>
+              <tr><td>fl</td><td class="n">76</td><td class="n">2.16</td><td class="n">6.1</td><td class="n">62</td></tr>
+              <tr><td>fr</td><td class="n">120</td><td class="n">1.85</td><td class="n">7.4</td><td class="n">63</td></tr>
+              <tr><td>cl</td><td class="n">337</td><td class="n">2.30</td><td class="n">5.3</td><td class="n">44</td></tr>
+              <tr><td>cr</td><td class="n">155</td><td class="n">1.57</td><td class="n">10.5</td><td class="n">39</td></tr>
+              <tr><td>rl</td><td class="n">429</td><td class="n">2.32</td><td class="n">5.9</td><td class="n">34</td></tr>
+              <tr><td>rr</td><td class="n">185</td><td class="n">2.53</td><td class="n">14.5</td><td class="n">34</td></tr>
+              <tr><td>r</td><td class="n">170</td><td class="n">2.87</td><td class="n">5.8</td><td class="n">52</td></tr>
+            </tbody>
+          </table></div>
+          <p class="note">Точки из пары кадров (i, i+1) проецируются в кадр i+2. Медиана около 2 px на половинном разрешении — это примерно 0.1° и для прототипа достаточно. Хвосты отсечёт RANSAC.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="qa">
+      <div class="sec-head">
+        <div class="eyebrow">Вопросы к организаторам · Q&amp;A 17–18 октября</div>
+        <h2>Что нужно спросить</h2>
+        <p>Раздел собирается из файла <code>QA.md</code> в репозитории. Туда же записываются ответы. P1 — вопросы, от которых зависит допуск к оценке или архитектура. Нажмите на вопрос, чтобы увидеть подробности и допущение, с которым работаем до ответа.</p>
+      </div>
+      <div class="chart-head">
+        <div class="chips" id="qaf" role="group" aria-label="Фильтр по приоритету">
+          <button class="tog" type="button" data-p="all" aria-pressed="true">все</button>
+          <button class="tog" type="button" data-p="P1" aria-pressed="false">P1</button>
+          <button class="tog" type="button" data-p="P2" aria-pressed="false">P2</button>
+          <button class="tog" type="button" data-p="P3" aria-pressed="false">P3</button>
+        </div>
+        <span class="note" id="qacount"></span>
+      </div>
+      <div class="qa-list" id="qalist"></div>
+    </section>
+
+    <section id="next">
+      <div class="sec-head">
+        <div class="eyebrow">Выводы</div>
+        <h2>Что из этого следует для метода</h2>
+      </div>
+      <ul class="plain">
+        <li>Основу движения даёт сама машина: скорость и yaw rate разрешены, и за 10 секунд позиция уходит примерно на метр. Задача камер — регулярно убирать этот дрейф.</li>
+        <li>Коррекции — по базе ключевых кадров с 3D-точками, PnP даёт позу сразу в координатах трека. Масштаб задаёт сама карта, камеры смотрят во все стороны.</li>
+        <li>Границы трека дают жёсткое ограничение в фильтре и коррекцию бокового смещения и курса по краю асфальта. Боковая ошибка решает при равенстве, поэтому её улучшаем первой.</li>
+        <li>Риски переноса на скрытый заезд: выше скорость, другое освещение, другие машины, другая траектория (смещение до ±6 м от базы). Поэтому нужна метрическая поза, а не «поза ближайшего кадра», а проверяем на отложенных самых быстрых кругах.</li>
+        <li>Время на кадр входит в оценку. Коррекция 2 раза в секунду стоит около 130 мс на кадр; если на Q&amp;A окажется, что время весит много, частота меняется одним параметром.</li>
+        <li>Ближайшее: одна команда «сырой mcap → CSV», затем финальная проверка на отложенных К3 и К6 с зафиксированными настройками. Открытые вопросы к организаторам собраны в разделе выше.</li>
+      </ul>
+    </section>
+
+    <footer>Состояние на 17 октября 2026, 01:15, сверено с INTRO-презентацией организаторов. Код: <code>analysis/analyze.py</code>, <code>baselines.py</code>, <code>car_state.py</code>, <code>dr_drift.py</code>, <code>retrieval_eval.py</code>, <code>pose_vis.py</code>, <code>track_filter.py</code>, <code>bench_runtime.py</code>, <code>make_masks.py</code>, <code>global_desc.py</code>, <code>db_build.py</code>, <code>localize.py</code>, <code>eval_single.py</code>.</footer>
+  </main>
+</div>
+
+<script id="data" type="application/json">__DATA__</script>
+<script>
+(() => {
+  const D = JSON.parse(document.getElementById('data').textContent);
+  const T = D.traj, N = T.t.length;
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const st = { idx: Math.round(N * 0.25), lap: null, metric: 'v', playing: null };
+
+  // ---------- speed ramp
+  function hexRgb(h) { h = h.replace('#', ''); return [0, 2, 4].map(i => parseInt(h.substr(i, 2), 16)); }
+  let RAMP = [];
+  function loadRamp() { RAMP = css('--ramp').split(',').map(s => hexRgb(s.trim())); }
+  function speedColor(v) {
+    const u = Math.max(0, Math.min(1, v / 40)) * (RAMP.length - 1);
+    const i = Math.min(RAMP.length - 2, Math.floor(u)), f = u - i;
+    const c = RAMP[i].map((a, k) => Math.round(a + (RAMP[i + 1][k] - a) * f));
+    return `rgb(${c[0]},${c[1]},${c[2]})`;
+  }
+  function drawRamp() {
+    const c = document.getElementById('ramp'), g = c.getContext('2d');
+    for (let x = 0; x < c.width; x++) { g.fillStyle = speedColor(40 * x / (c.width - 1)); g.fillRect(x, 0, 1, c.height); }
+  }
+
+  // ---------- map
+  const map = document.getElementById('map'), mg = map.getContext('2d');
+  const allPts = Object.values(D.bounds).flat();
+  const bx = [Math.min(...allPts.map(p => p[0])), Math.max(...allPts.map(p => p[0]))];
+  const by = [Math.min(...allPts.map(p => p[1])), Math.max(...allPts.map(p => p[1]))];
+  let MS = { k: 1, ox: 0, oy: 0, w: 0, h: 0 };
+  function sizeMap() {
+    const w = map.parentElement.clientWidth - 36;
+    const h = Math.min(w * (by[1] - by[0]) / (bx[1] - bx[0]), 680);
+    const dpr = window.devicePixelRatio || 1;
+    map.width = w * dpr; map.height = h * dpr; map.style.height = h + 'px';
+    mg.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const pad = 10, k = Math.min((w - 2 * pad) / (bx[1] - bx[0]), (h - 2 * pad) / (by[1] - by[0]));
+    MS = { k, w, h, ox: (w - k * (bx[1] - bx[0])) / 2 - k * bx[0], oy: (h + k * (by[1] - by[0])) / 2 + k * by[0] };
+  }
+  const px = x => MS.ox + MS.k * x, py = y => MS.oy - MS.k * y;
+  function lapRange() {
+    if (st.lap === null) return [0, N - 1];
+    let a = T.lap.indexOf(st.lap), b = T.lap.lastIndexOf(st.lap);
+    return [a, b];
+  }
+  function drawMap() {
+    const w = MS.w, h = MS.h;
+    mg.clearRect(0, 0, w, h);
+    for (const [name, pts] of Object.entries(D.bounds)) {
+      mg.beginPath();
+      pts.forEach((p, i) => i ? mg.lineTo(px(p[0]), py(p[1])) : mg.moveTo(px(p[0]), py(p[1])));
+      const pit = name.startsWith('pit');
+      mg.setLineDash(pit ? [4, 3] : []); mg.lineWidth = 1; mg.strokeStyle = pit ? css('--pit') : css('--axis');
+      mg.stroke();
+    }
+    mg.setLineDash([]);
+    const [a, b] = lapRange();
+    if (st.lap !== null) {               // other laps faint
+      mg.beginPath();
+      for (let i = 0; i < N; i++) { const f = i ? 'lineTo' : 'moveTo'; mg[f](px(T.x[i]), py(T.y[i])); }
+      mg.strokeStyle = css('--grid'); mg.lineWidth = 1; mg.stroke();
+    }
+    mg.lineWidth = 2.2; mg.lineCap = 'round';
+    for (let i = Math.max(1, a); i <= b; i++) {
+      mg.beginPath(); mg.moveTo(px(T.x[i - 1]), py(T.y[i - 1])); mg.lineTo(px(T.x[i]), py(T.y[i]));
+      mg.strokeStyle = speedColor(T.v[i]); mg.stroke();
+    }
+    // official start line
+    const sl = D.stats.start_line_xy;
+    if (sl) {
+      mg.fillStyle = css('--ink'); mg.fillRect(px(sl[0]) - 4.5, py(sl[1]) - 4.5, 9, 9);
+      mg.font = '11px "IBM Plex Mono", monospace'; mg.fillText('старт', px(sl[0]) + 8, py(sl[1]) + 4);
+    }
+    // car marker
+    const i = st.idx, cx = px(T.x[i]), cy = py(T.y[i]), yw = T.yaw[i] * Math.PI / 180;
+    mg.beginPath(); mg.arc(cx, cy, 7, 0, 2 * Math.PI); mg.fillStyle = css('--surface'); mg.fill();
+    mg.beginPath(); mg.arc(cx, cy, 5, 0, 2 * Math.PI); mg.fillStyle = css('--ink'); mg.fill();
+    mg.beginPath(); mg.moveTo(cx, cy); mg.lineTo(cx + 16 * Math.cos(yw), cy - 16 * Math.sin(yw));
+    mg.strokeStyle = css('--ink'); mg.lineWidth = 2; mg.stroke();
+  }
+  function mapPointer(e) {
+    const r = map.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
+    const [a, b] = lapRange();
+    let best = -1, bd = 400;
+    for (let i = a; i <= b; i++) { const d = (px(T.x[i]) - mx) ** 2 + (py(T.y[i]) - my) ** 2; if (d < bd) { bd = d; best = i; } }
+    if (best >= 0) setIdx(best);
+  }
+  map.addEventListener('pointermove', mapPointer);
+  map.addEventListener('pointerdown', mapPointer);
+
+  // ---------- timeline chart
+  const svg = document.getElementById('chart'), tip = document.getElementById('tip'), wrap = document.getElementById('chartwrap');
+  const METRIC = {
+    v: { title: 'Скорость, м/с', dom: [0, 42], ticks: [0, 10, 20, 30, 40], fmt: v => v.toFixed(1) + ' м/с' },
+    n: { title: 'Боковое смещение от центра n, м (+ влево)', dom: [-10, 10], ticks: [-10, -5, 0, 5, 10], fmt: v => (v > 0 ? '+' : '') + v.toFixed(1) + ' м' },
+    s: { title: 'Прогресс вдоль трека s, м', dom: [0, 3000], ticks: [0, 1000, 2000, 3000], fmt: v => v.toFixed(0) + ' м' },
+  };
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent && parent.appendChild(e); return e; };
+  let CH = {};
+  function drawChart() {
+    const W = wrap.clientWidth, H = 230, m = { l: 44, r: 10, t: 22, b: 24 };
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.setAttribute('width', W); svg.setAttribute('height', H);
+    svg.innerHTML = '';
+    const M = METRIC[st.metric], [a, b] = lapRange();
+    const t0 = T.t[a], t1 = T.t[b];
+    const X = t => m.l + (t - t0) / (t1 - t0) * (W - m.l - m.r);
+    const Y = v => m.t + (1 - (Math.max(M.dom[0], Math.min(M.dom[1], v)) - M.dom[0]) / (M.dom[1] - M.dom[0])) * (H - m.t - m.b);
+    CH = { X, Y, a, b, m, W, H };
+    // pit bands
+    let run = null;
+    for (let i = a; i <= b + 1; i++) {
+      const p = i <= b && T.pit[i];
+      if (p && run === null) run = i;
+      if (!p && run !== null) { el('rect', { x: X(T.t[run]), y: m.t, width: Math.max(1, X(T.t[i - 1]) - X(T.t[run])), height: H - m.t - m.b, fill: 'var(--pit-wash)' }, svg); run = null; }
+    }
+    // grid + y ticks
+    M.ticks.forEach(v => {
+      el('line', { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), stroke: v === 0 && st.metric === 'n' ? 'var(--axis)' : 'var(--grid)', 'stroke-width': 1 }, svg);
+      el('text', { x: m.l - 6, y: Y(v) + 3.5, 'text-anchor': 'end' }, svg).textContent = v;
+    });
+    // lap lines + labels
+    D.laps.forEach(L => {
+      if (L.t_start > t0 && L.t_start < t1) el('line', { x1: X(L.t_start), x2: X(L.t_start), y1: m.t, y2: H - m.b, stroke: 'var(--axis)', 'stroke-width': 1, 'stroke-dasharray': '2 3' }, svg);
+      const mid = (Math.max(L.t_start, t0) + Math.min(L.t_end, t1)) / 2;
+      if (mid > t0 && mid < t1 && (Math.min(L.t_end, t1) - Math.max(L.t_start, t0)) > (t1 - t0) * 0.04)
+        el('text', { x: X(mid), y: 13, 'text-anchor': 'middle' }, svg).textContent = 'К' + L.lap;
+    });
+    // x ticks
+    const span = t1 - t0, step = span > 600 ? 200 : span > 200 ? 50 : 20;
+    for (let t = Math.ceil(t0 / step) * step; t <= t1; t += step)
+      el('text', { x: X(t), y: H - 7, 'text-anchor': 'middle' }, svg).textContent = t + ' с';
+    // line
+    const vals = T[st.metric];
+    let d = '';
+    for (let i = a; i <= b; i++) {
+      const brk = i === a || (st.metric === 's' && vals[i] - vals[i - 1] < -1500);
+      d += (brk ? 'M' : 'L') + X(T.t[i]).toFixed(1) + ',' + Y(vals[i]).toFixed(1);
+    }
+    el('path', { d, fill: 'none', stroke: 'var(--accent)', 'stroke-width': 2, 'stroke-linejoin': 'round' }, svg);
+    CH.cursor = el('line', { y1: m.t, y2: H - m.b, stroke: 'var(--ink-2)', 'stroke-width': 1 }, svg);
+    CH.dot = el('circle', { r: 4.5, fill: 'var(--accent)', stroke: 'var(--surface)', 'stroke-width': 2 }, svg);
+    document.getElementById('chart-title').textContent = M.title;
+    placeCursor();
+  }
+  function placeCursor() {
+    if (!CH.cursor) return;
+    const i = st.idx, x = CH.X(T.t[i]);
+    const vis = i >= CH.a && i <= CH.b;
+    CH.cursor.style.display = CH.dot.style.display = vis ? '' : 'none';
+    CH.cursor.setAttribute('x1', x); CH.cursor.setAttribute('x2', x);
+    CH.dot.setAttribute('cx', x); CH.dot.setAttribute('cy', CH.Y(T[st.metric][i]));
+  }
+  function chartPointer(e) {
+    const r = svg.getBoundingClientRect(), mx = e.clientX - r.left;
+    const t = T.t[CH.a] + (mx - CH.m.l) / (CH.W - CH.m.l - CH.m.r) * (T.t[CH.b] - T.t[CH.a]);
+    let i = Math.round((t - T.t[0]) / 0.5); i = Math.max(CH.a, Math.min(CH.b, i));
+    setIdx(i);
+    const M = METRIC[st.metric];
+    tip.innerHTML = `<span class="k">t</span> ${T.t[i].toFixed(1)} с · <span class="k">круг</span> ${T.lap[i]}${T.pit[i] ? ' · пит-лейн' : ''}<br><b>${M.fmt(T[st.metric][i])}</b>`;
+    tip.hidden = false;
+    const tx = CH.X(T.t[i]), tw = tip.offsetWidth;
+    tip.style.left = Math.min(Math.max(0, tx + 12), CH.W - tw) + 'px';
+    tip.style.top = '24px';
+  }
+  svg.addEventListener('pointermove', chartPointer);
+  svg.addEventListener('pointerdown', chartPointer);
+  svg.addEventListener('pointerleave', () => { tip.hidden = true; });
+
+  // ---------- readout + slider
+  const slider = document.getElementById('slider');
+  function syncSlider() { const [a, b] = lapRange(); slider.min = a; slider.max = b; slider.value = st.idx; }
+  function readout() {
+    const i = st.idx;
+    document.getElementById('r-t').textContent = T.t[i].toFixed(1) + ' с';
+    document.getElementById('r-lap').textContent = T.lap[i] + (T.pit[i] ? ' · пит' : '');
+    document.getElementById('r-v').textContent = T.v[i].toFixed(1) + ' м/с';
+    document.getElementById('r-s').textContent = T.s[i].toFixed(0) + ' м';
+    document.getElementById('r-n').textContent = (T.n[i] > 0 ? '+' : '') + T.n[i].toFixed(1) + ' м';
+    document.getElementById('r-yaw').textContent = T.yaw[i].toFixed(0) + '°';
+  }
+  function setIdx(i) { st.idx = i; slider.value = i; readout(); drawMap(); placeCursor(); }
+  slider.addEventListener('input', () => setIdx(+slider.value));
+  const playBtn = document.getElementById('play');
+  playBtn.addEventListener('click', () => {
+    if (st.playing) { clearInterval(st.playing); st.playing = null; playBtn.textContent = '▶ ×20'; return; }
+    const [a, b] = lapRange(); if (st.idx >= b) setIdx(a);
+    playBtn.textContent = '❚❚ пауза';
+    st.playing = setInterval(() => {
+      const [, bb] = lapRange();
+      if (st.idx >= bb) { clearInterval(st.playing); st.playing = null; playBtn.textContent = '▶ ×20'; return; }
+      setIdx(st.idx + 2);
+    }, 50);
+  });
+
+  // ---------- lap chips + table
+  const chips = document.getElementById('lapchips');
+  function selectLap(l) {
+    st.lap = l;
+    const [a, b] = lapRange(); if (st.idx < a || st.idx > b) st.idx = a;
+    chips.querySelectorAll('button').forEach(bn => bn.setAttribute('aria-pressed', String(bn.dataset.lap === String(l))));
+    document.querySelectorAll('#laptbl tbody tr').forEach(tr => tr.classList.toggle('sel', tr.dataset.lap === String(l)));
+    syncSlider(); readout(); drawMap(); drawChart();
+  }
+  [['все', null], ...D.laps.map(L => ['К' + L.lap, L.lap])].forEach(([lab, l]) => {
+    const bn = document.createElement('button'); bn.className = 'tog'; bn.type = 'button'; bn.textContent = lab;
+    bn.dataset.lap = String(l); bn.setAttribute('aria-pressed', String(l === null));
+    bn.addEventListener('click', () => selectLap(l)); chips.appendChild(bn);
+  });
+  const maxDur = Math.max(...D.laps.map(L => L.duration_s));
+  const tb = document.querySelector('#laptbl tbody');
+  D.laps.forEach(L => {
+    const tr = document.createElement('tr'); tr.className = 'click'; tr.dataset.lap = L.lap; tr.tabIndex = 0;
+    const VAL = [3, 6];
+    const note = [L.lap === 0 ? 'выезд из боксов' : '', L.lap === D.laps.length - 1 ? 'заезд в боксы' : '',
+      VAL.includes(L.lap) ? 'валидация' : ''].filter(Boolean).join(', ');
+    tr.innerHTML = `<td>К${L.lap}</td><td class="n">${L.t_start.toFixed(1)}</td><td class="n">${L.t_end.toFixed(1)}</td>
+      <td class="num">${L.duration_s.toFixed(1)}<span class="bar" style="width:${Math.round(110 * L.duration_s / maxDur)}px;opacity:${L.complete ? 1 : .35}"></span></td>
+      <td class="n">${L.v_max.toFixed(1)}</td><td class="n">${L.v_mean.toFixed(1)}</td><td class="n">${L.pit_s.toFixed(1)}</td><td class="n">${L.stopped_s.toFixed(1)}</td>
+      <td>${note ? `<span class="tag">${note}</span>` : ''}</td>`;
+    const go = () => { selectLap(L.lap); document.getElementById('track').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); };
+    tr.addEventListener('click', go);
+    tr.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+    tb.appendChild(tr);
+  });
+  document.querySelectorAll('#metric button').forEach(bn => bn.addEventListener('click', () => {
+    st.metric = bn.dataset.m;
+    document.querySelectorAll('#metric button').forEach(b => b.setAttribute('aria-pressed', String(b === bn)));
+    drawChart();
+  }));
+
+  // ---------- cameras
+  const CAL = D.stats.calibration, MASK = { fl: 6.3, fr: 45.5, cl: 36.2, cr: 44.5, rl: 0.8, rr: 32.7, r: 0.8 };
+  const TIMES = [['01', 60], ['04', 240], ['08', 480], ['12', 720]];
+  const camSt = { cam: 'fl', k: '04' };
+  const camsvg = document.getElementById('camsvg');
+  const S = (xb, yb) => [-yb, -xb];       // base_link (x fwd, y left) -> screen (nose up)
+  el('rect', { x: -0.95, y: -1.9, width: 1.9, height: 4.9, rx: 0.5, class: 'car' }, camsvg);
+  const R0 = 6.2;
+  const order = ['fl', 'fr', 'cl', 'cr', 'rl', 'rr', 'r'];
+  order.forEach(c => {
+    const k = CAL[c], g = el('g', { class: 'wedge', tabindex: 0, role: 'button', 'aria-label': 'Камера ' + c }, camsvg);
+    const p = k.xyz, a0 = (k.yaw_deg - k.hfov_deg / 2) * Math.PI / 180, a1 = (k.yaw_deg + k.hfov_deg / 2) * Math.PI / 180;
+    const r = c === 'fl' ? R0 + 1.8 : c === 'fr' ? R0 + 0.6 : R0;
+    let d = 'M' + S(p[0], p[1]).join(',');
+    for (let j = 0; j <= 24; j++) { const a = a0 + (a1 - a0) * j / 24; d += 'L' + S(p[0] + r * Math.cos(a), p[1] + r * Math.sin(a)).map(v => v.toFixed(3)).join(','); }
+    el('path', { d: d + 'Z' }, g);
+    const am = k.yaw_deg * Math.PI / 180, lr = r * 0.72;
+    const [tx, ty] = S(p[0] + lr * Math.cos(am), p[1] + lr * Math.sin(am));
+    el('text', { x: tx, y: ty + 0.2, 'text-anchor': 'middle' }, g).textContent = c;
+    const pick = () => { camSt.cam = c; renderCam(); };
+    g.addEventListener('click', pick);
+    g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
+  });
+  const ct = document.getElementById('camtime');
+  TIMES.forEach(([k, t]) => {
+    const bn = document.createElement('button'); bn.className = 'tog'; bn.type = 'button'; bn.textContent = t + ' с';
+    bn.dataset.k = k; bn.addEventListener('click', () => { camSt.k = k; renderCam(); }); ct.appendChild(bn);
+  });
+  function renderCam() {
+    const c = camSt.cam, k = CAL[c];
+    camsvg.querySelectorAll('.wedge').forEach(g => g.classList.toggle('on', g.getAttribute('aria-label') === 'Камера ' + c));
+    ct.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.k === camSt.k)));
+    document.getElementById('camimg').src = `img/proj_${camSt.k}_${c}.jpg`;
+    document.getElementById('cam-title').textContent = `Камера ${c}`;
+    const kv = [['fx / fy', `${k.fx.toFixed(0)} / ${k.fy.toFixed(0)}`], ['HFOV', k.hfov_deg.toFixed(1) + '°'], ['VFOV', k.vfov_deg.toFixed(1) + '°'],
+      ['yaw', k.yaw_deg.toFixed(1) + '°'], ['pitch вниз', k.pitch_down_deg.toFixed(1) + '°'], ['roll', k.roll_deg.toFixed(1) + '°'],
+      ['x, y, z', k.xyz.map(v => v.toFixed(2)).join(', ') + ' м'], ['k1', k.D[0].toFixed(3)], ['маска', MASK[c] + ' %']];
+    document.getElementById('camkv').innerHTML = kv.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
+  }
+
+  // ---------- dead-reckoning drift chart
+  const DR = D.drift, dsvg = document.getElementById('drift'), dwrap = document.getElementById('driftwrap'), dtip = document.getElementById('drifttip');
+  let driftM = 'pos', DC = {};
+  function drawDrift() {
+    const W = dwrap.clientWidth, H = 210, m = { l: 44, r: 12, t: 12, b: 26 };
+    dsvg.setAttribute('viewBox', `0 0 ${W} ${H}`); dsvg.setAttribute('width', W); dsvg.setAttribute('height', H); dsvg.innerHTML = '';
+    const med = DR[driftM + '_med'], p90 = DR[driftM + '_p90'];
+    const ticks = driftM === 'pos' ? [0, 2, 4, 6, 8] : [0, 0.25, 0.5, 0.75, 1];
+    const ymax = ticks[ticks.length - 1];
+    const X = h => m.l + h / 30 * (W - m.l - m.r), Y = v => m.t + (1 - v / ymax) * (H - m.t - m.b);
+    DC = { X, Y, m, W };
+    ticks.forEach(v => { el('line', { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), stroke: v ? 'var(--grid)' : 'var(--axis)' }, dsvg);
+      el('text', { x: m.l - 6, y: Y(v) + 3.5, 'text-anchor': 'end' }, dsvg).textContent = driftM === 'pos' ? v : v.toFixed(2); });
+    [0, 5, 10, 15, 20, 25, 30].forEach(h => { el('text', { x: X(h), y: H - 8, 'text-anchor': 'middle' }, dsvg).textContent = h + ' с'; });
+    let band = `M${X(0)},${Y(0)}`; DR.h.forEach((h, i) => band += `L${X(h)},${Y(p90[i])}`); band += `L${X(30)},${Y(0)}Z`;
+    el('path', { d: band, fill: 'var(--accent-wash)' }, dsvg);
+    let line = `M${X(0)},${Y(0)}`; DR.h.forEach((h, i) => line += `L${X(h)},${Y(med[i])}`);
+    el('path', { d: line, fill: 'none', stroke: 'var(--accent)', 'stroke-width': 2, 'stroke-linejoin': 'round' }, dsvg);
+    DR.h.forEach((h, i) => el('circle', { cx: X(h), cy: Y(med[i]), r: 3.5, fill: 'var(--accent)', stroke: 'var(--surface)', 'stroke-width': 1.5 }, dsvg));
+    DC.hl = el('circle', { r: 6, fill: 'none', stroke: 'var(--ink)', 'stroke-width': 1.5 }, dsvg); DC.hl.style.display = 'none';
+    document.getElementById('drift-title').textContent = driftM === 'pos' ? 'Дрейф dead reckoning: ошибка позиции, м' : 'Дрейф dead reckoning: ошибка курса, °';
+  }
+  dsvg.addEventListener('pointermove', e => {
+    const r = dsvg.getBoundingClientRect(), mx = e.clientX - r.left;
+    let i = 0; DR.h.forEach((h, k) => { if (Math.abs(DC.X(h) - mx) < Math.abs(DC.X(DR.h[i]) - mx)) i = k; });
+    const med = DR[driftM + '_med'][i], p90 = DR[driftM + '_p90'][i], u = driftM === 'pos' ? ' м' : '°';
+    DC.hl.style.display = ''; DC.hl.setAttribute('cx', DC.X(DR.h[i])); DC.hl.setAttribute('cy', DC.Y(med));
+    dtip.innerHTML = `<span class="k">через</span> ${DR.h[i]} с<br><span class="k">медиана</span> <b>${med.toFixed(2)}${u}</b> · <span class="k">p90</span> ${p90.toFixed(2)}${u}`;
+    dtip.hidden = false; dtip.style.left = Math.min(DC.X(DR.h[i]) + 12, DC.W - dtip.offsetWidth) + 'px'; dtip.style.top = '14px';
+  });
+  dsvg.addEventListener('pointerleave', () => { dtip.hidden = true; if (DC.hl) DC.hl.style.display = 'none'; });
+  document.querySelectorAll('#driftm button').forEach(bn => bn.addEventListener('click', () => {
+    driftM = bn.dataset.m; document.querySelectorAll('#driftm button').forEach(b => b.setAttribute('aria-pressed', String(b === bn))); drawDrift();
+  }));
+
+  // ---------- retrieval: bars + error map
+  const RT = D.retr, rmap = document.getElementById('rmap'), rg = rmap.getContext('2d'), rtip = document.getElementById('rtip');
+  const CFG = [['all', 'все 7'], ['fl+fr+r+rl', 'fl fr r rl'], ...['rr', 'cr', 'cl', 'fr', 'rl', 'fl', 'r'].map(c => [c, c])];
+  const rs = { cfg: 'all', metric: 'lt10' };
+  let RM = {};
+  function binColor(e) { return e <= 5 ? css('--good') : e <= 10 ? css('--warn') : css('--crit'); }
+  function drawBars() {
+    const box = document.getElementById('bars'); box.innerHTML = '';
+    const M = rs.metric, isMed = M === 'median';
+    const lo = isMed ? 0 : 75, hi = isMed ? 4 : 100;
+    CFG.forEach(([k, lab]) => {
+      const c = RT.configs[k], v = c[M];
+      const bn = document.createElement('button'); bn.type = 'button'; bn.setAttribute('aria-pressed', String(k === rs.cfg));
+      const w = Math.max(2, Math.min(100, (v - lo) / (hi - lo) * 100));
+      bn.innerHTML = `<span class="lab">${lab}</span><span class="track"><span class="fill" style="width:${w}%"></span></span><span class="val">${isMed ? v.toFixed(2) + ' м' : v.toFixed(1) + ' %'}</span>`;
+      bn.addEventListener('click', () => { rs.cfg = k; drawBars(); drawRmap(); });
+      box.appendChild(bn);
+    });
+    document.getElementById('bars-title').textContent = M === 'lt10' ? 'Ближе 10 м, % запросов (шкала от 75 %)' : M === 'best3_lt10' ? 'Лучший из трёх кандидатов ближе 10 м, % (шкала от 75 %)' : 'Медиана ошибки, м';
+    const c = RT.configs[rs.cfg];
+    document.getElementById('rsum').textContent = `${CFG.find(q => q[0] === rs.cfg)[1]}: ${RT.x.length} запросов, медиана ${c.median.toFixed(2)} м, ближе 10 м ${c.lt10} %, ближе 25 м ${c.lt25} %, дальше 100 м ${c.gt100} %.`;
+  }
+  function drawRmap() {
+    const w = rmap.parentElement.clientWidth;
+    const h = Math.min(w * (by[1] - by[0]) / (bx[1] - bx[0]), 600), dpr = window.devicePixelRatio || 1;
+    rmap.width = w * dpr; rmap.height = h * dpr; rmap.style.height = h + 'px'; rg.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const pad = 10, k = Math.min((w - 2 * pad) / (bx[1] - bx[0]), (h - 2 * pad) / (by[1] - by[0]));
+    const ox = (w - k * (bx[1] - bx[0])) / 2 - k * bx[0], oy = (h + k * (by[1] - by[0])) / 2 + k * by[0];
+    const X = x => ox + k * x, Y = y => oy - k * y;
+    RM = { X, Y };
+    rg.clearRect(0, 0, w, h);
+    for (const [name, pts] of Object.entries(D.bounds)) {
+      rg.beginPath(); pts.forEach((p, i) => i ? rg.lineTo(X(p[0]), Y(p[1])) : rg.moveTo(X(p[0]), Y(p[1])));
+      rg.setLineDash(name.startsWith('pit') ? [4, 3] : []); rg.strokeStyle = css('--axis'); rg.lineWidth = 1; rg.stroke();
+    }
+    rg.setLineDash([]);
+    const err = RT.configs[rs.cfg].err, order = err.map((e, i) => i).sort((a, b) => err[a] - err[b]);
+    order.forEach(i => {
+      const e = err[i], r = e > 10 ? 4.5 : e > 5 ? 3.5 : 2.2;
+      rg.beginPath(); rg.arc(X(RT.x[i]), Y(RT.y[i]), r + (e > 5 ? 1.5 : 0), 0, 2 * Math.PI);
+      if (e > 5) { rg.fillStyle = css('--surface'); rg.fill(); rg.beginPath(); rg.arc(X(RT.x[i]), Y(RT.y[i]), r, 0, 2 * Math.PI); }
+      rg.fillStyle = binColor(e); rg.fill();
+    });
+  }
+  rmap.addEventListener('pointermove', e => {
+    const r = rmap.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
+    const err = RT.configs[rs.cfg].err;
+    let best = -1, bd = 120;
+    for (let i = 0; i < err.length; i++) { const d = (RM.X(RT.x[i]) - mx) ** 2 + (RM.Y(RT.y[i]) - my) ** 2; if (d < bd || (d < 120 && best >= 0 && Math.abs(d - bd) < 20 && err[i] > err[best])) { bd = d; best = i; } }
+    if (best < 0) { rtip.hidden = true; return; }
+    rtip.innerHTML = `<span class="k">t</span> ${RT.t[best].toFixed(1)} с · <span class="k">круг</span> К${RT.lap[best]}<br><span class="k">ошибка</span> <b>${err[best].toFixed(1)} м</b>`;
+    rtip.hidden = false;
+    rtip.style.left = Math.min(RM.X(RT.x[best]) + 12, rmap.clientWidth - rtip.offsetWidth) + 'px';
+    rtip.style.top = Math.max(0, RM.Y(RT.y[best]) - 50) + 'px';
+  });
+  rmap.addEventListener('pointerleave', () => { rtip.hidden = true; });
+  document.querySelectorAll('#barm button').forEach(bn => bn.addEventListener('click', () => {
+    rs.metric = bn.dataset.m; document.querySelectorAll('#barm button').forEach(b => b.setAttribute('aria-pressed', String(b === bn))); drawBars();
+  }));
+
+  // ---------- Q&A list from QA.md
+  const qaSt = { p: 'all' };
+  function drawQA() {
+    const box = document.getElementById('qalist'); box.innerHTML = '';
+    const items = D.qa.filter(q => qaSt.p === 'all' || q.prio === qaSt.p);
+    let grp = null;
+    items.forEach(q => {
+      if (q.group !== grp) { grp = q.group; const g = document.createElement('div'); g.className = 'qa-group'; g.textContent = grp; box.appendChild(g); }
+      const d = document.createElement('details'); d.className = 'qa';
+      const answered = q.status === 'отвечен';
+      d.innerHTML = `<summary><span class="qn">${q.n}</span><span class="qt">${q.title}</span><span class="pills"><span class="pill ${q.prio.toLowerCase()}">${q.prio}</span><span class="pill${answered ? ' ok' : ''}">${q.status}</span></span></summary>
+        <div class="qa-body">${q.body}
+          ${q.assume ? `<div class="qa-box"><span>Пока считаем</span>${q.assume}</div>` : ''}
+          <div class="qa-box${q.answer ? ' ans' : ''}"><span>Ответ</span>${q.answer || 'ещё нет'}</div></div>`;
+      box.appendChild(d);
+    });
+    const open = D.qa.filter(q => q.status !== 'отвечен').length;
+    document.getElementById('qacount').textContent = `${D.qa.length} вопросов, без ответа ${open}, из них P1: ${D.qa.filter(q => q.prio === 'P1' && q.status !== 'отвечен').length}`;
+  }
+  document.querySelectorAll('#qaf button').forEach(bn => bn.addEventListener('click', () => {
+    qaSt.p = bn.dataset.p; document.querySelectorAll('#qaf button').forEach(b => b.setAttribute('aria-pressed', String(b === bn))); drawQA();
+  }));
+  drawQA(); drawBars();
+
+  // ---------- single-shot pose (fl + fr)
+  const POSE_CFG = [['flfr', 'fl + fr'], ['flfrcl', 'fl + fr + cl'], ['5cam', '5 камер'], ['7cam', '7 камер']].filter(([k]) => D.pose[k]);
+  let P = D.pose[POSE_CFG[POSE_CFG.length - 1][0]], PN = P.t.length;
+  const ps = { gate: 0 };
+  const pOk = i => P.err[i] >= 0, pAcc = i => pOk(i) && P.inl[i] >= ps.gate;
+  const pCol = e => e <= 0.5 ? css('--good') : e <= 1 ? css('--warn') : css('--crit');
+  function pTip(i) {
+    if (!pOk(i)) return `<span class="k">t</span> ${P.t[i].toFixed(1)} с · поза не найдена`;
+    return `<span class="k">t</span> ${P.t[i].toFixed(1)} с · К${P.lap[i]} · ${P.v[i].toFixed(0)} м/с<br><span class="k">ошибка</span> <b>${P.err[i].toFixed(2)} м</b> · <span class="k">бок</span> ${P.lat[i].toFixed(2)} · <span class="k">прод</span> ${P.lon[i].toFixed(2)}<br><span class="k">курс</span> ${P.dyaw[i].toFixed(2)}° · <span class="k">совпадений</span> ${P.inl[i]}${pAcc(i) ? '' : ' · отброшено'}`;
+  }
+  function poseFacts() {
+    const acc = [...Array(PN).keys()].filter(pAcc), e = acc.map(i => P.err[i]).sort((a, b) => a - b);
+    const rms = a => Math.sqrt(a.reduce((s, v) => s + v * v, 0) / Math.max(1, a.length));
+    const med = a => a.length ? a[Math.floor(a.length / 2)] : NaN;
+    const yaw = acc.map(i => Math.abs(P.dyaw[i])).sort((a, b) => a - b);
+    const f = [[`${PN}`, `запросов, круги К${[...new Set(P.lap)].join(', К')}`],
+      [`${(100 * acc.length / PN).toFixed(0)} %`, 'поз принято'],
+      [`${med(e).toFixed(2)} м`, 'медиана ошибки'],
+      [`${rms(e).toFixed(2)} м`, 'RMSE позиции'],
+      [`${rms(acc.map(i => P.lat[i])).toFixed(2)} м`, 'RMSE боковой'],
+      [`${(100 * e.filter(v => v < 1).length / Math.max(1, e.length)).toFixed(0)} %`, 'ближе 1 м'],
+      [`${med(yaw).toFixed(2)}°`, 'медиана ошибки курса']];
+    document.getElementById('posefacts').innerHTML = f.map(([a, b]) => `<div class="fact"><b>${a}</b><span>${b}</span></div>`).join('');
+  }
+  const pmap = document.getElementById('pmap'), pg = pmap.getContext('2d'), ptip = document.getElementById('ptip');
+  let PM = {};
+  function drawPmap() {
+    const w = pmap.parentElement.clientWidth, h = Math.min(w * (by[1] - by[0]) / (bx[1] - bx[0]), 600), dpr = window.devicePixelRatio || 1;
+    pmap.width = w * dpr; pmap.height = h * dpr; pmap.style.height = h + 'px'; pg.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const k = Math.min((w - 20) / (bx[1] - bx[0]), (h - 20) / (by[1] - by[0]));
+    const ox = (w - k * (bx[1] - bx[0])) / 2 - k * bx[0], oy = (h + k * (by[1] - by[0])) / 2 + k * by[0];
+    PM = { X: x => ox + k * x, Y: y => oy - k * y };
+    pg.clearRect(0, 0, w, h);
+    for (const [name, pts] of Object.entries(D.bounds)) {
+      pg.beginPath(); pts.forEach((p, i) => i ? pg.lineTo(PM.X(p[0]), PM.Y(p[1])) : pg.moveTo(PM.X(p[0]), PM.Y(p[1])));
+      pg.setLineDash(name.startsWith('pit') ? [4, 3] : []); pg.strokeStyle = css('--axis'); pg.lineWidth = 1; pg.stroke();
+    }
+    pg.setLineDash([]);
+    const order = [...Array(PN).keys()].sort((a, b) => (pAcc(a) - pAcc(b)) || (P.err[a] - P.err[b]));
+    order.forEach(i => {
+      const x = PM.X(P.gx[i]), y = PM.Y(P.gy[i]);
+      if (!pAcc(i)) { pg.beginPath(); pg.arc(x, y, 3, 0, 2 * Math.PI); pg.strokeStyle = css('--muted'); pg.lineWidth = 1.2; pg.stroke(); return; }
+      const e = P.err[i], r = e > 1 ? 4.5 : e > 0.5 ? 3.5 : 2.4;
+      pg.beginPath(); pg.arc(x, y, r + 1.2, 0, 2 * Math.PI); pg.fillStyle = css('--surface'); pg.fill();
+      pg.beginPath(); pg.arc(x, y, r, 0, 2 * Math.PI); pg.fillStyle = pCol(e); pg.fill();
+    });
+  }
+  function nearest(list, mx, my, fx, fy, r2 = 100) {
+    let best = -1, bd = r2;
+    list.forEach(i => { const d = (fx(i) - mx) ** 2 + (fy(i) - my) ** 2; if (d < bd) { bd = d; best = i; } });
+    return best;
+  }
+  function hoverTip(tipEl, wrapW, i, x, y) {
+    if (i < 0) { tipEl.hidden = true; return; }
+    tipEl.innerHTML = pTip(i); tipEl.hidden = false;
+    tipEl.style.left = Math.max(0, Math.min(x + 12, wrapW - tipEl.offsetWidth)) + 'px';
+    tipEl.style.top = Math.max(0, y - 70) + 'px';
+  }
+  pmap.addEventListener('pointermove', e => {
+    const r = pmap.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
+    const i = nearest([...Array(PN).keys()], mx, my, i => PM.X(P.gx[i]), i => PM.Y(P.gy[i]));
+    hoverTip(ptip, pmap.clientWidth, i, mx, my);
+  });
+  pmap.addEventListener('pointerleave', () => { ptip.hidden = true; });
+
+  function scatter(svgId, wrapId, tipId, cfg) {
+    const s = document.getElementById(svgId), wr = document.getElementById(wrapId), tp = document.getElementById(tipId);
+    let S = {};
+    function draw() {
+      const W = wr.clientWidth, H = cfg.square ? Math.min(W, 300) : 230, m = { l: 40, r: 12, t: 10, b: 26 };
+      s.setAttribute('viewBox', `0 0 ${W} ${H}`); s.setAttribute('width', W); s.setAttribute('height', H); s.innerHTML = '';
+      const pw = W - m.l - m.r, ph = H - m.t - m.b;
+      const X = v => m.l + cfg.xs(v) * pw, Y = v => m.t + (1 - cfg.ys(v)) * ph;
+      S = { X, Y };
+      cfg.xt.forEach(v => { el('line', { x1: X(v), x2: X(v), y1: m.t, y2: H - m.b, stroke: v === 0 ? 'var(--axis)' : 'var(--grid)' }, s);
+        el('text', { x: X(v), y: H - 8, 'text-anchor': 'middle' }, s).textContent = v; });
+      cfg.yt.forEach(v => { el('line', { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), stroke: v === 0 ? 'var(--axis)' : 'var(--grid)' }, s);
+        el('text', { x: m.l - 6, y: Y(v) + 3.5, 'text-anchor': 'end' }, s).textContent = v; });
+      if (cfg.extra) cfg.extra(s, X, Y, m, W, H);
+      const idx = [...Array(PN).keys()].filter(pOk).sort((a, b) => (pAcc(a) - pAcc(b)) || (P.err[a] - P.err[b]));
+      idx.forEach(i => {
+        const acc = pAcc(i);
+        el('circle', { cx: X(cfg.xv(i)), cy: Y(cfg.yv(i)), r: acc ? 3.2 : 2.8, fill: acc ? pCol(P.err[i]) : 'none',
+          stroke: acc ? 'var(--surface)' : 'var(--muted)', 'stroke-width': acc ? 1 : 1.2 }, s);
+      });
+    }
+    s.addEventListener('pointermove', e => {
+      const r = s.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
+      const i = nearest([...Array(PN).keys()].filter(pOk), mx, my, i => S.X(cfg.xv(i)), i => S.Y(cfg.yv(i)), 64);
+      hoverTip(tp, wr.clientWidth, i, mx, my);
+    });
+    s.addEventListener('pointerleave', () => { tp.hidden = true; });
+    return draw;
+  }
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const drawSc1 = scatter('sc1', 'sc1wrap', 'sc1tip', {
+    square: true, xt: [-2, -1, 0, 1, 2], yt: [-2, -1, 0, 1, 2],
+    xs: v => (v + 2) / 4, ys: v => (v + 2) / 4,
+    xv: i => clamp(P.lon[i], -2, 2), yv: i => clamp(P.lat[i], -2, 2),
+    extra: (s, X, Y) => [0.5, 1].forEach(r => el('ellipse', { cx: X(0), cy: Y(0), rx: X(r) - X(0), ry: Y(0) - Y(r), fill: 'none', stroke: 'var(--axis)', 'stroke-dasharray': '3 3' }, s)),
+  });
+  const LX = v => (Math.log10(Math.max(v, 10)) - 1) / 2;
+  const drawSc2 = scatter('sc2', 'sc2wrap', 'sc2tip', {
+    xt: [10, 30, 100, 300, 1000], yt: [0, 1, 2, 3, 4],
+    xs: LX, ys: v => v / 4,
+    xv: i => P.inl[i], yv: i => clamp(P.err[i], 0, 4),
+    extra: (s, X, Y, m, W, H) => { if (ps.gate > 0) el('line', { x1: X(ps.gate), x2: X(ps.gate), y1: m.t, y2: H - m.b, stroke: 'var(--ink-2)', 'stroke-dasharray': '4 3' }, s); },
+  });
+  const gate = document.getElementById('gate');
+  gate.addEventListener('input', () => { ps.gate = +gate.value; document.getElementById('gatev').textContent = ps.gate; poseFacts(); drawPmap(); drawSc1(); drawSc2(); });
+  // examples
+  const exc = document.getElementById('exchips');
+  function showEx(k) {
+    const x = P.examples[k];
+    exc.querySelectorAll('button').forEach((b, j) => b.setAttribute('aria-pressed', String(j === k)));
+    document.getElementById('eximg').src = x.img;
+    const kv = [['запрос', `${x.t} с · К${x.lap}`], ['кадр базы', `${x.kf_t} с · К${x.kf_lap}`], ['между ними', x.kf_dist.toFixed(1) + ' м'],
+      ['скорость', x.v.toFixed(0) + ' м/с'], ['ошибка', x.err.toFixed(2) + ' м'], ['боковая', x.lat.toFixed(2) + ' м'], ['продольная', x.lon.toFixed(2) + ' м'],
+      ['курс', x.dyaw.toFixed(2) + '°'], ['совпадений в позе', x.inliers]];
+    document.getElementById('exkv').innerHTML = kv.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
+  }
+  function buildEx() {
+    exc.innerHTML = '';
+    P.examples.forEach((x, k) => { const b = document.createElement('button'); b.className = 'tog'; b.type = 'button'; b.textContent = x.name; b.addEventListener('click', () => showEx(k)); exc.appendChild(b); });
+    if (P.examples.length) showEx(0);
+  }
+  const pcfg = document.getElementById('posecfg');
+  function setPose(k) {
+    P = D.pose[k]; PN = P.t.length;
+    pcfg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.k === k)));
+    buildEx(); poseFacts(); drawPmap(); drawSc1(); drawSc2();
+  }
+  POSE_CFG.forEach(([k, lab]) => { const b = document.createElement('button'); b.className = 'tog'; b.type = 'button'; b.dataset.k = k; b.textContent = lab;
+    b.setAttribute('aria-pressed', String(D.pose[k] === P)); b.addEventListener('click', () => setPose(k)); pcfg.appendChild(b); });
+  buildEx();
+  poseFacts();
+
+  // ---------- filter
+  const F = D.filter, FCFG = [['flfr_1hz', '2 камеры, 1 с'], ['flfrcl_1hz', '3 камеры, 1 с'], ['5cam_1hz', '5 камер, 1 с'], ['7cam_1hz', '7 камер, 1 с'],
+    ['7cam_fast_p2', '7 быстро, 2 с'], ['7cam_fast_p1', '7 быстро, 1 с'], ['7cam_fast_p0.5', '7 быстро, 0.5 с']].filter(([k]) => F[k]);
+  const fs = { cfg: F['7cam_fast_p0.5'] ? '7cam_fast_p0.5' : FCFG[FCFG.length - 1][0], lap: '1', m: 'err' };
+  (function fTable() {
+    const tb = document.querySelector('#ftbl tbody'); tb.innerHTML = '';
+    const rows = [...FCFG.map(([k, lab]) => [k, 'Фильтр, ' + lab]), ['dr', 'Только скорость и yaw rate']];
+    rows.forEach(([k, lab]) => Object.entries(F[k] || {}).forEach(([lap, e]) => {
+      const mm = e.metrics, ms = e.meas;
+      const acc = ms ? `${ms.ok.reduce((a, b) => a + b, 0)} из ${ms.ok.length}` : '—';
+      const tr = document.createElement('tr'); if (k === fs.cfg) tr.className = 'sel';
+      tr.innerHTML = `<td>${lab}</td><td>К${lap}</td><td class="n">${mm.rmse.toFixed(3)}</td><td class="n">${mm.med.toFixed(2)} / ${mm.p95.toFixed(2)}</td>
+        <td class="n">${mm.lat.toFixed(3)}</td><td class="n">${mm.lon.toFixed(3)}</td><td class="n">${mm.yaw.toFixed(2)}</td><td class="n">${mm.lt1.toFixed(1)} %</td><td class="n">${acc}</td>`;
+      tb.appendChild(tr);
+    }));
+  })();
+  const fsvg = document.getElementById('fchart'), fwrap = document.getElementById('fwrap'), ftip = document.getElementById('ftip');
+  let FC = {};
+  function drawF() {
+    const e = F[fs.cfg][fs.lap], W = fwrap.clientWidth, H = 240, m = { l: 40, r: 10, t: 10, b: 46 };
+    fsvg.setAttribute('viewBox', `0 0 ${W} ${H}`); fsvg.setAttribute('width', W); fsvg.setAttribute('height', H); fsvg.innerHTML = '';
+    const t0 = e.t[0], t1 = e.t[e.t.length - 1], signed = fs.m !== 'err';
+    const lo = signed ? -1.5 : 0, hi = 1.5, ph = H - m.t - m.b;
+    const X = t => m.l + (t - t0) / (t1 - t0) * (W - m.l - m.r), Y = v => m.t + (1 - (Math.max(lo, Math.min(hi, v)) - lo) / (hi - lo)) * ph;
+    FC = { X, Y, e, m, W, H, t0, t1 };
+    (signed ? [-1.5, -1, -0.5, 0, 0.5, 1, 1.5] : [0, 0.5, 1, 1.5]).forEach(v => {
+      el('line', { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), stroke: v === 0 ? 'var(--axis)' : 'var(--grid)' }, fsvg);
+      el('text', { x: m.l - 6, y: Y(v) + 3.5, 'text-anchor': 'end' }, fsvg).textContent = v; });
+    const step = (t1 - t0) > 150 ? 20 : 10;
+    for (let t = Math.ceil(t0 / step) * step; t <= t1; t += step) el('text', { x: X(t), y: H - 6, 'text-anchor': 'middle' }, fsvg).textContent = t + ' с';
+    let d = ''; e.t.forEach((t, i) => d += (i ? 'L' : 'M') + X(t).toFixed(1) + ',' + Y(e[fs.m][i]).toFixed(1));
+    el('path', { d, fill: 'none', stroke: 'var(--accent)', 'stroke-width': 1.6, 'stroke-linejoin': 'round' }, fsvg);
+    const my = H - m.b + 14;
+    el('text', { x: m.l - 6, y: my + 3.5, 'text-anchor': 'end' }, fsvg).textContent = 'изм.';
+    if (e.meas) e.meas.t.forEach((t, i) => el('circle', { cx: X(t), cy: my, r: e.meas.ok[i] ? 2.6 : 3.4, fill: e.meas.ok[i] ? 'var(--good)' : 'var(--crit)' }, fsvg));
+    FC.cur = el('line', { y1: m.t, y2: H - m.b, stroke: 'var(--ink-2)' }, fsvg); FC.cur.style.display = 'none';
+    document.getElementById('fchart-title').textContent = { err: 'Ошибка позиции по времени, м', lat: 'Боковая ошибка по времени, м (+ влево)', lon: 'Продольная ошибка по времени, м (+ вперёд)' }[fs.m];
+  }
+  fsvg.addEventListener('pointermove', ev => {
+    const r = fsvg.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top, e = FC.e;
+    const t = FC.t0 + (mx - FC.m.l) / (FC.W - FC.m.l - FC.m.r) * (FC.t1 - FC.t0);
+    let html;
+    if (e.meas && my > FC.H - FC.m.b) {
+      let k = 0; e.meas.t.forEach((tt, i) => { if (Math.abs(tt - t) < Math.abs(e.meas.t[k] - t)) k = i; });
+      html = `<span class="k">измерение</span> ${e.meas.t[k].toFixed(1)} с · ${e.meas.ok[k] ? 'принято' : 'отброшено'}<br><span class="k">ошибка измерения</span> <b>${e.meas.err[k].toFixed(2)} м</b> · <span class="k">совпадений</span> ${e.meas.inl[k]}`;
+      FC.cur.setAttribute('x1', FC.X(e.meas.t[k])); FC.cur.setAttribute('x2', FC.X(e.meas.t[k]));
+    } else {
+      let i = 0, lo = 0, hi = e.t.length - 1; while (lo <= hi) { const md = (lo + hi) >> 1; if (e.t[md] < t) lo = md + 1; else hi = md - 1; } i = Math.min(e.t.length - 1, lo);
+      html = `<span class="k">t</span> ${e.t[i].toFixed(1)} с<br><span class="k">ошибка</span> <b>${e.err[i].toFixed(2)} м</b> · <span class="k">бок</span> ${e.lat[i].toFixed(2)} · <span class="k">прод</span> ${e.lon[i].toFixed(2)}`;
+      FC.cur.setAttribute('x1', FC.X(e.t[i])); FC.cur.setAttribute('x2', FC.X(e.t[i]));
+    }
+    FC.cur.style.display = ''; ftip.innerHTML = html; ftip.hidden = false;
+    ftip.style.left = Math.max(0, Math.min(mx + 12, FC.W - ftip.offsetWidth)) + 'px'; ftip.style.top = '12px';
+  });
+  fsvg.addEventListener('pointerleave', () => { ftip.hidden = true; if (FC.cur) FC.cur.style.display = 'none'; });
+  function chipGroup(id, items, key) {
+    const box = document.getElementById(id);
+    items.forEach(([k, lab]) => { const b = document.createElement('button'); b.className = 'tog'; b.type = 'button'; b.textContent = lab; b.dataset.k = k;
+      b.setAttribute('aria-pressed', String(fs[key] === k));
+      b.addEventListener('click', () => { fs[key] = k; box.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); drawF(); });
+      box.appendChild(b); });
+  }
+  chipGroup('fcfg', FCFG, 'cfg');
+  chipGroup('flap', Object.keys(F[fs.cfg]).map(l => [l, 'К' + l]), 'lap');
+  document.querySelectorAll('#fmet button').forEach(b => b.addEventListener('click', () => {
+    fs.m = b.dataset.m; document.querySelectorAll('#fmet button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); drawF(); }));
+
+  // ---------- DB progress in the pipeline list
+  (function dbProgress() {
+    const li = document.getElementById('dbstep'); if (!li || !D.db) return;
+    const done = D.db.done, cur = D.db.current, n = done.length;
+    const frac = (n + (cur ? cur.kf / cur.total : 0)) / 7;
+    li.querySelector('.progress i').style.width = (100 * frac).toFixed(0) + '%';
+    li.querySelector('.chip').innerHTML = `<i class="dot ${n === 7 ? 'done' : 'run'}"></i>${n} / 7`;
+    li.querySelector('.dbcams').textContent = done.map(d => `${d.cam} ${(d.points / 1e6).toFixed(2)} млн`).join(' · ') + (cur ? ` · сейчас ${cur.cam}: ${cur.kf} из ${cur.total}` : '');
+  })();
+
+  // ---------- runtime: stacked bars + accuracy vs time per frame
+  (function runtime() {
+    const SEG = [['dino_ms', 'DINOv2', '--s1'], ['superpoint_ms', 'SuperPoint', '--s2'], ['lightglue_ms', 'LightGlue', '--s3'], ['pnp_ms', 'PnP', '--s4'], ['load_ms', 'чтение кадров', '--s5']];
+    document.getElementById('slegend').innerHTML = SEG.map(([, lab, c]) => `<span><i class="swatch" style="background:var(${c})"></i>${lab}</span>`).join('');
+    const maxT = Math.max(...D.bench.map(b => b.total_ms));
+    document.getElementById('stack').innerHTML = D.bench.map((b, i) => {
+      const segs = SEG.map(([k, lab, c]) => `<i style="width:${(100 * b[k] / maxT).toFixed(2)}%;background:var(${c})" title="${lab}: ${b[k].toFixed(0)} мс"></i>`).join('');
+      const best = b.cams === 7 && b.k === 1 && b.max_kp === 512;
+      return `<div class="srow${best ? ' best' : ''}"><div class="sl"><b>${b.variant}${best ? ' · выбрано' : ''}</b><span>медиана ${b.median_m.toFixed(3)} · RMSE ${b.rmse_m.toFixed(3)} · боковая ${b.lat_rmse_m.toFixed(3)} м</span></div>
+        <div class="sbar" role="img" aria-label="${SEG.map(([k, lab]) => lab + ' ' + b[k].toFixed(0) + ' мс').join(', ')}">${segs}</div><div class="tot">${b.total_ms.toFixed(0)} мс</div></div>`;
+    }).join('') + `<details><summary class="note" style="cursor:pointer">Таблица значений, мс</summary><div class="tbl-wrap" style="margin-top:8px"><table>
+      <thead><tr><th>Вариант</th>${SEG.map(([, lab]) => `<th class="n">${lab}</th>`).join('')}<th class="n">всего</th></tr></thead><tbody>
+      ${D.bench.map(b => `<tr><td>${b.variant}</td>${SEG.map(([k]) => `<td class="n">${b[k].toFixed(0)}</td>`).join('')}<td class="n">${b.total_ms.toFixed(0)}</td></tr>`).join('')}
+      </tbody></table></div></details>`;
+  })();
+  const tsvg = document.getElementById('tochart'), twrap = document.getElementById('towrap'), ttip = document.getElementById('totip');
+  let TO = {};
+  function drawTO() {
+    const fastB = D.bench.find(b => b.cams === 7 && b.k === 1 && b.max_kp === 512), fullB = D.bench.find(b => b.cams === 7 && b.k === 3);
+    const pts = [];
+    [['7cam_fast_p2', 2], ['7cam_fast_p1', 1], ['7cam_fast_p0.5', 0.5]].forEach(([k, per]) => ['1', '5'].forEach(l => {
+      if (F[k] && F[k][l]) pts.push({ lap: l, x: fastB.total_ms / per / 10, y: F[k][l].metrics.rmse, lat: F[k][l].metrics.lat, lab: `быстро, раз в ${per} с`, fill: true, per });
+    }));
+    ['1', '5'].forEach(l => { if (F['7cam_1hz'] && F['7cam_1hz'][l]) pts.push({ lap: l, x: fullB.total_ms / 10, y: F['7cam_1hz'][l].metrics.rmse, lat: F['7cam_1hz'][l].metrics.lat, lab: 'полная, раз в 1 с', fill: false }); });
+    const W = twrap.clientWidth, H = 240, m = { l: 44, r: 16, t: 12, b: 30 };
+    tsvg.setAttribute('viewBox', `0 0 ${W} ${H}`); tsvg.setAttribute('width', W); tsvg.setAttribute('height', H); tsvg.innerHTML = '';
+    const X = v => m.l + v / 200 * (W - m.l - m.r), Y = v => m.t + (1 - v / 0.25) * (H - m.t - m.b);
+    TO = { pts, X, Y, W };
+    [0, 0.05, 0.1, 0.15, 0.2, 0.25].forEach(v => { el('line', { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), stroke: v ? 'var(--grid)' : 'var(--axis)' }, tsvg);
+      el('text', { x: m.l - 6, y: Y(v) + 3.5, 'text-anchor': 'end' }, tsvg).textContent = v.toFixed(2); });
+    [0, 50, 100, 150, 200].forEach(v => { el('text', { x: X(v), y: H - 10, 'text-anchor': 'middle' }, tsvg).textContent = v + ' мс'; });
+    el('text', { x: W - m.r, y: H - 10 - 12, 'text-anchor': 'end' }, tsvg).textContent = 'время на кадр →';
+    el('text', { x: m.l + 4, y: m.t + 10 }, tsvg).textContent = 'RMSE, м';
+    ['1', '5'].forEach((l, li) => {
+      const c = li ? 'var(--s2)' : 'var(--s1)';
+      const fp = pts.filter(p => p.lap === l && p.fill).sort((a, b) => a.x - b.x);
+      el('path', { d: fp.map((p, i) => (i ? 'L' : 'M') + X(p.x) + ',' + Y(p.y)).join(''), fill: 'none', stroke: c, 'stroke-width': 2 }, tsvg);
+      pts.filter(p => p.lap === l).forEach(p => el('circle', { cx: X(p.x), cy: Y(p.y), r: 5, fill: p.fill ? c : 'var(--surface)', stroke: p.fill ? 'var(--surface)' : c, 'stroke-width': 2 }, tsvg));
+    });
+    pts.filter(p => p.fill && p.lap === '1').forEach(p => el('text', { x: X(p.x), y: Y(Math.max(p.y, pts.find(q => q.fill && q.lap === '5' && q.per === p.per).y)) - 10, 'text-anchor': 'middle' }, tsvg).textContent = p.per + ' с');
+  }
+  tsvg.addEventListener('pointermove', e => {
+    const r = tsvg.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
+    let best = -1, bd = 400; TO.pts.forEach((p, i) => { const d = (TO.X(p.x) - mx) ** 2 + (TO.Y(p.y) - my) ** 2; if (d < bd) { bd = d; best = i; } });
+    if (best < 0) { ttip.hidden = true; return; }
+    const p = TO.pts[best];
+    ttip.innerHTML = `<b>К${p.lap}</b> · ${p.lab}<br><span class="k">RMSE</span> ${p.y.toFixed(3)} м · <span class="k">боковая</span> ${p.lat.toFixed(3)} м<br><span class="k">время на кадр</span> ${p.x.toFixed(0)} мс`;
+    ttip.hidden = false; ttip.style.left = Math.max(0, Math.min(TO.X(p.x) + 12, TO.W - ttip.offsetWidth)) + 'px'; ttip.style.top = Math.max(0, TO.Y(p.y) - 70) + 'px';
+  });
+  tsvg.addEventListener('pointerleave', () => { ttip.hidden = true; });
+
+  // ---------- validation (held-out laps)
+  (function validation() {
+    const V = D.val; if (!V) return;
+    const LAPS = Object.keys(V.laps);
+    const fastB = D.bench.find(b => b.cams === 7 && b.k === 1 && b.max_kp === 512);
+    const C = V.combined;
+    const tiles = [[C.rmse.toFixed(3) + ' м', 'RMSE позиции, К3 + К6', `в ${(0.304 / C.rmse).toFixed(1)} раза лучше ориентира README`],
+      [C.lat.toFixed(3) + ' м', 'RMSE боковой ошибки', ''], [C.yaw.toFixed(2) + '°', 'RMSE курса', ''],
+      [C.lt1.toFixed(1) + ' %', 'поз ближе 1 м', `ближе 0.5 м: ${C.lt05.toFixed(1)} %`],
+      [C.med.toFixed(3) + ' / ' + C.p95.toFixed(2), 'медиана / p95, м', ''],
+      [Math.round(fastB.total_ms / 0.5 / 10) + ' мс', 'на кадр, по замеру времени', 'коррекция раз в 0.5 с']];
+    document.getElementById('vtiles').innerHTML = tiles.map(([a, b, c]) => `<div class="vtile"><b>${a}</b><span>${b}</span>${c ? `<em>${c}</em>` : ''}</div>`).join('');
+    document.getElementById('vfrozen').textContent = V.frozen;
+    const row = (lab, m, sel) => `<tr${sel ? ' class="sel"' : ''}><td>${lab}</td><td class="n">${m.n ?? '—'}</td><td class="n">${m.rmse.toFixed(3)}</td><td class="n">${m.med.toFixed(2)} / ${m.p95.toFixed(2)}</td>
+      <td class="n">${m.lat.toFixed(3)}</td><td class="n">${m.lon.toFixed(3)}</td><td class="n">${m.yaw.toFixed(2)}</td>
+      <td class="n">${m.lt025 != null ? m.lt025.toFixed(1) + ' %' : '—'}</td><td class="n">${m.lt05 != null ? m.lt05.toFixed(1) + ' %' : '—'}</td><td class="n">${m.lt1.toFixed(1)} %</td><td class="n">${m.cov != null ? m.cov.toFixed(0) + ' %' : '—'}</td></tr>`;
+    let rows = LAPS.map(l => row(`Валидация, К${l}`, V.laps[l].metrics, true)).join('') + row('Валидация, оба круга', C, true);
+    const dev = F['7cam_fast_p0.5'];
+    if (dev) rows += Object.entries(dev).map(([l, e]) => row(`Разработка, К${l}, та же настройка`, e.metrics, false)).join('');
+    if (D.val_dr) rows += Object.entries(D.val_dr).map(([l, m]) => row(`Только скорость и yaw rate, К${l}`, m, false)).join('');
+    rows += row('Ориентир README: GT + шум 0.3 м и 1°', { rmse: 0.304, med: 0.211, p95: 0.591, lat: 0.300, lon: 0.049, yaw: 1.007, lt025: 58.5, lt05: 90.5, lt1: 99.9, cov: 100 }, false);
+    document.querySelector('#vtbl tbody').innerHTML = rows;
+
+    const vs = { lap: LAPS[0], amp: 20, m: 'err', idx: 0, k: 1, cx: 0, cy: 0 };
+    const cv = document.getElementById('vmap'), g = cv.getContext('2d');
+    let W = 0, H = 0;
+    const L = () => V.laps[vs.lap];
+    const binc = e => e <= 0.25 ? css('--good') : e <= 0.5 ? css('--warn') : css('--crit');
+    function fit() {
+      W = cv.parentElement.clientWidth; H = Math.min(Math.round(W * 1.1), 640);
+      const dpr = window.devicePixelRatio || 1; cv.width = W * dpr; cv.height = H * dpr; cv.style.height = H + 'px'; g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    function reset() {
+      vs.cx = (bx[0] + bx[1]) / 2; vs.cy = (by[0] + by[1]) / 2;
+      vs.k = Math.min((W - 20) / (bx[1] - bx[0]), (H - 20) / (by[1] - by[0]));
+    }
+    const SX = x => W / 2 + vs.k * (x - vs.cx), SY = y => H / 2 - vs.k * (y - vs.cy);
+    const AX = (e, i) => e.gx[i] + vs.amp * (e.x[i] - e.gx[i]), AY = (e, i) => e.gy[i] + vs.amp * (e.y[i] - e.gy[i]);
+    function draw() {
+      g.clearRect(0, 0, W, H);
+      g.fillStyle = css('--bg'); g.fillRect(0, 0, W, H);
+      for (const [name, pts] of Object.entries(D.bounds)) {
+        g.beginPath(); pts.forEach((p, i) => i ? g.lineTo(SX(p[0]), SY(p[1])) : g.moveTo(SX(p[0]), SY(p[1])));
+        g.setLineDash(name.startsWith('pit') ? [4, 3] : []); g.strokeStyle = css('--axis'); g.lineWidth = 1; g.stroke();
+      }
+      g.setLineDash([]);
+      const e = L(), n = e.t.length;
+      g.beginPath(); for (let i = 0; i < n; i++) i ? g.lineTo(SX(e.gx[i]), SY(e.gy[i])) : g.moveTo(SX(e.gx[i]), SY(e.gy[i]));
+      g.strokeStyle = css('--ink'); g.lineWidth = 1.4; g.stroke();
+      g.lineWidth = 2.6; g.lineCap = 'round';
+      for (let i = 1; i < n; i++) { g.beginPath(); g.moveTo(SX(AX(e, i - 1)), SY(AY(e, i - 1))); g.lineTo(SX(AX(e, i)), SY(AY(e, i))); g.strokeStyle = binc(e.err[i]); g.stroke(); }
+      const i = vs.idx;
+      g.beginPath(); g.arc(SX(e.gx[i]), SY(e.gy[i]), 7, 0, 2 * Math.PI); g.strokeStyle = css('--ink'); g.lineWidth = 2; g.stroke();
+      g.beginPath(); g.arc(SX(AX(e, i)), SY(AY(e, i)), 4.5, 0, 2 * Math.PI); g.fillStyle = binc(e.err[i]); g.fill();
+      // scale bar
+      const meters = [1, 2, 5, 10, 20, 50, 100, 200, 500].find(m => m * vs.k > 60) || 500;
+      g.fillStyle = css('--ink-2'); g.fillRect(12, H - 16, meters * vs.k, 3);
+      g.font = '11px "IBM Plex Mono", monospace'; g.fillText(meters + ' м' + (vs.amp > 1 ? `  ·  отклонение ×${vs.amp}` : ''), 12, H - 22);
+    }
+    function readout() {
+      const e = L(), i = vs.idx;
+      const kv = [['время', e.t[i].toFixed(1) + ' с'], ['круг', 'К' + vs.lap], ['скорость', e.v[i].toFixed(0) + ' м/с'], ['ошибка', e.err[i].toFixed(3) + ' м'],
+        ['боковая', (e.lat[i] > 0 ? '+' : '') + e.lat[i].toFixed(3) + ' м'], ['продольная', (e.lon[i] > 0 ? '+' : '') + e.lon[i].toFixed(3) + ' м'], ['курс', e.dyaw[i].toFixed(3) + '°']];
+      document.getElementById('vread').innerHTML = kv.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
+    }
+    function setIdx(i) { vs.idx = i; draw(); readout(); placeVC(); }
+    function zoomAt(f, sx, sy) {
+      const x = vs.cx + (sx - W / 2) / vs.k, y = vs.cy - (sy - H / 2) / vs.k;
+      vs.k = Math.max(0.2, Math.min(4000, vs.k * f));
+      vs.cx = x - (sx - W / 2) / vs.k; vs.cy = y + (sy - H / 2) / vs.k; draw();
+    }
+    cv.addEventListener('wheel', ev => { ev.preventDefault(); const r = cv.getBoundingClientRect(); zoomAt(ev.deltaY < 0 ? 1.25 : 0.8, ev.clientX - r.left, ev.clientY - r.top); }, { passive: false });
+    let drag = null;
+    cv.addEventListener('pointerdown', ev => { drag = { x: ev.clientX, y: ev.clientY, cx: vs.cx, cy: vs.cy }; cv.classList.add('drag'); cv.setPointerCapture(ev.pointerId); });
+    cv.addEventListener('pointerup', ev => { drag = null; cv.classList.remove('drag'); });
+    cv.addEventListener('pointermove', ev => {
+      if (drag) { vs.cx = drag.cx - (ev.clientX - drag.x) / vs.k; vs.cy = drag.cy + (ev.clientY - drag.y) / vs.k; draw(); return; }
+      const r = cv.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top, e = L();
+      let best = -1, bd = 196; for (let i = 0; i < e.t.length; i++) { const d = (SX(e.gx[i]) - mx) ** 2 + (SY(e.gy[i]) - my) ** 2; if (d < bd) { bd = d; best = i; } }
+      if (best >= 0) setIdx(best);
+    });
+    document.getElementById('vzin').addEventListener('click', () => zoomAt(1.6, W / 2, H / 2));
+    document.getElementById('vzout').addEventListener('click', () => zoomAt(1 / 1.6, W / 2, H / 2));
+    document.getElementById('vzreset').addEventListener('click', () => { reset(); draw(); });
+    function focus(i) { const e = L(); vs.cx = e.gx[i]; vs.cy = e.gy[i]; vs.k = Math.min(W, H) / 80; setIdx(i); }
+
+    // error over time
+    const vsvg = document.getElementById('vchart'), vw = document.getElementById('vcwrap'), vtip = document.getElementById('vctip');
+    let VC = {};
+    function drawVC() {
+      const e = L(), Wc = vw.clientWidth, Hc = 220, m = { l: 40, r: 10, t: 10, b: 44 };
+      vsvg.setAttribute('viewBox', `0 0 ${Wc} ${Hc}`); vsvg.setAttribute('width', Wc); vsvg.setAttribute('height', Hc); vsvg.innerHTML = '';
+      const signed = vs.m !== 'err', lo = signed ? -0.5 : 0, hi = 0.5, t0 = e.t[0], t1 = e.t[e.t.length - 1];
+      const X = t => m.l + (t - t0) / (t1 - t0) * (Wc - m.l - m.r), Y = v => m.t + (1 - (Math.max(lo, Math.min(hi, v)) - lo) / (hi - lo)) * (Hc - m.t - m.b);
+      VC = { X, Y, m, Wc, Hc, t0, t1 };
+      (signed ? [-0.5, -0.25, 0, 0.25, 0.5] : [0, 0.25, 0.5]).forEach(v => { el('line', { x1: m.l, x2: Wc - m.r, y1: Y(v), y2: Y(v), stroke: v === 0 ? 'var(--axis)' : 'var(--grid)' }, vsvg);
+        el('text', { x: m.l - 6, y: Y(v) + 3.5, 'text-anchor': 'end' }, vsvg).textContent = v; });
+      for (let t = Math.ceil(t0 / 20) * 20; t <= t1; t += 20) el('text', { x: X(t), y: Hc - 6, 'text-anchor': 'middle' }, vsvg).textContent = t + ' с';
+      let d = ''; e.t.forEach((t, i) => d += (i ? 'L' : 'M') + X(t).toFixed(1) + ',' + Y(e[vs.m][i]).toFixed(1));
+      el('path', { d, fill: 'none', stroke: 'var(--accent)', 'stroke-width': 1.5, 'stroke-linejoin': 'round' }, vsvg);
+      const my = Hc - m.b + 14;
+      el('text', { x: m.l - 6, y: my + 3.5, 'text-anchor': 'end' }, vsvg).textContent = 'изм.';
+      e.meas.t.forEach((t, i) => el('circle', { cx: X(t), cy: my, r: e.meas.ok[i] ? 2.2 : 3.4, fill: e.meas.ok[i] ? 'var(--good)' : 'var(--crit)' }, vsvg));
+      VC.cur = el('line', { y1: m.t, y2: Hc - m.b, stroke: 'var(--ink-2)' }, vsvg);
+      document.getElementById('vchart-title').textContent = { err: 'Ошибка позиции по времени, м', lat: 'Боковая ошибка, м (+ влево)', lon: 'Продольная ошибка, м (+ вперёд)' }[vs.m] + ' · значения за ±0.5 м прижаты к краю';
+      placeVC();
+    }
+    function placeVC() { if (!VC.cur) return; const x = VC.X(L().t[vs.idx]); VC.cur.setAttribute('x1', x); VC.cur.setAttribute('x2', x); }
+    function idxAt(ev) { const r = vsvg.getBoundingClientRect(), t = VC.t0 + (ev.clientX - r.left - VC.m.l) / (VC.Wc - VC.m.l - VC.m.r) * (VC.t1 - VC.t0), e = L();
+      let lo = 0, hi = e.t.length - 1; while (lo < hi) { const md = (lo + hi) >> 1; if (e.t[md] < t) lo = md + 1; else hi = md; } return lo; }
+    vsvg.addEventListener('pointermove', ev => {
+      const i = idxAt(ev), e = L(); setIdx(i);
+      vtip.innerHTML = `<span class="k">t</span> ${e.t[i].toFixed(1)} с · ${e.v[i].toFixed(0)} м/с<br><span class="k">ошибка</span> <b>${e.err[i].toFixed(3)} м</b> · <span class="k">бок</span> ${e.lat[i].toFixed(3)} · <span class="k">прод</span> ${e.lon[i].toFixed(3)}`;
+      vtip.hidden = false; vtip.style.left = Math.max(0, Math.min(VC.X(e.t[i]) + 12, VC.Wc - vtip.offsetWidth)) + 'px'; vtip.style.top = '10px';
+    });
+    vsvg.addEventListener('pointerleave', () => { vtip.hidden = true; });
+    vsvg.addEventListener('click', ev => focus(idxAt(ev)));
+
+    // CDF
+    const csvg = document.getElementById('vcdf'), cw = document.getElementById('vcdfwrap'), ctip = document.getElementById('vcdftip');
+    let CC = {};
+    function drawCDF() {
+      const Wc = cw.clientWidth, Hc = 200, m = { l: 40, r: 12, t: 10, b: 26 };
+      csvg.setAttribute('viewBox', `0 0 ${Wc} ${Hc}`); csvg.setAttribute('width', Wc); csvg.setAttribute('height', Hc); csvg.innerHTML = '';
+      const X = v => m.l + Math.min(v, 1) / 1 * (Wc - m.l - m.r), Y = p => m.t + (1 - p / 100) * (Hc - m.t - m.b);
+      CC = { X, Y, m, Wc };
+      [0, 25, 50, 75, 100].forEach(p => { el('line', { x1: m.l, x2: Wc - m.r, y1: Y(p), y2: Y(p), stroke: p ? 'var(--grid)' : 'var(--axis)' }, csvg);
+        el('text', { x: m.l - 6, y: Y(p) + 3.5, 'text-anchor': 'end' }, csvg).textContent = p + '%'; });
+      [0, 0.25, 0.5, 0.75, 1].forEach(v => { el('line', { x1: X(v), x2: X(v), y1: m.t, y2: Hc - m.b, stroke: 'var(--grid)', 'stroke-dasharray': v ? '2 3' : '' }, csvg);
+        el('text', { x: X(v), y: Hc - 8, 'text-anchor': 'middle' }, csvg).textContent = v + ' м'; });
+      LAPS.forEach((l, li) => { const c = V.laps[l].cdf; let d = ''; c.forEach((v, p) => d += (p ? 'L' : 'M') + X(v).toFixed(1) + ',' + Y(p).toFixed(1));
+        el('path', { d, fill: 'none', stroke: li ? 'var(--s2)' : 'var(--s1)', 'stroke-width': 2 }, csvg); });
+    }
+    csvg.addEventListener('pointermove', ev => {
+      const r = csvg.getBoundingClientRect(), v = Math.max(0, (ev.clientX - r.left - CC.m.l) / (CC.Wc - CC.m.l - CC.m.r));
+      const pct = l => { const c = V.laps[l].cdf; let p = 0; while (p < 100 && c[p] <= v) p++; return p; };
+      ctip.innerHTML = `<span class="k">ошибка до</span> <b>${v.toFixed(2)} м</b><br>` + LAPS.map(l => `К${l}: ${pct(l)} % поз`).join(' · ');
+      ctip.hidden = false; ctip.style.left = Math.max(0, Math.min(CC.X(v) + 12, CC.Wc - ctip.offsetWidth)) + 'px'; ctip.style.top = '10px';
+    });
+    csvg.addEventListener('pointerleave', () => { ctip.hidden = true; });
+
+    // frames
+    const fr = []; LAPS.forEach(l => V.laps[l].frames.forEach(f => fr.push({ ...f, lap: l })));
+    const fbox = document.getElementById('vframes');
+    function showF(k) {
+      const f = fr[k]; fbox.querySelectorAll('button').forEach((b, j) => b.setAttribute('aria-pressed', String(j === k)));
+      document.getElementById('vimg').src = f.img;
+      document.getElementById('vimgkv').innerHTML = [['круг', 'К' + f.lap], ['время', f.t + ' с'], ['скорость', f.v.toFixed(0) + ' м/с'], ['ошибка', f.err.toFixed(3) + ' м'],
+        ['боковая', f.lat.toFixed(3) + ' м'], ['продольная', f.lon.toFixed(3) + ' м'], ['курс', f.dyaw.toFixed(3) + '°']].map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
+    }
+    fr.forEach((f, k) => { const b = document.createElement('button'); b.className = 'tog'; b.type = 'button'; b.textContent = `К${f.lap} · ${f.name}`; b.addEventListener('click', () => showF(k)); fbox.appendChild(b); });
+    if (fr.length) showF(0);
+
+    // controls
+    const lb = document.getElementById('vlap');
+    LAPS.forEach(l => { const b = document.createElement('button'); b.className = 'tog'; b.type = 'button'; b.textContent = 'К' + l; b.setAttribute('aria-pressed', String(l === vs.lap));
+      b.addEventListener('click', () => { vs.lap = l; vs.idx = 0; lb.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); draw(); readout(); drawVC(); }); lb.appendChild(b); });
+    document.querySelectorAll('#vamp button').forEach(b => b.addEventListener('click', () => { vs.amp = +b.dataset.a; document.querySelectorAll('#vamp button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); draw(); }));
+    document.querySelectorAll('#vmet button').forEach(b => b.addEventListener('click', () => { vs.m = b.dataset.m; document.querySelectorAll('#vmet button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); drawVC(); }));
+    window.__valFull = () => { const keep = W && vs.k; fit(); if (!keep) reset(); draw(); readout(); drawVC(); drawCDF(); };
+  })();
+
+  // ---------- boot + theme
+  function full() { if (window.__valFull) window.__valFull(); drawTO(); drawF(); loadRamp(); drawRamp(); sizeMap(); syncSlider(); readout(); drawMap(); drawChart(); drawDrift(); drawRmap(); drawPmap(); drawSc1(); drawSc2(); }
+  full(); renderCam();
+  let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(full, 120); });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', full);
+  new MutationObserver(full).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+})();
+</script>

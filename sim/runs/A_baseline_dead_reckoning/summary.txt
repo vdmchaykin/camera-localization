@@ -1,0 +1,20 @@
+== A_baseline_dead_reckoning
+poses 11942 / sets 11942, dropped 0, evaluated 11942
+pos RMSE 65.446 m  (median 41.337, p95 133.553)  lat RMSE 50.468  lon RMSE 41.667  yaw RMSE 8.648 deg  <1 m 2.5 %
+worst moments:
+  t= 1158.0 s K8  v= 14.2 m/s  pos 181.00  lat +32.57  lon -178.04  yaw -16.44 deg
+  t= 1153.0 s K8  v= 19.2 m/s  pos 163.74  lat -149.29  lon -67.27  yaw -15.83 deg
+  t= 1163.0 s K8  v= 15.9 m/s  pos 161.55  lat +157.68  lon +35.12  yaw -16.52 deg
+  t= 1046.5 s K7  v= 12.3 m/s  pos 157.12  lat +26.15  lon -154.93  yaw -14.40 deg
+  t= 1109.9 s K7  v= 18.4 m/s  pos 156.41  lat +13.59  lon -155.81  yaw -15.72 deg
+evaluate.py (GT window of this run):
+poses submitted        11942   evaluated 11942
+coverage (1 s bins)    100.0 %   (>= 90 % to be ranked)
+position RMSE  [m]     65.446   <- SCORE (lower is better)
+position median/p95    41.337 / 133.553
+lateral RMSE   [m]     50.468
+longitudinal RMSE [m]  41.667
+yaw RMSE     [deg]     8.648
+within 0.25 m          0.5 %
+within 0.50 m          0.6 %
+within 1.00 m          2.5 %

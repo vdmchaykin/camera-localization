@@ -1,0 +1,73 @@
+{
+ "label": "v2_nostate",
+ "spec": "v2/my_loc_v2.py:Localizer",
+ "live": true,
+ "car_state": false,
+ "poses": 200,
+ "sets": 200,
+ "dropped": 0,
+ "pos_rmse": 18.861454577751434,
+ "lat_rmse": 11.283747051805149,
+ "lon_rmse": 15.113951212686217,
+ "yaw_rmse_deg": 17.057930491935174,
+ "within_025": 4.0,
+ "within_1m": 17.5,
+ "evaluate": "poses submitted        200   evaluated 200\ncoverage (1 s bins)    95.2 %   (>= 90 % to be ranked)\nposition RMSE  [m]     18.861   <- SCORE (lower is better)\nposition median/p95    8.054 / 40.947\nlateral RMSE   [m]     11.284\nlongitudinal RMSE [m]  15.114\nyaw RMSE     [deg]     17.058\nwithin 0.25 m          4.0 %\nwithin 0.50 m          8.0 %\nwithin 1.00 m          17.5 %\n",
+ "step_ms_mean": 0.6667351099349617,
+ "step_ms_p95": 3.073417250016064,
+ "step_ms_max": 9.310632998676738,
+ "localizer_stats": {
+  "mode": "async",
+  "car_state": false,
+  "init_s": 4.4,
+  "map_keyframes_allowed": 4300,
+  "relocalizations": 15,
+  "reloc_ms_mean": 1272.1,
+  "reloc_ms_p95": 1578.3,
+  "fuse_delay_ms_mean": 1421.4,
+  "measurements": 14,
+  "failed": 0,
+  "accepted": 14,
+  "rejected": 0,
+  "recovered": 0,
+  "flags": {
+   "guided": true,
+   "batch": true,
+   "calib": true,
+   "corner": true
+  },
+  "guided": 1,
+  "guided_fail": 0,
+  "guided_ms_mean": 462.6,
+  "guided_ms_p95": 462.6,
+  "guided_inliers_median": 953,
+  "global_": 13,
+  "global_ms_mean": 1425.3
+ },
+ "worst": [
+  {
+   "t_s": 682.0,
+   "lap": "K4",
+   "pos": 70.681,
+   "lat": 0.059,
+   "lon": -70.681,
+   "dyaw_deg": -0.384
+  },
+  {
+   "t_s": 698.4,
+   "lap": "K4",
+   "pos": 43.351,
+   "lat": -39.884,
+   "lon": -16.986,
+   "dyaw_deg": -45.806
+  },
+  {
+   "t_s": 689.2,
+   "lap": "K4",
+   "pos": 40.873,
+   "lat": -40.507,
+   "lon": 5.464,
+   "dyaw_deg": -47.634
+  }
+ ]
+}

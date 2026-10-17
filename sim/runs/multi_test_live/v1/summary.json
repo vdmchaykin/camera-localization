@@ -1,0 +1,60 @@
+{
+ "label": "v1",
+ "spec": "sim/my_loc.py:Localizer",
+ "live": true,
+ "car_state": true,
+ "poses": 200,
+ "sets": 200,
+ "dropped": 0,
+ "pos_rmse": 0.4362199307416265,
+ "lat_rmse": 0.31995829829272665,
+ "lon_rmse": 0.2965038200931853,
+ "yaw_rmse_deg": 0.1958670850234005,
+ "within_025": 37.0,
+ "within_1m": 100.0,
+ "evaluate": "poses submitted        200   evaluated 200\ncoverage (1 s bins)    95.2 %   (>= 90 % to be ranked)\nposition RMSE  [m]     0.436   <- SCORE (lower is better)\nposition median/p95    0.391 / 0.740\nlateral RMSE   [m]     0.320\nlongitudinal RMSE [m]  0.297\nyaw RMSE     [deg]     0.196\nwithin 0.25 m          37.0 %\nwithin 0.50 m          65.5 %\nwithin 1.00 m          100.0 %\n",
+ "step_ms_mean": 1.9928554302532575,
+ "step_ms_p95": 9.600217949446233,
+ "step_ms_max": 23.026817001664313,
+ "localizer_stats": {
+  "mode": "async",
+  "car_state": true,
+  "init_s": 5.3,
+  "map_keyframes_allowed": 4300,
+  "relocalizations": 13,
+  "reloc_ms_mean": 1477.9,
+  "reloc_ms_p95": 1591.2,
+  "fuse_delay_ms_mean": 1541.7,
+  "measurements": 12,
+  "failed": 0,
+  "accepted": 12,
+  "rejected": 0,
+  "recovered": 0
+ },
+ "worst": [
+  {
+   "t_s": 695.1,
+   "lap": "K4",
+   "pos": 0.871,
+   "lat": 0.504,
+   "lon": -0.71,
+   "dyaw_deg": 0.254
+  },
+  {
+   "t_s": 690.1,
+   "lap": "K4",
+   "pos": 0.536,
+   "lat": -0.482,
+   "lon": -0.235,
+   "dyaw_deg": -0.344
+  },
+  {
+   "t_s": 682.8,
+   "lap": "K4",
+   "pos": 0.41,
+   "lat": -0.14,
+   "lon": -0.385,
+   "dyaw_deg": -0.05
+  }
+ ]
+}

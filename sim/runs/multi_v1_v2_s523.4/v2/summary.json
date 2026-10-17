@@ -1,0 +1,89 @@
+{
+ "label": "v2",
+ "spec": "v2/my_loc_v2.py:Localizer",
+ "live": true,
+ "car_state": true,
+ "poses": 1106,
+ "sets": 1106,
+ "dropped": 0,
+ "pos_rmse": 0.10772675717587467,
+ "lat_rmse": 0.052754312681117486,
+ "lon_rmse": 0.09392569778911812,
+ "yaw_rmse_deg": 0.05560470896937182,
+ "within_025": 98.55334538878843,
+ "within_1m": 100.0,
+ "evaluate": "poses submitted        1106   evaluated 1106\ncoverage (1 s bins)    100.0 %   (>= 90 % to be ranked)\nposition RMSE  [m]     0.108   <- SCORE (lower is better)\nposition median/p95    0.087 / 0.180\nlateral RMSE   [m]     0.053\nlongitudinal RMSE [m]  0.094\nyaw RMSE     [deg]     0.056\nwithin 0.25 m          98.6 %\nwithin 0.50 m          100.0 %\nwithin 1.00 m          100.0 %\n",
+ "step_ms_mean": 2.2982648227003946,
+ "step_ms_p95": 7.124873000066145,
+ "step_ms_max": 12.531816995760892,
+ "localizer_stats": {
+  "mode": "async",
+  "car_state": true,
+  "init_s": 4.3,
+  "map_keyframes_allowed": 4300,
+  "relocalizations": 337,
+  "reloc_ms_mean": 255.2,
+  "reloc_ms_p95": 479.3,
+  "fuse_delay_ms_mean": 310.8,
+  "measurements": 335,
+  "failed": 0,
+  "accepted": 335,
+  "rejected": 0,
+  "recovered": 0,
+  "flags": {
+   "guided": true,
+   "batch": true,
+   "calib": true,
+   "corner": true
+  },
+  "guided": 336,
+  "guided_fail": 0,
+  "guided_ms_mean": 255.7,
+  "guided_ms_p95": 479.4,
+  "guided_inliers_median": 715,
+  "global_": 0,
+  "global_ms_mean": NaN
+ },
+ "worst": [
+  {
+   "t_s": 629.7,
+   "lap": "K3",
+   "pos": 0.355,
+   "lat": 0.056,
+   "lon": -0.351,
+   "dyaw_deg": 0.023
+  },
+  {
+   "t_s": 525.0,
+   "lap": "K3",
+   "pos": 0.213,
+   "lat": -0.024,
+   "lon": -0.211,
+   "dyaw_deg": -0.024
+  },
+  {
+   "t_s": 598.7,
+   "lap": "K3",
+   "pos": 0.205,
+   "lat": -0.179,
+   "lon": 0.1,
+   "dyaw_deg": -0.125
+  },
+  {
+   "t_s": 593.7,
+   "lap": "K3",
+   "pos": 0.202,
+   "lat": 0.111,
+   "lon": -0.169,
+   "dyaw_deg": 0.083
+  },
+  {
+   "t_s": 610.8,
+   "lap": "K3",
+   "pos": 0.202,
+   "lat": -0.196,
+   "lon": -0.048,
+   "dyaw_deg": -0.082
+  }
+ ]
+}

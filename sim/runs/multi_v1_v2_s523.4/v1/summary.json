@@ -1,0 +1,76 @@
+{
+ "label": "v1",
+ "spec": "sim/my_loc.py:Localizer",
+ "live": true,
+ "car_state": true,
+ "poses": 1106,
+ "sets": 1106,
+ "dropped": 0,
+ "pos_rmse": 0.2520257607787725,
+ "lat_rmse": 0.1771962157452779,
+ "lon_rmse": 0.1792163084701612,
+ "yaw_rmse_deg": 0.12861170349670834,
+ "within_025": 66.90777576853526,
+ "within_1m": 100.0,
+ "evaluate": "poses submitted        1106   evaluated 1106\ncoverage (1 s bins)    100.0 %   (>= 90 % to be ranked)\nposition RMSE  [m]     0.252   <- SCORE (lower is better)\nposition median/p95    0.167 / 0.495\nlateral RMSE   [m]     0.177\nlongitudinal RMSE [m]  0.179\nyaw RMSE     [deg]     0.129\nwithin 0.25 m          66.9 %\nwithin 0.50 m          95.1 %\nwithin 1.00 m          100.0 %\n",
+ "step_ms_mean": 2.4244850224392276,
+ "step_ms_p95": 12.028139250105596,
+ "step_ms_max": 21.766090001619887,
+ "localizer_stats": {
+  "mode": "async",
+  "car_state": true,
+  "init_s": 5.1,
+  "map_keyframes_allowed": 4300,
+  "relocalizations": 110,
+  "reloc_ms_mean": 945.8,
+  "reloc_ms_p95": 1128.5,
+  "fuse_delay_ms_mean": 1008.3,
+  "measurements": 109,
+  "failed": 0,
+  "accepted": 109,
+  "rejected": 0,
+  "recovered": 0
+ },
+ "worst": [
+  {
+   "t_s": 569.4,
+   "lap": "K3",
+   "pos": 0.708,
+   "lat": 0.546,
+   "lon": -0.45,
+   "dyaw_deg": 0.58
+  },
+  {
+   "t_s": 629.7,
+   "lap": "K3",
+   "pos": 0.661,
+   "lat": 0.185,
+   "lon": -0.634,
+   "dyaw_deg": 0.166
+  },
+  {
+   "t_s": 603.7,
+   "lap": "K3",
+   "pos": 0.655,
+   "lat": 0.6,
+   "lon": -0.263,
+   "dyaw_deg": 0.366
+  },
+  {
+   "t_s": 611.4,
+   "lap": "K3",
+   "pos": 0.607,
+   "lat": -0.604,
+   "lon": -0.056,
+   "dyaw_deg": -0.294
+  },
+  {
+   "t_s": 594.8,
+   "lap": "K3",
+   "pos": 0.588,
+   "lat": 0.436,
+   "lon": -0.394,
+   "dyaw_deg": 0.272
+  }
+ ]
+}

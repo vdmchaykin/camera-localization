@@ -1,0 +1,76 @@
+{
+ "tag": "A_filter_val_final_lap6",
+ "mode": "A",
+ "localizer": "results/filter_val_final_lap6.csv",
+ "speed": 0.0,
+ "state": null,
+ "window_s": [
+  896.173777151,
+  1007.685208722
+ ],
+ "sets_in_window": 1115,
+ "poses": 1115,
+ "dropped": 0,
+ "evaluated": 1115,
+ "pos_rmse": 0.1311922104326492,
+ "lat_rmse": 0.06202677543948678,
+ "lon_rmse": 0.11560309341355873,
+ "yaw_rmse_deg": 0.07017904287016818,
+ "pos_median": 0.09270745677200772,
+ "pos_p95": 0.2518703582359272,
+ "within_1m": 100.0,
+ "init_s": 3.2139978429768234e-06,
+ "worst": [
+  {
+   "t_s": 932.1,
+   "lap": "K6",
+   "stamp": 1791919089189052559,
+   "v_mps": 23.5,
+   "pos": 0.361,
+   "lat": 0.017,
+   "lon": -0.361,
+   "dyaw_deg": -0.05
+  },
+  {
+   "t_s": 937.6,
+   "lap": "K6",
+   "stamp": 1791919094689135329,
+   "v_mps": 15.7,
+   "pos": 0.337,
+   "lat": -0.278,
+   "lon": -0.191,
+   "dyaw_deg": -0.239
+  },
+  {
+   "t_s": 926.6,
+   "lap": "K6",
+   "stamp": 1791919083688969159,
+   "v_mps": 0.1,
+   "pos": 0.331,
+   "lat": 0.039,
+   "lon": 0.329,
+   "dyaw_deg": 0.091
+  },
+  {
+   "t_s": 1003.1,
+   "lap": "K6",
+   "stamp": 1791919160189963204,
+   "v_mps": 31.6,
+   "pos": 0.312,
+   "lat": 0.062,
+   "lon": -0.306,
+   "dyaw_deg": 0.056
+  },
+  {
+   "t_s": 995.6,
+   "lap": "K6",
+   "stamp": 1791919152689878801,
+   "v_mps": 17.0,
+   "pos": 0.259,
+   "lat": -0.251,
+   "lon": -0.064,
+   "dyaw_deg": -0.046
+  }
+ ],
+ "evaluate": "poses submitted        1115   evaluated 1115\ncoverage (1 s bins)    100.0 %   (>= 90 % to be ranked)\nposition RMSE  [m]     0.131   <- SCORE (lower is better)\nposition median/p95    0.093 / 0.252\nlateral RMSE   [m]     0.062\nlongitudinal RMSE [m]  0.116\nyaw RMSE     [deg]     0.070\nwithin 0.25 m          94.5 %\nwithin 0.50 m          100.0 %\nwithin 1.00 m          100.0 %\n"
+}

@@ -1,0 +1,6 @@
+Frozen before looking at held-out laps K3, K6 (2026-10-17 00:50):
+  localization: 7 cameras, k=1 map candidate, SuperPoint max 512 keypoints, LightGlue, PnP-RANSAC + multi-camera refinement
+  corrections: every 5th camera set (0.5 s)
+  filter: track_filter.TrackEKF as of this time (Q_POS_T 0.10, Q_POS_D 0.010, Q_YAW_T 0.004, R 0.12/0.30 m, 0.30 deg,
+          MIN_SCALE 0.7, gate chi2 16, min 30 inliers, recovery rule)
+  map: keyframes every 4 m, K3 and K6 excluded (VAL_LAPS)

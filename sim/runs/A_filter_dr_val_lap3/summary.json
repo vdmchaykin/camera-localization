@@ -1,0 +1,76 @@
+{
+ "tag": "A_filter_dr_val_lap3",
+ "mode": "A",
+ "localizer": "results/filter_dr_val_lap3.csv",
+ "speed": 0.0,
+ "state": null,
+ "window_s": [
+  523.468989283,
+  633.980398458
+ ],
+ "sets_in_window": 1105,
+ "poses": 1105,
+ "dropped": 0,
+ "evaluated": 1105,
+ "pos_rmse": 6.97964974376856,
+ "lat_rmse": 5.521272697888739,
+ "lon_rmse": 4.269784343645112,
+ "yaw_rmse_deg": 0.871974690892065,
+ "pos_median": 3.24175518672503,
+ "pos_p95": 15.979418302546279,
+ "within_1m": 8.959276018099548,
+ "init_s": 2.4479995772708207e-06,
+ "worst": [
+  {
+   "t_s": 623.9,
+   "lap": "K3",
+   "stamp": 1791918780985098798,
+   "v_mps": 17.1,
+   "pos": 16.674,
+   "lat": 2.165,
+   "lon": -16.532,
+   "dyaw_deg": -1.68
+  },
+  {
+   "t_s": 618.9,
+   "lap": "K3",
+   "stamp": 1791918775985039650,
+   "v_mps": 30.5,
+   "pos": 14.99,
+   "lat": -14.347,
+   "lon": -4.343,
+   "dyaw_deg": -1.336
+  },
+  {
+   "t_s": 628.9,
+   "lap": "K3",
+   "stamp": 1791918785985157889,
+   "v_mps": 31.7,
+   "pos": 14.268,
+   "lat": 13.256,
+   "lon": -5.28,
+   "dyaw_deg": -1.751
+  },
+  {
+   "t_s": 613.9,
+   "lap": "K3",
+   "stamp": 1791918770984980451,
+   "v_mps": 35.1,
+   "pos": 11.155,
+   "lat": -10.689,
+   "lon": -3.191,
+   "dyaw_deg": -1.319
+  },
+  {
+   "t_s": 633.9,
+   "lap": "K3",
+   "stamp": 1791918790985215880,
+   "v_mps": 35.1,
+   "pos": 10.693,
+   "lat": 7.959,
+   "lon": -7.14,
+   "dyaw_deg": -1.54
+  }
+ ],
+ "evaluate": "poses submitted        1105   evaluated 1105\ncoverage (1 s bins)    100.0 %   (>= 90 % to be ranked)\nposition RMSE  [m]     6.980   <- SCORE (lower is better)\nposition median/p95    3.242 / 15.979\nlateral RMSE   [m]     5.521\nlongitudinal RMSE [m]  4.270\nyaw RMSE     [deg]     0.872\nwithin 0.25 m          2.5 %\nwithin 0.50 m          4.3 %\nwithin 1.00 m          9.0 %\n"
+}

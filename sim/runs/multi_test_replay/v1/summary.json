@@ -1,0 +1,58 @@
+{
+ "label": "v1",
+ "spec": "v2/runs/v1_K1/pred.csv",
+ "live": false,
+ "car_state": true,
+ "poses": 1800,
+ "sets": 1800,
+ "dropped": 0,
+ "pos_rmse": 0.1657993885912324,
+ "lat_rmse": 0.09584399633372492,
+ "lon_rmse": 0.13528993171706244,
+ "yaw_rmse_deg": 0.09140390680141165,
+ "within_025": 89.16666666666667,
+ "within_1m": 100.0,
+ "evaluate": "poses submitted        1800   evaluated 1800\ncoverage (1 s bins)    99.4 %   (>= 90 % to be ranked)\nposition RMSE  [m]     0.166   <- SCORE (lower is better)\nposition median/p95    0.131 / 0.300\nlateral RMSE   [m]     0.096\nlongitudinal RMSE [m]  0.135\nyaw RMSE     [deg]     0.091\nwithin 0.25 m          89.2 %\nwithin 0.50 m          99.9 %\nwithin 1.00 m          100.0 %\n",
+ "worst": [
+  {
+   "t_s": 354.8,
+   "lap": "K1",
+   "pos": 0.506,
+   "lat": 0.099,
+   "lon": -0.496,
+   "dyaw_deg": 0.124
+  },
+  {
+   "t_s": 276.5,
+   "lap": "K1",
+   "pos": 0.488,
+   "lat": 0.342,
+   "lon": -0.348,
+   "dyaw_deg": 0.38
+  },
+  {
+   "t_s": 309.3,
+   "lap": "K1",
+   "pos": 0.402,
+   "lat": 0.383,
+   "lon": -0.122,
+   "dyaw_deg": 0.251
+  },
+  {
+   "t_s": 282.5,
+   "lap": "K1",
+   "pos": 0.38,
+   "lat": -0.38,
+   "lon": 0.002,
+   "dyaw_deg": -0.215
+  },
+  {
+   "t_s": 318.0,
+   "lap": "K1",
+   "pos": 0.374,
+   "lat": 0.374,
+   "lon": -0.011,
+   "dyaw_deg": 0.199
+  }
+ ]
+}
