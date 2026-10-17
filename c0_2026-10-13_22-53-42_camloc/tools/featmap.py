@@ -108,14 +108,17 @@ def load_mask(data, cam):
 
 # ----------------------------------------------------------------------------- features
 class Features:
-    def __init__(self, max_kp=1024):
+    def __init__(self, max_kp=1024, mp=False):
         self.sp = SuperPoint(max_num_keypoints=max_kp).eval().to(DEV)
-        self.lg = LightGlue(features="superpoint").eval().to(DEV)
+        try:                           # mp = mixed precision (fp16) inside LightGlue
+            self.lg = LightGlue(features="superpoint", mp=mp).eval().to(DEV)
+        except TypeError:
+            self.lg = LightGlue(features="superpoint").eval().to(DEV)
         self.transform = None          # optional image degradation for stress tests
 
     @torch.no_grad()
     def extract(self, path, mask=None):
-        img = cv2.imread(str(path), cv2.IMREAD_COLOR)
+        img = path if isinstance(path, np.ndarray) else cv2.imread(str(path), cv2.IMREAD_COLOR)
         if img is None:
             raise FileNotFoundError(path)
         if self.transform is not None:
@@ -132,6 +135,43 @@ class Features:
             kp, de, sc = kp[keep], de[keep], sc[keep]
         return {"kp": kp.astype(np.float32), "desc": de.astype(np.float16),
                 "score": sc.astype(np.float32), "size": np.array([img.shape[1], img.shape[0]])}
+
+    @torch.no_grad()
+    def extract_batch(self, imgs, masks):
+        """SuperPoint on all cameras in ONE forward pass. Same preprocessing as
+        SuperPoint.extract (grayscale, long side resized to 1024, keypoints scaled back).
+        Falls back to one-by-one if the batch cannot be stacked."""
+        sizes = {im.shape[:2] for im in imgs}
+        if len(imgs) == 1 or len(sizes) != 1 or self.transform is not None:
+            return [self.extract(im, m) for im, m in zip(imgs, masks)]
+        H, W = imgs[0].shape[:2]
+        x = torch.from_numpy(np.stack(imgs)).to(DEV)              # B,H,W,3 uint8 BGR
+        x = x.permute(0, 3, 1, 2).float().div(255)
+        gray = (0.114 * x[:, 0] + 0.587 * x[:, 1] + 0.299 * x[:, 2])[:, None]
+        s = 1024 / max(H, W)
+        h2, w2 = (int(round(H * s)), int(round(W * s))) if s < 1 else (H, W)
+        if (h2, w2) != (H, W):
+            gray = torch.nn.functional.interpolate(gray, size=(h2, w2), mode="bilinear",
+                                                   align_corners=False, antialias=True)
+        try:
+            f = self.sp({"image": gray})
+        except RuntimeError:                   # different keypoint counts cannot be stacked
+            return [self.extract(im, m) for im, m in zip(imgs, masks)]
+        sc_xy = torch.tensor([w2 / W, h2 / H], device=gray.device)
+        out = []
+        for b in range(len(imgs)):
+            kp = ((f["keypoints"][b] + 0.5) / sc_xy - 0.5).cpu().numpy()
+            de = f["descriptors"][b].cpu().numpy()
+            sc = f["keypoint_scores"][b].cpu().numpy()
+            m = masks[b]
+            if m is not None:
+                u = kp[:, 0].astype(int).clip(0, m.shape[1] - 1)
+                v = kp[:, 1].astype(int).clip(0, m.shape[0] - 1)
+                keep = m[v, u] > 0
+                kp, de, sc = kp[keep], de[keep], sc[keep]
+            out.append({"kp": kp.astype(np.float32), "desc": de.astype(np.float16),
+                        "score": sc.astype(np.float32), "size": np.array([W, H])})
+        return out
 
     @torch.no_grad()
     def match(self, a, b):
@@ -315,7 +355,11 @@ class Localizer:
                     self.cams[c].T_cb = np.linalg.inv(self.cams[c].T_bc)
             print("camera yaw offsets applied:", {c: round(v, 4) for c, v in offs.items()})
         self.z0 = float(np.median(self.maps[self.names[0]].kt.z))
-        self.feats = feats or Features(o.max_kp)
+        self.feats = feats or Features(o.max_kp, mp=getattr(o, "lg_mp", False))
+        from concurrent.futures import ThreadPoolExecutor
+        self.pool = ThreadPoolExecutor(8)       # JPEG decoding of all cameras in parallel
+        self.prof = {} if getattr(o, "profile", False) else None
+        self.n_fix = 0
         self.dino = None
         if getattr(o, "dino", False):
             try:                                  # dino_desc.py with DINOv3 support
@@ -353,42 +397,93 @@ class Localizer:
         d = [np.hypot(*(cm.kt[["cx", "cy"]].values[i] - T[:2, 3])) for i in idx]
         return [idx[k] for k in np.argsort(d)[:self.o.k_cand]]
 
+    def _tick(self, name, t0):
+        """accumulate stage time (ms) when profiling; GPU work is synchronised first"""
+        if self.prof is None:
+            return time.perf_counter()
+        if torch.cuda.is_available():
+            torch.cuda.synchronize()
+        t1 = time.perf_counter()
+        self.prof[name] = self.prof.get(name, 0.0) + (t1 - t0) * 1000
+        return t1
+
+    def profile_report(self):
+        if not self.prof or not self.n_fix:
+            return
+        tot = sum(self.prof.values())
+        print(f"time per camera fix ({self.n_fix} fixes), ms:")
+        for k, v in sorted(self.prof.items(), key=lambda x: -x[1]):
+            print(f"  {k:12s} {v / self.n_fix:7.1f}   ({v / tot:.0%})")
+        print(f"  {'total':12s} {tot / self.n_fix:7.1f}")
+
     def localize(self, images, prior_xyyaw, radius):
         """images: {cam: path}. Returns (x, y, yaw), n_inliers, info  or  None."""
+        self.n_fix += 1
+        t = time.perf_counter()
         T_prior = T_from_xyyaw(*prior_xyyaw, z=self.z0)
         per_cam = {}
+        cams = [c for c in images if c in self.cams]
+        imgs = dict(zip(cams, self.pool.map(lambda c: cv2.imread(str(images[c])), cams)))
+        t = self._tick("read jpeg", t)
         qd = {}
-        if self.dino is not None:               # one batch for all cameras of this set
-            cams = [c for c in images if c in self.cams]
-            if cams:
-                D = self.dino([cv2.imread(str(images[c])) for c in cams])
-                qd = dict(zip(cams, D))
-        for cam, path in images.items():
-            if cam not in self.cams:
-                continue
+        if self.dino is not None and cams:      # one batch for all cameras of this set
+            qd = dict(zip(cams, self.dino([imgs[c] for c in cams])))
+            t = self._tick("dino", t)
+        if getattr(self.o, "sp_batch", False):
+            qs = dict(zip(cams, self.feats.extract_batch([imgs[c] for c in cams],
+                                                        [self.masks[c] for c in cams])))
+            t = self._tick("superpoint", t)
+        for cam in cams:
             c = self.cams[cam]
-            q = self.feats.extract(path, self.masks[cam])
+            if getattr(self.o, "sp_batch", False):
+                q = qs[cam]
+            else:
+                q = self.feats.extract(imgs[cam], self.masks[cam])
+                t = self._tick("superpoint", t)
             uv, X = [], []
             for i in self.candidates(cam, T_prior, radius, qd.get(cam)):
                 kf, xyz = self.maps[cam].keyframe(i)
                 m = self.feats.match(q, kf)
                 uv.append(q["kp"][m[:, 0]]); X.append(xyz[m[:, 1]])
+            t = self._tick("lightglue", t)
             if not uv:
                 continue
             uv, X = np.concatenate(uv), np.concatenate(X).astype(np.float64)
             if len(X) < self.o.min_inliers:
                 continue
             n = c.norm(uv)
+            gate = getattr(self.o, "pnp_prior_gate", 0.0)
+            if gate > 0:
+                # the filter prior is accurate to ~0.1 m: keep matches that agree with it and
+                # skip RANSAC; the joint robust refinement below does the rest
+                T_cm0 = c.T_cb @ np.linalg.inv(T_prior)
+                Xc = X @ T_cm0[:3, :3].T + T_cm0[:3, 3]
+                front = Xc[:, 2] > 0.5
+                err = np.full(len(X), np.inf)
+                err[front] = np.linalg.norm(Xc[front, :2] / Xc[front, 2:3] - n[front], axis=1) * c.f
+                inl = np.flatnonzero(err < gate)
+                if len(inl) >= 2 * self.o.min_inliers:
+                    rmax = getattr(self.o, "refine_max_pts", 0)
+                    if rmax and len(inl) > rmax:
+                        inl = inl[np.linspace(0, len(inl) - 1, rmax).astype(int)]
+                    per_cam[cam] = (T_prior, n[inl], X[inl])
+                    t = self._tick("pnp gate", t)
+                    continue                      # else: prior is off, fall back to RANSAC
             try:
                 ok, rvec, tvec, inl = cv2.solvePnPRansac(
                     X, n, np.eye(3), None, iterationsCount=300,
                     reprojectionError=self.o.pnp_px / c.f, confidence=0.999,
                     flags=cv2.SOLVEPNP_SQPNP)
             except cv2.error:          # degenerate sample (e.g. near-duplicate points)
+                t = self._tick("pnp ransac", t)
                 continue
+            t = self._tick("pnp ransac", t)
             if not ok or inl is None or len(inl) < self.o.min_inliers:
                 continue
             inl = inl.ravel()
+            rmax = getattr(self.o, "refine_max_pts", 0)
+            if rmax and len(inl) > rmax:           # evenly spread subset for the refinement
+                inl = inl[np.linspace(0, len(inl) - 1, rmax).astype(int)]
             T_cm = np.eye(4)
             T_cm[:3, :3] = cv2.Rodrigues(rvec)[0]
             T_cm[:3, 3] = tvec.ravel()
@@ -396,10 +491,11 @@ class Localizer:
             per_cam[cam] = (T_mb, n[inl], X[inl])
         if not per_cam:
             return None
+        self._t_refine = t
 
         # joint refinement of base_link pose over all cameras (rig PnP)
         best = max(per_cam, key=lambda k: len(per_cam[k][1]))
-        T0 = per_cam[best][0]
+        T0 = per_cam[best][0]                      # = prior pose for prior-gated cameras
         p0 = np.r_[R.from_matrix(T0[:3, :3]).as_rotvec(), T0[:3, 3]]
 
         def resid(p):
@@ -417,6 +513,21 @@ class Localizer:
             return np.concatenate(res)
 
         sol = least_squares(resid, p0, loss="huber", f_scale=self.o.pnp_px)
+        if getattr(self.o, "pnp_prior_gate", 0.0) > 0:     # trim outliers, refine once more
+            r_ = np.abs(resid(sol.x)).reshape(-1, 2).max(1)
+            off = 0
+            for cam in list(per_cam):
+                T_, n_, X_ = per_cam[cam]
+                keep = r_[off:off + len(n_)] < 2 * self.o.pnp_px
+                off += len(n_)
+                if keep.sum() >= self.o.min_inliers:
+                    per_cam[cam] = (T_, n_[keep], X_[keep])
+                else:
+                    del per_cam[cam]
+            if not per_cam:
+                return None
+            sol = least_squares(resid, sol.x, loss="huber", f_scale=self.o.pnp_px)
+        self._tick("refine", self._t_refine)
         T = np.eye(4)
         T[:3, :3] = R.from_rotvec(sol.x[:3]).as_matrix()
         T[:3, 3] = sol.x[3:]
@@ -831,6 +942,7 @@ def validate(a):
           f"({warm.mean() / period:.0%} of the period)")
     print(f"  live playback lag: mean {lags.mean():.1f} ms, p95 {np.percentile(lags, 95):.1f}, "
           f"max {lags.max():.1f} ms -> {'bounded, keeps up' if lags[-200:].mean() < 3 * period else 'GROWING, cannot keep up'}")
+    loc.profile_report()
     if a.async_fix:
         dl = r.fix_delay_ms.dropna()
         print(f"  ASYNC: pose output latency mean {r.main_ms.mean():.2f} ms, max {r.main_ms.max():.1f} ms | "
@@ -932,6 +1044,14 @@ if __name__ == "__main__":
                    help="json {cam: deg} from cam_yaw_offsets.py, corrects camera extrinsic yaw")
     v.add_argument("--no-query-masks", action="store_true",
                    help="ignore data/masks/<cam>.png for query images")
+    v.add_argument("--profile", action="store_true", help="time per stage of a camera fix")
+    v.add_argument("--lg-mp", action="store_true", help="LightGlue in mixed precision (fp16)")
+    v.add_argument("--sp-batch", action="store_true", help="SuperPoint on all cameras in one batch")
+    v.add_argument("--pnp-prior-gate", type=float, default=0.0,
+                   help="px; >0: keep matches consistent with the filter prior and skip RANSAC "
+                        "(falls back to RANSAC if too few agree)")
+    v.add_argument("--refine-max-pts", type=int, default=0,
+                   help="max inliers per camera in the joint refinement (0 = all)")
     v.add_argument("--async-fix", action="store_true",
                    help="live-like: camera fixes run in a background worker and are applied "
                         "late (rewind + replay); poses are output immediately (needs --filter kf)")
