@@ -1,0 +1,14 @@
+{
+ "note": "Validation map: keyframes of the held-out laps K3 / K6 (+-5 s) are excluded; keyframes closer than self_exclude_s in time to the query are not used (a frame never matches its own pass on the training run).",
+ "exclude_windows_ns": [
+  [
+   1791918675514146048,
+   1791918796114146048
+  ],
+  [
+   1791919048214146048,
+   1791919169814146048
+  ]
+ ],
+ "self_exclude_s": 100.0
+}

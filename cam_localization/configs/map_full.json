@@ -1,0 +1,5 @@
+{
+ "note": "Full map: every keyframe of the training run (all laps, K3 / K6 included). For test runs.",
+ "exclude_windows_ns": [],
+ "self_exclude_s": 0.0
+}

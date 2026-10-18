@@ -1,0 +1,52 @@
+single-frame global relocalization: 420 sets
+  returned a pose 100.0 %, accepted (inl>=30, drivable) 100.0 %
+  accepted with err < 0.5 m: 100.0 %
+  accepted with err < 1 m: 100.0 %
+  accepted with err < 2 m: 100.0 %
+  accepted with err < 5 m: 100.0 %
+  accepted err median 0.067 p95 0.201 max 0.33 m; wrong place (>5 m) 0; inliers median 656
+
+bootstrap (vote) at 42 starts:
+   boot_K3_0 err 0.199 m  yaw 0.084 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K3_1 err 0.017 m  yaw 0.022 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K3_10 err 0.025 m  yaw 0.045 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K3_11 err 0.035 m  yaw 0.003 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K3_12 err 0.116 m  yaw 0.076 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K3_13 err 0.125 m  yaw 0.010 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K3_14 err 0.040 m  yaw 0.014 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K3_15 err 0.100 m  yaw 0.007 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K3_16 err 0.126 m  yaw 0.039 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K3_17 err 0.150 m  yaw 0.033 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K3_18 err 0.079 m  yaw 0.058 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K3_19 err 0.050 m  yaw 0.004 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K3_2 err 0.002 m  yaw 0.077 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K3_3 err 0.015 m  yaw 0.032 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K3_4 err 0.143 m  yaw 0.018 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K3_5 err 0.061 m  yaw 0.008 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K3_6 err 0.041 m  yaw 0.030 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K3_7 err 0.094 m  yaw 0.124 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K3_8 err 0.139 m  yaw 0.113 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K3_9 err 0.135 m  yaw 0.021 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K6_0 err 0.167 m  yaw 0.003 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K6_1 err 0.102 m  yaw 0.035 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K6_10 err 0.128 m  yaw 0.076 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K6_11 err 0.083 m  yaw 0.010 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K6_12 err 0.093 m  yaw 0.089 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K6_13 err 0.129 m  yaw 0.036 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K6_14 err 0.052 m  yaw 0.000 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K6_15 err 0.069 m  yaw 0.037 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K6_16 err 0.166 m  yaw 0.131 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K6_17 err 0.061 m  yaw 0.013 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K6_18 err 0.065 m  yaw 0.008 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K6_19 err 0.128 m  yaw 0.080 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K6_2 err 0.064 m  yaw 0.092 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K6_3 err 0.084 m  yaw 0.003 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K6_4 err 0.048 m  yaw 0.015 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K6_5 err 0.065 m  yaw 0.108 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K6_6 err 0.118 m  yaw 0.029 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K6_7 err 0.045 m  yaw 0.080 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K6_8 err 0.038 m  yaw 0.089 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   boot_K6_9 err 0.144 m  yaw 0.179 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   full_K3 err 0.199 m  yaw 0.084 deg  after 0.9 s (10 sets, ok 10, agree 10)
+   full_K6 err 0.167 m  yaw 0.003 deg  after 0.9 s (10 sets, ok 10, agree 10)
+  initialised 42/42; err median 0.089 p95 0.167 max 0.199 m; yaw max 0.179 deg; time to init max 0.9 s

@@ -1,0 +1,12 @@
+# Python 3.12, CUDA 12.8 (tested: RTX 5060 Ti 16 GB, driver 570+). Install with setup.sh.
+--extra-index-url https://download.pytorch.org/whl/cu128
+torch==2.7.1+cu128
+torchvision==0.22.1+cu128
+numpy==2.5.2
+scipy==1.18.1
+pandas==3.0.6
+opencv-python-headless==5.0.0.93
+kornia==0.8.3
+mcap==1.5.0
+mcap-ros2-support==0.5.7
+lightglue @ git+https://github.com/cvg/LightGlue.git@eb42fee2d71449efb0aa5c10549752b5d75384d8

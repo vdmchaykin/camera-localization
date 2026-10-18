@@ -1,0 +1,171 @@
+{
+ "localizer": "v6/my_loc_v6.py:Localizer",
+ "env": {
+  "LOC_SYNC": "1"
+ },
+ "sets": 739,
+ "poses": 739,
+ "boot": [
+  {
+   "stamp_ns": 1791894442591620719,
+   "res": [
+    -97.0636,
+    698.4389,
+    -1.8841,
+    35.0
+   ]
+  },
+  {
+   "stamp_ns": 1791894442691619392,
+   "res": [
+    -98.6053,
+    693.4405,
+    -1.8835,
+    31.0
+   ]
+  },
+  {
+   "stamp_ns": 1791894442791646140,
+   "res": [
+    -102.0755,
+    690.236,
+    -1.8941,
+    26.0
+   ]
+  },
+  {
+   "stamp_ns": 1791894442891644654,
+   "res": [
+    -101.9656,
+    683.9747,
+    -1.891,
+    77.0
+   ]
+  },
+  {
+   "stamp_ns": 1791894442991643711,
+   "res": [
+    -106.6515,
+    678.2638,
+    -1.99,
+    13.0
+   ]
+  },
+  {
+   "stamp_ns": 1791894443091642537,
+   "res": [
+    -109.5489,
+    674.0003,
+    -2.0068,
+    20.0
+   ]
+  },
+  {
+   "stamp_ns": 1791894443191620646,
+   "res": [
+    -110.0086,
+    668.7055,
+    -1.9626,
+    34.0
+   ]
+  },
+  {
+   "stamp_ns": 1791894443291640265,
+   "res": [
+    -110.6033,
+    663.8149,
+    -1.9366,
+    43.0
+   ]
+  },
+  {
+   "stamp_ns": 1791894443391639071,
+   "res": [
+    -110.1897,
+    658.6969,
+    -1.8857,
+    70.0
+   ]
+  },
+  {
+   "stamp_ns": 1791894443491637520,
+   "res": [
+    -111.8379,
+    653.7718,
+    -1.8859,
+    84.0
+   ]
+  }
+ ],
+ "first_pose": {
+  "stamp_ns": 1791894442591620719,
+  "x": -97.4066558607299,
+  "y": 698.0442915718834,
+  "yaw": -1.904195202577276
+ },
+ "boot_ok": 7,
+ "boot_agree": 7,
+ "step_ms_mean": 57.29247239659035,
+ "step_ms_p95": 69.57010227488354,
+ "step_ms_max": 84.68785602599382,
+ "over_100ms": 0,
+ "v_mps_mean": 40.11129990653371,
+ "v_mps_max": 67.92773213425926,
+ "localizer_stats": {
+  "mode": "sync",
+  "car_state": true,
+  "init_s": 4.0,
+  "map_keyframes_allowed": 4300,
+  "relocalizations": 739,
+  "reloc_ms_mean": 56.9,
+  "reloc_ms_p95": 69.2,
+  "fuse_delay_ms_mean": 0.0,
+  "measurements": 722,
+  "failed": 17,
+  "accepted": 722,
+  "rejected": 0,
+  "recovered": 0,
+  "flags": {
+   "guided": true,
+   "batch": true,
+   "calib": true,
+   "corner": true
+  },
+  "guided": 739,
+  "guided_fail": 17,
+  "guided_ms_mean": 56.9,
+  "guided_ms_p95": 69.2,
+  "guided_inliers_median": 124,
+  "global_": 0,
+  "global_ms_mean": NaN,
+  "v3": {
+   "fast_sp": true,
+   "compile": true,
+   "straight_period_s": 0.0
+  },
+  "v5": {
+   "max_kp": 1024,
+   "dense": 1,
+   "n_kf": 3,
+   "dense_sim": 0.75,
+   "dense_margin": 0.03,
+   "kp_corr_median": 179,
+   "dense_corr_median": 47,
+   "frames_with_dense": 866
+  },
+  "v6": {
+   "expo": true,
+   "sat": true,
+   "relax_on": true,
+   "bounds": true,
+   "global_": true,
+   "gamma_median": 1.878,
+   "gamma_p5": 1.25,
+   "relax": 127,
+   "relax_ok": 110,
+   "bounds_rejected": 0,
+   "global_skipped_to_guided": 0,
+   "cams_skipped_saturated": 0
+  }
+ }
+}
