@@ -10,8 +10,8 @@ the pose for set *t* uses only data up to *t*. GT is never read at inference.
 ```bash
 ./setup.sh                              # .venv with the pinned dependencies (Python 3.12, CUDA 12.8)
 ./download_model.sh                     # trained model -> model/ (8.6 GB from Google Drive, checked with sha256)
-./run.sh RUN.mcap out/RUN               # first pose unknown: found by global relocalization
 ./run.sh RUN.mcap out/RUN X Y YAW       # first pose of the run given
+./run.sh RUN.mcap out/RUN               # If first pose unknown: found by global relocalization
 ```
 
 **Model download.** `download_model.sh` fetches `cam_localization_model.tar` (8.6 GB, sha256
@@ -62,7 +62,7 @@ start / lost: DINOv2 retrieval + LightGlue + PnP-RANSAC over the whole map (glob
   has a day descriptor, computed at the same keyframe pixel on a day-styled copy of the training run (Qwen image
   editing: same geometry, other light). Matching uses `max(similarity to night, similarity to day)`, so night runs
   behave as before and day runs find ~3x more matches.
-* **No first pose**: global relocalization on the first camera sets; the solutions are carried forward with the car
+* **No first pose**: We have also tested our model without initial pose given, global relocalization on the first camera sets; the solutions are carried forward with the car
   state and voted on (median of the agreeing ones within 2 m); tracking starts once >= 3 (and at least half) agree.
 
 Code (`camloc/`):
@@ -165,7 +165,7 @@ keyframe and camera.
 * DINOv2 ViT-S/14 (Meta, `facebookresearch/dinov2` via torch.hub) - global descriptors.
 * SuperPoint and LightGlue weights (`cvg/LightGlue`) - keypoints, descriptors, matching.
 * Qwen image editing model - only offline, to re-light the training images night -> day for the day layer
-  (exact checkpoint: TODO).
+  (exact checkpoint: (https://huggingface.co/Qwen/Qwen-Image-Edit-2511)).
 * No external datasets; the map is built from the provided training run.
 
 ## Configuration
