@@ -1,0 +1,76 @@
+{
+ "mcap": "~/synthetic/qwen/qwen_full.mcap",
+ "window_s": [
+  523.4,
+  110.6
+ ],
+ "map_config": "map_val_k3k6.json",
+ "first_pose": {
+  "given": false,
+  "from_gt": true
+ },
+ "car_state": "/constructor0/state_estimation",
+ "track_bounds": "bag",
+ "sets": 1106,
+ "hardware": {
+  "gpu": "NVIDIA GeForce RTX 5060 Ti",
+  "cpu": "x86_64",
+  "torch": "2.7.1+cu128",
+  "python": "3.12.12"
+ },
+ "init_s": 3.4,
+ "ms_per_set": {
+  "mean": 62.5704040525188,
+  "p95": 75.9039759868756,
+  "max": 236.41946795396507,
+  "decode_mean": 4.843909050056721,
+  "step_mean": 57.72649500246209,
+  "over_100ms": 2
+ },
+ "localizer": {
+  "car_state": true,
+  "day_layer": false,
+  "init_s": 3.4,
+  "map_keyframes_allowed": 4300,
+  "relocalizations": 1106,
+  "reloc_ms_mean": 57.4,
+  "reloc_ms_p95": 70.7,
+  "measurements": 1082,
+  "failed": 24,
+  "accepted": 1081,
+  "rejected": 1,
+  "recovered": 0,
+  "guided": 1105,
+  "guided_fail": 23,
+  "guided_ms_mean": 57.2,
+  "guided_ms_p95": 70.6,
+  "guided_inliers_median": 117.5,
+  "kp_corr_median": 178.0,
+  "dense_corr_median": 39.0,
+  "relax": 211,
+  "relax_ok": 188,
+  "bounds_rejected": 0,
+  "cams_skipped_saturated": 0,
+  "gamma_median": 2.5,
+  "gamma_p5": 1.282,
+  "day_better_share_median": null,
+  "global_": 1,
+  "global_ms_mean": 232.0,
+  "global_skipped_to_guided": 2,
+  "boot": {
+   "given_first_pose": true
+  }
+ },
+ "errors": {
+  "evaluated": 1106,
+  "pos_rmse": 0.11352590322343284,
+  "lat_rmse": 0.052607545182709985,
+  "lon_rmse": 0.10060107798898266,
+  "yaw_rmse_deg": 0.08498413060205853,
+  "pos_median": 0.07159038731537135,
+  "pos_p95": 0.21750291586940385,
+  "pos_max": 0.5347352727224945,
+  "within_1m": 100.0
+ },
+ "evaluate": "poses submitted        1106   evaluated 1106\ncoverage (1 s bins)    100.0 %   (>= 90 % to be ranked)\nposition RMSE  [m]     0.114   <- SCORE (lower is better)\nposition median/p95    0.072 / 0.217\nlateral RMSE   [m]     0.053\nlongitudinal RMSE [m]  0.101\nyaw RMSE     [deg]     0.085\nwithin 0.25 m          96.3 %\nwithin 0.50 m          99.9 %\nwithin 1.00 m          100.0 %\n"
+}

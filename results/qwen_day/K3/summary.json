@@ -1,0 +1,76 @@
+{
+ "mcap": "~/synthetic/qwen/qwen_full.mcap",
+ "window_s": [
+  523.4,
+  110.6
+ ],
+ "map_config": "map_val_k3k6.json",
+ "first_pose": {
+  "given": false,
+  "from_gt": true
+ },
+ "car_state": "/constructor0/state_estimation",
+ "track_bounds": "bag",
+ "sets": 1106,
+ "hardware": {
+  "gpu": "NVIDIA GeForce RTX 5060 Ti",
+  "cpu": "x86_64",
+  "torch": "2.7.1+cu128",
+  "python": "3.12.12"
+ },
+ "init_s": 4.0,
+ "ms_per_set": {
+  "mean": 65.09720087024024,
+  "p95": 79.28627732326277,
+  "max": 128.4564099041745,
+  "decode_mean": 4.779785137226094,
+  "step_mean": 60.31741573301415,
+  "over_100ms": 1
+ },
+ "localizer": {
+  "car_state": true,
+  "day_layer": true,
+  "init_s": 4.0,
+  "map_keyframes_allowed": 4300,
+  "relocalizations": 1106,
+  "reloc_ms_mean": 60.0,
+  "reloc_ms_p95": 73.6,
+  "measurements": 1106,
+  "failed": 0,
+  "accepted": 1106,
+  "rejected": 0,
+  "recovered": 0,
+  "guided": 1106,
+  "guided_fail": 0,
+  "guided_ms_mean": 60.0,
+  "guided_ms_p95": 73.6,
+  "guided_inliers_median": 632.5,
+  "kp_corr_median": 1100.0,
+  "dense_corr_median": 391.0,
+  "relax": 0,
+  "relax_ok": 0,
+  "bounds_rejected": 0,
+  "cams_skipped_saturated": 0,
+  "gamma_median": 2.5,
+  "gamma_p5": 1.282,
+  "day_better_share_median": 0.9924812316894531,
+  "global_": 0,
+  "global_ms_mean": null,
+  "global_skipped_to_guided": 0,
+  "boot": {
+   "given_first_pose": true
+  }
+ },
+ "errors": {
+  "evaluated": 1106,
+  "pos_rmse": 0.07638765772408035,
+  "lat_rmse": 0.03356916953968502,
+  "lon_rmse": 0.06861621607890613,
+  "yaw_rmse_deg": 0.05929391636861301,
+  "pos_median": 0.05488481081374534,
+  "pos_p95": 0.15146735113334914,
+  "pos_max": 0.21119339549240437,
+  "within_1m": 100.0
+ },
+ "evaluate": "poses submitted        1106   evaluated 1106\ncoverage (1 s bins)    100.0 %   (>= 90 % to be ranked)\nposition RMSE  [m]     0.076   <- SCORE (lower is better)\nposition median/p95    0.055 / 0.152\nlateral RMSE   [m]     0.034\nlongitudinal RMSE [m]  0.069\nyaw RMSE     [deg]     0.059\nwithin 0.25 m          100.0 %\nwithin 0.50 m          100.0 %\nwithin 1.00 m          100.0 %\n"
+}

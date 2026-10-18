@@ -77,18 +77,18 @@ start, RTX 5060 Ti 16 GB. Outputs of `tools/reproduce.sh` in [results/](results/
 | run | pos RMSE [m] | lateral RMSE [m] | yaw RMSE [deg] | p95 [m] | < 1 m | time / set |
 |---|---|---|---|---|---|---|
 | K3, night | 0.071 | 0.025 | 0.050 | 0.143 | 100 % | 67 ms |
-| K6, night | 0.081 | 0.044 | 0.082 | 0.175 | 100 % | 66 ms |
-| K3, day (Qwen re-lit copy) | 0.076 | 0.034 | 0.059 | 0.151 | 100 % | 66 ms |
+| K6, night | 0.081 | 0.044 | 0.082 | 0.176 | 100 % | 66 ms |
+| K3, day (Qwen re-lit copy) | 0.076 | 0.034 | 0.059 | 0.151 | 100 % | 65 ms |
 | K6, day (Qwen re-lit copy) | 0.086 | 0.051 | 0.081 | 0.184 | 100 % | 65 ms |
-| K3 / K6, day, without the day layer | 0.114 / 0.136 | 0.052 / 0.067 | 0.085 / 0.104 | 0.217 / 0.266 | 100 % | |
-| organisers' day lap (no GT, no first pose) | – | – | – | – | 739/739 corrections, 0 failed | 69 ms |
+| K3 / K6, day, without the day layer | 0.114 / 0.134 | 0.053 / 0.067 | 0.085 / 0.102 | 0.218 / 0.260 | 100 % | |
+| organisers' day lap (no GT, no first pose) | – | – | – | – | 730/730 corrections after the start, 0 failed | 69 ms |
 
 Time per set = image decoding + `step()`; the camera period is 100 ms. Peak use: 7.5 GB GPU memory, 10.7 GB RAM.
 Without a first pose the localizer starts after 10 sets (1 s) and reaches the same accuracy (K3 / K6 night
 0.072 / 0.080 m, day 0.080 / 0.088 m; the larger max error is in the first second, before the start is fixed).
 Caveat: the day copy of K3 / K6 and the day layer come from the same image editing model (the layer from the other
 laps), so the day numbers are optimistic; the organisers' real day lap has no GT. On it the day layer raises the
-median inliers per correction from 127 to 260 and removes all 19 failed corrections.
+median inliers per correction from 127 to 260 and removes all 21 failed corrections.
 
 Validation command (K3; K6: `--start-s 896.1 --max-s 111.6`):
 

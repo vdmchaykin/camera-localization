@@ -1,0 +1,85 @@
+{
+ "mcap": "~/better_gpu/hidden_test/data/rosbag_2026-10-13_16-08-46_cameras_lap/rosbag_2026-10-13_16-08-46_cameras_lap_0.mcap",
+ "window_s": [
+  null,
+  null
+ ],
+ "map_config": "map_full.json",
+ "first_pose": {
+  "given": false,
+  "from_gt": false
+ },
+ "car_state": "/constructor0/validation/twist",
+ "track_bounds": "model/track_bounds.npz",
+ "sets": 739,
+ "hardware": {
+  "gpu": "NVIDIA GeForce RTX 5060 Ti",
+  "cpu": "x86_64",
+  "torch": "2.7.1+cu128",
+  "python": "3.12.12"
+ },
+ "init_s": 3.7,
+ "ms_per_set": {
+  "mean": 68.83450141913826,
+  "p95": 81.73185555497184,
+  "max": 329.4314609374851,
+  "decode_mean": 3.64584436546255,
+  "step_mean": 65.18865705367571,
+  "over_100ms": 10
+ },
+ "localizer": {
+  "car_state": true,
+  "day_layer": true,
+  "init_s": 3.7,
+  "map_keyframes_allowed": 5956,
+  "relocalizations": 740,
+  "reloc_ms_mean": 64.8,
+  "reloc_ms_p95": 77.1,
+  "measurements": 730,
+  "failed": 0,
+  "accepted": 730,
+  "rejected": 0,
+  "recovered": 0,
+  "guided": 730,
+  "guided_fail": 0,
+  "guided_ms_mean": 62.1,
+  "guided_ms_p95": 75.6,
+  "guided_inliers_median": 259.5,
+  "kp_corr_median": 499.0,
+  "dense_corr_median": 186.0,
+  "relax": 0,
+  "relax_ok": 0,
+  "bounds_rejected": 0,
+  "cams_skipped_saturated": 0,
+  "gamma_median": 1.8778975164578586,
+  "gamma_p5": 1.247,
+  "day_better_share_median": 0.785714328289032,
+  "global_": 0,
+  "global_ms_mean": null,
+  "global_skipped_to_guided": 0,
+  "boot": {
+   "given_first_pose": false,
+   "first_pose": {
+    "stamp_ns": 1791894443491653207,
+    "x": -111.70895307167524,
+    "y": 653.8594248597842,
+    "yaw": -1.886661659604589
+   },
+   "n_sets": 10,
+   "n_ok": 10,
+   "n_agree": 8,
+   "inliers": [
+    52,
+    31,
+    51,
+    82,
+    90,
+    96,
+    34,
+    43,
+    70,
+    84
+   ]
+  }
+ }
+}
