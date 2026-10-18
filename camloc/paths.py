@@ -1,5 +1,5 @@
 """Where the trained model lives. Everything the localizer reads at run time is under MODEL (default
-<repo>/cam_localization/model, override with CAMLOC_MODEL=<dir>):
+<repo>/model, override with CAMLOC_MODEL=<dir>):
 
     features/db_<cam>.npz       keyframe map: per keyframe the SuperPoint keypoints, descriptors and 3D points
     features/global_<cam>.npy   DINOv2 global descriptor of every frame of the training run (keyframe rows used)

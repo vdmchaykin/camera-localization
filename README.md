@@ -9,10 +9,18 @@ the pose for set *t* uses only data up to *t*. GT is never read at inference.
 
 ```bash
 ./setup.sh                              # .venv with the pinned dependencies (Python 3.12, CUDA 12.8)
-./download_model.sh                     # trained model -> model/ (8.6 GB from Google Drive, checked with sha256;
-                                        #   or MODEL_TAR=/path/cam_localization_model.tar ./download_model.sh)
+./download_model.sh                     # trained model -> model/ (8.6 GB from Google Drive, checked with sha256)
 ./run.sh RUN.mcap out/RUN               # first pose unknown: found by global relocalization
 ./run.sh RUN.mcap out/RUN X Y YAW       # first pose of the run given
+```
+
+**Model download.** `download_model.sh` fetches `cam_localization_model.tar` (8.6 GB, sha256
+`c3f01dac5a00e1a23b27b46c0f8175035d95a4aef4c7a7e2ec98136fc94506a5`) from Google Drive. Drive limits downloads of large
+shared files; if the script stops with "Quota exceeded" (or any other error), download the archive by hand in a browser
+from the [Google Drive folder](https://drive.google.com/drive/folders/1MiI1nSciCO-bJB_dFHq23Rb4BqsDERa2) ([direct link to the file](https://drive.google.com/file/d/1K050xbkpVElLbSnwAx3x5Msb2TL-sk6n/view)) and unpack it with the script:
+
+```bash
+MODEL_TAR=/path/to/cam_localization_model.tar ./download_model.sh      # checks the sha256, unpacks into model/
 ```
 
 `out/RUN/poses.csv` is the submission file: `timestamp_ns,x,y,yaw` (one row per camera set, `timestamp_ns` = header
