@@ -78,7 +78,7 @@ Code (`camloc/`):
 
 ## Results
 
-Validation on the held-out laps K3, K6 of the training run with the validation model (K3 / K6 excluded from the map,
+Validation on the held-out laps K3 and K6 of the training run with the validation model (K3 / K6 excluded from the map,
 the motion calibration and the day layer; see [Building the model](#building-the-model)), first pose = GT at the lap
 start, RTX 5060 Ti 16 GB. Outputs of `tools/reproduce.sh` in [results/](results/README.md).
 
