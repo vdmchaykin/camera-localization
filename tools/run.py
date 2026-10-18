@@ -5,7 +5,7 @@
     python3 tools/run.py --mcap RUN.mcap --out out/RUN --first-pose X Y YAW # first pose of the run given
     # validation on the training run (map without the held-out laps K3 / K6, first pose = GT at the lap start):
     python3 tools/run.py --mcap TRAIN.mcap --out out/K3 --start-s 523.4 --max-s 110.6 --map-config configs/map_val_k3k6.json \
-        --first-pose-from-gt
+        --first-pose-from-gt --evaluate PATH/TO/tools/evaluate.py
 
 Processing is causal: camera sets are fed in stamp order, the pose for set t uses only images and car state up to t.
 Every set is processed (no drops); the time per set (decode + step) is measured and reported.
@@ -22,8 +22,6 @@ from concurrent.futures import ThreadPoolExecutor
 
 PROJECT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, PROJECT)
-# organisers' scoring script, unchanged copy from the dataset's starter kit
-EVALUATE = os.path.join(os.path.dirname(PROJECT), 'c0_2026-10-13_22-53-42_camloc', 'tools', 'evaluate.py')
 
 
 def main():
@@ -38,9 +36,8 @@ def main():
     ap.add_argument('--map-config', default=os.path.join(PROJECT, 'configs', 'map_full.json'),
                     help='map subset: configs/map_full.json (all keyframes, for test runs) or '
                          'configs/map_val_k3k6.json (held-out laps K3 / K6 excluded, for validation)')
-    ap.add_argument('--evaluate', default=EVALUATE if os.path.exists(EVALUATE) else None,
-                    help="organisers' tools/evaluate.py, run on the GT window if the bag has GT (default: the copy in "
-                         "this repository)")
+    ap.add_argument('--evaluate', help="organisers' tools/evaluate.py (dataset starter kit), run on the GT window "
+                                       "if the bag has GT")
     a = ap.parse_args()
     os.environ['LOC_MAP_CONFIG'] = os.path.abspath(a.map_config)
 

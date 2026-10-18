@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Training-time artefact: the day descriptor layer of the map, from a day-styled copy of the training run.
 
-    python3 tools/build_day_layer.py --mcap DAY.mcap                                   # all laps (submission model)
+    python3 tools/build_day_layer.py --mcap DAY.mcap [DAY2.mcap ...]                   # all laps (submission model)
     python3 tools/build_day_layer.py --mcap DAY.mcap --map-config configs/map_val_k3k6.json --out model/day_val
       -> <out>/day_<cam>.npy   (N, 256) float16, aligned with model/features/db_<cam>.npz['desc'] (same points, order)
       -> <out>/day_meta.json   source bag, keyframes used / skipped
@@ -11,7 +11,8 @@ are unchanged, so each map point (keyframe image position + 3D point) keeps its 
 camera found in the day bag (header stamp within 5 ms) the day image goes through exactly the query path of the
 localizer (grey, exposure normalisation to the night median, CLAHE, FP16 SuperPoint backbone, L2-normalised dense
 descriptors) and the descriptor is sampled at the map keypoints. Keyframes excluded by --map-config (validation:
-held-out laps K3 / K6) and keyframes missing in the day bag keep the night descriptor.
+held-out laps K3 / K6) and keyframes missing in the day bags keep the night descriptor. Several bags (e.g. the
+copy delivered in parts) are read in turn; an image of a keyframe / camera already taken is skipped.
 """
 import argparse, json, os, sys, time
 import cv2
@@ -26,7 +27,7 @@ from lightglue import SuperPoint  # noqa: E402
 from lightglue.superpoint import sample_descriptors  # noqa: E402
 from camloc.camera_model import CAMS, H, W  # noqa: E402
 from camloc.localizer import GAMMA_MAX, GAMMA_MIN, _backbone  # noqa: E402  same query path as the localizer
-from camloc.paths import CONFIGS, DAY, FEAT, MASKS, MODEL  # noqa: E402
+from camloc.paths import CONFIGS, DAY, FEAT, MASKS, MODEL, fresh  # noqa: E402
 
 SET_TOL_NS = 5_000_000
 CLAHE = cv2.createCLAHE(2.0, (8, 8))        # as camloc/localizer.py
@@ -48,7 +49,7 @@ def cdr_jpeg(raw):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--mcap', required=True, help='day-styled copy of the training run')
+    ap.add_argument('--mcap', required=True, nargs='+', help='day-styled copy of the training run (one or more bags)')
     ap.add_argument('--map-config', default=os.path.join(CONFIGS, 'map_full.json'),
                     help='keyframes excluded here keep the night descriptor (validation: configs/map_val_k3k6.json)')
     ap.add_argument('--out', default=DAY)
@@ -98,40 +99,45 @@ def main():
                 k = torch.from_numpy(kps[c][s:e].astype(np.float32)).cuda()
                 d = sample_descriptors(k[None], dense[j:j + 1], 8)[0].T
                 day[c][s:e] = d.cpu().numpy().astype(np.float16)
+            done_c[c][i] = True
 
     # stream the day bag; a keyframe set is complete when all 7 cameras arrived
     topic = {f'/constructor0/sensor/camera_{c}/compressed_image': c for c in CAMS}
     want = ~excl
-    pending, done, gammas, n_img = {}, np.zeros(len(kf), bool), [], 0
+    pending, gammas, n_img = {}, [], 0
+    done_c = {c: np.zeros(len(kf), bool) for c in CAMS}          # keyframe / camera has its day descriptor
     t0, t1 = int(kf[want].min()) - SET_TOL_NS, int(kf[want].max()) + SET_TOL_NS
-    with open(a.mcap, 'rb') as f:
-        for _, ch, msg in make_reader(f).iter_messages(topics=list(topic), start_time=t0 - 10**9, end_time=t1 + 10**9):
-            st = cdr_stamp(msg.data)
-            i = int(np.searchsorted(kf, st))
-            i = min((j for j in (i - 1, i) if 0 <= j < len(kf)), key=lambda j: abs(kf[j] - st))
-            if abs(kf[i] - st) > SET_TOL_NS or not want[i] or done[i]:
-                continue
-            c = topic[ch.topic]
-            img, gm = prep(c, cdr_jpeg(msg.data))
-            pending.setdefault(i, {})[c] = (img, gm)
-            gammas.append(gm)
-            n_img += 1
-            if len(pending[i]) == len(CAMS):
-                process(i, pending.pop(i))
-                done[i] = True
-            for j in [j for j in pending if kf[j] < st - 200_000_000]:   # a camera missing (camera r drops)
-                process(j, pending.pop(j))
-                done[j] = True
-    for j in list(pending):
-        process(j, pending.pop(j))
-        done[j] = True
+    for path in a.mcap:
+        with open(path, 'rb') as f:
+            for _, ch, msg in make_reader(f).iter_messages(topics=list(topic), start_time=t0 - 10**9,
+                                                           end_time=t1 + 10**9):
+                st = cdr_stamp(msg.data)
+                i = int(np.searchsorted(kf, st))
+                i = min((j for j in (i - 1, i) if 0 <= j < len(kf)), key=lambda j: abs(kf[j] - st))
+                c = topic[ch.topic]
+                if abs(kf[i] - st) > SET_TOL_NS or not want[i] or done_c[c][i]:
+                    continue
+                img, gm = prep(c, cdr_jpeg(msg.data))
+                pending.setdefault(i, {})[c] = (img, gm)
+                gammas.append(gm)
+                n_img += 1
+                if len(pending[i]) == len(CAMS):
+                    process(i, pending.pop(i))
+                for j in [j for j in pending if kf[j] < st - 200_000_000]:   # a camera missing (camera r drops)
+                    process(j, pending.pop(j))
+        for j in list(pending):
+            process(j, pending.pop(j))
+    done = np.any([done_c[c] for c in CAMS], axis=0)
 
     for c in CAMS:
-        np.save(os.path.join(OUT, f'day_{c}.npy'), day[c])
-    meta = dict(source=os.path.abspath(a.mcap), keyframes=int(len(kf)), keyframes_day=int(done.sum()),
+        p = os.path.join(OUT, f'day_{c}.npy')
+        np.save(fresh(p), day[c]); os.replace(fresh(p), p)
+    meta = dict(source=[os.path.abspath(p) for p in a.mcap], keyframes=int(len(kf)), keyframes_day=int(done.sum()),
+                camera_images_day={c: int(done_c[c].sum()) for c in CAMS},
                 keyframes_excluded=int(excl.sum()), map_config=os.path.basename(a.map_config), keyframes_missing=int((want & ~done).sum()),
                 images=n_img, gamma_median=float(np.median(gammas)), build_s=round(time.time() - t_start, 1))
-    json.dump(meta, open(os.path.join(OUT, 'day_meta.json'), 'w'), indent=1)
+    p = os.path.join(OUT, 'day_meta.json')
+    json.dump(meta, open(fresh(p), 'w'), indent=1); os.replace(fresh(p), p)
     # how different is the day layer from the night one (same points)
     for c in CAMS:
         sel = np.concatenate([np.arange(off[c][i], off[c][i + 1]) for i in np.where(done)[0][::50]])

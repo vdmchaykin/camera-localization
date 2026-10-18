@@ -21,3 +21,10 @@ CONFIGS = os.path.join(PROJECT, 'configs')
 FEAT = os.path.join(MODEL, 'features')
 MASKS = os.path.join(MODEL, 'masks')
 DAY = os.path.abspath(os.environ.get('CAMLOC_DAY_DIR', os.path.join(MODEL, 'day')))
+
+
+def fresh(path):
+    """Temporary name next to `path` with the same extension; os.replace(fresh(p), p) after writing it. A new file
+    replaces `path` instead of overwriting it in place, so hard-linked copies of the model are never modified."""
+    root, ext = os.path.splitext(path)
+    return f'{root}.tmp{os.getpid()}{ext}'
