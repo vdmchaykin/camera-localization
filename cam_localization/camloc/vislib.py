@@ -1,6 +1,5 @@
-"""Local features (SuperPoint + LightGlue) on half-res frames, shared by DB building and localization."""
+"""Local features (SuperPoint + LightGlue) on half-res frames, for the global relocalization."""
 import warnings
-import cv2
 import numpy as np
 import torch
 
@@ -10,7 +9,6 @@ from lightglue import LightGlue, SuperPoint  # noqa: E402
 from .camera_model import H, W  # noqa: E402
 
 DEV = 'cuda'
-_CLAHE = cv2.createCLAHE(2.0, (8, 8))
 
 
 class Features:
@@ -18,23 +16,18 @@ class Features:
         self.sp = SuperPoint(max_num_keypoints=max_kp, detection_threshold=thr).eval().to(DEV)
         self.lg = LightGlue(features='superpoint').eval().to(DEV)
 
-    @staticmethod
-    def load_gray(path):
-        return _CLAHE.apply(cv2.imread(path, cv2.IMREAD_GRAYSCALE))
-
     @torch.no_grad()
     def extract(self, gray, mask=None):
-        """-> dict(kps (N,2) float32 np, scores (N,), desc (N,256) float16 np)."""
+        """-> dict(kps (N,2) float32 np, desc (N,256) float16 np)."""
         x = torch.from_numpy(gray).float().div(255)[None, None].to(DEV)
         f = self.sp.extract(x)
         k = f['keypoints'][0].cpu().numpy()
-        s = f['keypoint_scores'][0].cpu().numpy()
         d = f['descriptors'][0].cpu().numpy()
         if mask is not None:
             ki = np.round(k).astype(int)
             keep = mask[ki[:, 1].clip(0, H - 1), ki[:, 0].clip(0, W - 1)] > 0
-            k, s, d = k[keep], s[keep], d[keep]
-        return dict(kps=k.astype(np.float32), scores=s.astype(np.float32), desc=d.astype(np.float16))
+            k, d = k[keep], d[keep]
+        return dict(kps=k.astype(np.float32), desc=d.astype(np.float16))
 
     @torch.no_grad()
     def match(self, f0, f1, min_score=0.2):

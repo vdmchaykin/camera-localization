@@ -15,13 +15,14 @@ the pose for set *t* uses only data up to *t*. GT is never read at inference.
 ```
 
 `out/RUN/poses.csv` is the submission file: `timestamp_ns,x,y,yaw` (one row per camera set, `timestamp_ns` = header
-stamp of the set, metres / radians, track frame). `frames.csv` has the measured time per set, `summary.json` the
+stamp of the newest image of the set, metres / radians, track frame). `frames.csv` has the measured time per set, `summary.json` the
 runtime statistics, the hardware and the localizer statistics.
 
 Inputs read from the mcap: `/constructor0/sensor/camera_*/compressed_image` and `camera_info`, `/tf_static`,
 `/constructor0/track_bounds` (if missing, the bundled borders of the same circuit are used), and the car state from
-`/constructor0/state_estimation` (only the motion fields whitelisted in `camloc/car_state.py`; pose fields are never
-read) or, if that topic is missing, `/constructor0/validation/twist` (+ `accel`).
+`/constructor0/state_estimation` (only the fields whitelisted in `camloc/car_state.py`: body-frame velocity `vx_mps`,
+`vy_mps` and yaw rate `wz_radps`; pose fields are never read) or, if that topic is missing, the same quantities from
+`/constructor0/validation/twist` (body frame `constructor0/base_link`).
 
 ## Method
 
@@ -49,24 +50,21 @@ start / lost: DINOv2 retrieval + LightGlue + PnP-RANSAC over the whole map (glob
 * **No first pose**: global relocalization on the first camera sets; the solutions are carried forward with the car
   state and voted on (median of the agreeing ones within 2 m); tracking starts once >= 3 (and at least half) agree.
 
-Code (`camloc/`, each module extends the one before; every stage can be switched off by an environment variable for
-ablations, see the module docstrings):
+Code (`camloc/`):
 
-| module | adds |
+| module | content |
 |---|---|
-| `base.py` | global relocalization (DINOv2 + LightGlue + PnP-RANSAC) + EKF with car state |
-| `guided.py` | correction guided by the EKF prior, motion calibration, corner-aware scheduling |
-| `fast_sp.py` | FP16 / compiled SuperPoint, correction on every set |
-| `dense.py` | 1024 keypoints, dense guided search, keyframes from several passes |
-| `daylight.py` | exposure normalisation, glare mask, relaxed retry, drivable-area check |
-| `day_layer.py` | day descriptor layer of the map |
-| `localizer.py` | **the localizer**: all of the above + start without a first pose |
-| `bag.py` | mcap reading (calibration, camera sets, car state, GT for validation only) |
+| `localizer.py` | **the localizer**: guided correction (exposure normalisation, glare mask, FP16 / compiled SuperPoint, keypoint + dense guided search with night and day descriptors, Gauss-Newton refinement, relaxed retry, drivable-area check), global relocalization when lost, start without a first pose |
+| `localize.py` | keyframe map access; LightGlue + PnP-RANSAC + multi-camera refinement for the global relocalization |
+| `track_filter.py` | EKF with car state (calibrated motion model); constant-velocity EKF for runs without car state |
+| `global_desc.py`, `vislib.py` | DINOv2 global descriptor; SuperPoint + LightGlue of the global relocalization |
+| `camera_model.py` | cameras: half-res intrinsics, extrinsics, body masks, projection |
+| `bag.py`, `car_state.py` | mcap reading (calibration, camera sets, whitelisted car state, GT for validation only) |
 
 ## Results
 
 Validation on the held-out laps K3, K6 of the training run (map without their keyframes: `configs/map_val_k3k6.json`,
-first pose = GT at the lap start), RTX 5060 Ti 16 GB. Full outputs in [results/](results/README.md).
+first pose = GT at the lap start), RTX 5060 Ti 16 GB.
 
 | run | pos RMSE [m] | lateral RMSE [m] | yaw RMSE [deg] | < 1 m | time / set |
 |---|---|---|---|---|---|
@@ -85,21 +83,24 @@ Validation command (K3; K6: `--start-s 896.1 --max-s 111.6`):
 
 ```bash
 .venv/bin/python tools/run.py --mcap TRAIN.mcap --out out/K3 --start-s 523.4 --max-s 110.6 \
-    --map-config configs/map_val_k3k6.json --first-pose-from-gt --evaluate PATH/TO/tools/evaluate.py
+    --map-config configs/map_val_k3k6.json --first-pose-from-gt
 ```
 
+With GT in the bag, `run.py` writes `gt_window.csv` (format of the organisers' `tools/extract_gt.py`) and scores the
+poses with their unchanged `tools/evaluate.py` (`../c0_2026-10-13_22-53-42_camloc/tools/`) into `evaluate.txt`.
+
 Current model state: the map (`features/`) holds the keyframes of all laps and test runs use all of them
-(`configs/map_full.json`, K3 / K6 included). The day layer (`model/day/`) is still the validation build: keyframes of
-K3 / K6 keep their night descriptor, because the Qwen day copy of the training run is not complete yet. Once it is,
-the layer is rebuilt from all laps (command below); for validation build a separate layer with
-`--map-config configs/map_val_k3k6.json --out model/day_val` and run with `CAMLOC_DAY_DIR=model/day_val`.
+(`configs/map_full.json`, K3 / K6 included). The day layer (`model/day/`) is the validation build: keyframes of
+K3 / K6 keep their night descriptor. For test runs rebuild it from the complete Qwen day copy of the training run
+(command below, all laps) and keep the validation build separately (`--map-config configs/map_val_k3k6.json
+--out model/day_val`, run with `CAMLOC_DAY_DIR=model/day_val`).
 
 ## Model (`model/`, ~8 GB, not in git)
 
 | file | content | built by |
 |---|---|---|
 | `features/db_<cam>.npz` | keyframes: keypoints, SuperPoint descriptors, 3D points | map builder (not in this repository yet) |
-| `features/global_<cam>.npy`, `set_stamps.npy` | DINOv2 global descriptors of the training-run frames | `camloc/global_desc.py` |
+| `features/global_<cam>.npy`, `set_stamps.npy` | DINOv2 global descriptors of the training-run frames | descriptor of `camloc/global_desc.py`, map builder |
 | `kf_poses.npz`, `motion_calib.json` | keyframe poses; car state -> motion calibration | from GT of the training run |
 | `masks/<cam>.png` | car-body masks | from the training images |
 | `night_stats.json` | median grey of the night keyframes per camera | from the map keyframes |
@@ -125,8 +126,8 @@ Rebuilding the day layer (e.g. from a new day-styled copy of the training run, a
 |---|---|---|
 | `CAMLOC_MODEL` | `model/` | model directory |
 | `LOC_MAP_CONFIG` | `configs/map_full.json` | map subset (`tools/run.py --map-config`) |
-| `LOC_SYNC` | `1` | correction inside `step()` (0: background thread, poses fused with delay) |
-| `CAMLOC_DAY` | `1` | day descriptor layer on / off |
+| `CAMLOC_DAY` | `1` | day descriptor layer on / off (0: night descriptors only, ablation) |
 | `CAMLOC_DAY_DIR` | `model/day/` | day descriptor layer directory |
+| `CAMLOC_COMPILE` | `1` | `torch.compile` of the SuperPoint backbone (0: eager, if compiling fails on a machine) |
 | `CAMLOC_BOOT_*` | see `camloc/localizer.py` | start without a first pose |
 | `TORCH_HOME` | `.torch/` | cache of the pretrained weights |

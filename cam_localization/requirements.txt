@@ -4,7 +4,6 @@ torch==2.7.1+cu128
 torchvision==0.22.1+cu128
 numpy==2.5.2
 scipy==1.18.1
-pandas==3.0.6
 opencv-python-headless==5.0.0.93
 kornia==0.8.3
 mcap==1.5.0

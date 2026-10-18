@@ -5,7 +5,7 @@
     python3 tools/run.py --mcap RUN.mcap --out out/RUN --first-pose X Y YAW # first pose of the run given
     # validation on the training run (map without the held-out laps K3 / K6, first pose = GT at the lap start):
     python3 tools/run.py --mcap TRAIN.mcap --out out/K3 --start-s 523.4 --max-s 110.6 --map-config configs/map_val_k3k6.json \
-        --first-pose-from-gt --evaluate PATH/TO/tools/evaluate.py
+        --first-pose-from-gt
 
 Processing is causal: camera sets are fed in stamp order, the pose for set t uses only images and car state up to t.
 Every set is processed (no drops); the time per set (decode + step) is measured and reported.
@@ -14,13 +14,16 @@ Output in --out:
   poses.csv      timestamp_ns,x,y,yaw - the submission file (one pose per camera set, track frame, yaw in rad)
   frames.csv     per set: timestamp_ns, decode_ms, step_ms, n_cams
   summary.json   runtime statistics, hardware, localizer statistics; with GT in the bag also the errors
-  gt_window.csv, evaluate.txt   (only if the bag has GT /tf) GT of the window and the official scoring output
+  gt_window.csv, evaluate.txt   (only if the bag has GT /tf) GT of the window (format of the organisers'
+                 tools/extract_gt.py) and the output of their tools/evaluate.py on it
 """
 import argparse, json, os, platform, subprocess, sys, time
 from concurrent.futures import ThreadPoolExecutor
 
 PROJECT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, PROJECT)
+# organisers' scoring script, unchanged copy from the dataset's starter kit
+EVALUATE = os.path.join(os.path.dirname(PROJECT), 'c0_2026-10-13_22-53-42_camloc', 'tools', 'evaluate.py')
 
 
 def main():
@@ -35,10 +38,11 @@ def main():
     ap.add_argument('--map-config', default=os.path.join(PROJECT, 'configs', 'map_full.json'),
                     help='map subset: configs/map_full.json (all keyframes, for test runs) or '
                          'configs/map_val_k3k6.json (held-out laps K3 / K6 excluded, for validation)')
-    ap.add_argument('--evaluate', help="organisers' tools/evaluate.py (run on the GT window if the bag has GT)")
+    ap.add_argument('--evaluate', default=EVALUATE if os.path.exists(EVALUATE) else None,
+                    help="organisers' tools/evaluate.py, run on the GT window if the bag has GT (default: the copy in "
+                         "this repository)")
     a = ap.parse_args()
     os.environ['LOC_MAP_CONFIG'] = os.path.abspath(a.map_config)
-    os.environ.setdefault('LOC_SYNC', '1')          # correction on the current set, in step() (no worker thread)
 
     import cv2
     import numpy as np
@@ -47,29 +51,30 @@ def main():
     from camloc.localizer import Localizer
 
     os.makedirs(a.out, exist_ok=True)
-    have, (b0, b1) = bag.topics(a.mcap)
+    have, (b0, _) = bag.topics(a.mcap)
     t0 = None if a.start_s is None else b0 + int(a.start_s * 1e9)
     t1 = None if a.max_s is None else (t0 or b0) + int(a.max_s * 1e9)
     info, tfs, bounds, bounds_src = bag.read_static(a.mcap)
-    print(f'[run] {a.mcap}\n[run] car state: {bag.state_source(a.mcap)}, track bounds: {bounds_src}', flush=True)
+    state_src = bag.state_source(a.mcap)
+    print(f'[run] {a.mcap}\n[run] car state: {state_src}, track bounds: {bounds_src}', flush=True)
 
     sets = bag.stream(a.mcap, t0, t1)
     first = next(sets)
     gt = None
     if '/tf' in have:
-        gt = bag.read_gt(a.mcap, None if t0 is None else t0 - 10**9, None if t1 is None else t1 + 10**9)
+        gt_t, gt = bag.read_gt(a.mcap, None if t0 is None else t0 - 10**9, None if t1 is None else t1 + 10**9)
         gt = gt if len(gt) else None
     if a.first_pose is not None:
         fp = dict(stamp_ns=int(first[0]), x=a.first_pose[0], y=a.first_pose[1], yaw=a.first_pose[2])
     elif a.first_pose_from_gt:
         if gt is None:
             raise SystemExit('--first-pose-from-gt: the bag has no GT (/tf map -> base_link)')
-        i = int(np.searchsorted(gt[:, 0], first[0]))
+        i = int(np.searchsorted(gt_t, first[0]))
         i = min(max(i, 1), len(gt) - 1)
-        w = (first[0] - gt[i - 1, 0]) / (gt[i, 0] - gt[i - 1, 0])
-        dyaw = np.angle(np.exp(1j * (gt[i, 4] - gt[i - 1, 4])))
-        fp = dict(stamp_ns=int(first[0]), x=float(gt[i - 1, 1] + w * (gt[i, 1] - gt[i - 1, 1])),
-                  y=float(gt[i - 1, 2] + w * (gt[i, 2] - gt[i - 1, 2])), yaw=float(gt[i - 1, 4] + w * dyaw))
+        w = (first[0] - gt_t[i - 1]) / (gt_t[i] - gt_t[i - 1])
+        dyaw = np.angle(np.exp(1j * (gt[i, 3] - gt[i - 1, 3])))
+        fp = dict(stamp_ns=int(first[0]), x=float(gt[i - 1, 0] + w * (gt[i, 0] - gt[i - 1, 0])),
+                  y=float(gt[i - 1, 1] + w * (gt[i, 1] - gt[i - 1, 1])), yaw=float(gt[i - 1, 3] + w * dyaw))
     else:
         fp = None
     print(f'[run] first pose: {fp if fp else "not given - global relocalization"}', flush=True)
@@ -90,7 +95,7 @@ def main():
         ims = dict(zip(jpegs, pool.map(decode, jpegs.values())))
         ims = {c: ims.get(c) for c in bag.CAMS}
         tb = time.perf_counter()
-        x, y, yaw = loc.step(int(stamp), ims, cs)
+        x, y, yaw = loc.step(int(stamp), ims, cs if state_src else None)     # None: no car state in this run
         tc = time.perf_counter()
         poses.append((int(stamp), x, y, float(np.angle(np.exp(1j * yaw)))))
         frames.append((int(stamp), (tb - ta) * 1e3, (tc - tb) * 1e3, len(jpegs)))
@@ -114,7 +119,7 @@ def main():
     tot = fr.sum(1)
     S = dict(mcap=os.path.abspath(a.mcap), window_s=[a.start_s, a.max_s], map_config=os.path.basename(a.map_config),
              first_pose=dict(given=a.first_pose is not None, from_gt=a.first_pose_from_gt),
-             car_state=bag.state_source(a.mcap), track_bounds=bounds_src, sets=len(poses),
+             car_state=state_src, track_bounds=bounds_src, sets=len(poses),
              hardware=dict(gpu=torch.cuda.get_device_name(0), cpu=platform.processor() or platform.machine(),
                            torch=torch.__version__, python=platform.python_version()),
              init_s=round(t_init, 1),
@@ -123,32 +128,35 @@ def main():
                              over_100ms=int((tot > 100).sum())),
              localizer=loc.summary())
     if gt is not None:
-        P = np.array(poses)
-        g_t = gt[:, 0]
-        i = np.clip(np.searchsorted(g_t, P[:, 0]), 1, len(g_t) - 1)
-        ok = (P[:, 0] >= g_t[0]) & (P[:, 0] <= g_t[-1]) & (g_t[i] - g_t[i - 1] <= 50_000_000)
-        w = (P[:, 0] - g_t[i - 1]) / (g_t[i] - g_t[i - 1])
-        yu = np.unwrap(gt[:, 4])
-        gx = gt[i - 1, 1] + w * (gt[i, 1] - gt[i - 1, 1])
-        gy = gt[i - 1, 2] + w * (gt[i, 2] - gt[i - 1, 2])
+        # as the organisers' tools/evaluate.py: GT interpolated at each pose stamp (yaw unwrapped); poses outside the
+        # GT or in a GT gap > 50 ms are skipped; errors split into the GT car frame
+        pt = np.array([p[0] for p in poses], np.int64)
+        P = np.array([p[1:] for p in poses])                       # x, y, yaw
+        i = np.searchsorted(gt_t, pt)
+        ok = (i > 0) & (i < len(gt_t))
+        i = np.clip(i, 1, len(gt_t) - 1)
+        ok &= gt_t[i] - gt_t[i - 1] <= 50_000_000
+        w = (pt - gt_t[i - 1]) / (gt_t[i] - gt_t[i - 1])
+        yu = np.unwrap(gt[:, 3])
+        gx = gt[i - 1, 0] + w * (gt[i, 0] - gt[i - 1, 0])
+        gy = gt[i - 1, 1] + w * (gt[i, 1] - gt[i - 1, 1])
         gyaw = yu[i - 1] + w * (yu[i] - yu[i - 1])
-        dx, dy = P[:, 1] - gx, P[:, 2] - gy
+        dx, dy = P[:, 0] - gx, P[:, 1] - gy
         lat = -np.sin(gyaw) * dx + np.cos(gyaw) * dy
         lon = np.cos(gyaw) * dx + np.sin(gyaw) * dy
         pos = np.hypot(dx, dy)
-        dyaw = np.degrees(np.angle(np.exp(1j * (P[:, 3] - gyaw))))
+        dyaw = np.degrees(np.angle(np.exp(1j * (P[:, 2] - gyaw))))
         rms = lambda v: float(np.sqrt(np.mean(v[ok] ** 2)))
         S['errors'] = dict(evaluated=int(ok.sum()), pos_rmse=rms(pos), lat_rmse=rms(lat), lon_rmse=rms(lon),
                            yaw_rmse_deg=rms(dyaw), pos_median=float(np.median(pos[ok])),
                            pos_p95=float(np.percentile(pos[ok], 95)), pos_max=float(pos[ok].max()),
                            within_1m=float(np.mean(pos[ok] < 1.0) * 100))
-        lo, hi = P[0, 0] - 100_000_000, P[-1, 0] + 100_000_000
-        gw = gt[(gt[:, 0] >= lo) & (gt[:, 0] <= hi)]
+        sel = (gt_t >= pt[0] - 100_000_000) & (gt_t <= pt[-1] + 100_000_000)
         gp = os.path.join(a.out, 'gt_window.csv')
         with open(gp, 'w') as f:
             f.write('timestamp_ns,x,y,z,yaw\n')
-            for r in gw:
-                f.write(f'{int(r[0])},{r[1]:.4f},{r[2]:.4f},{r[3]:.4f},{r[4]:.6f}\n')
+            for t, r in zip(gt_t[sel], gt[sel]):
+                f.write(f'{t},{r[0]:.4f},{r[1]:.4f},{r[2]:.4f},{r[3]:.6f}\n')
         if a.evaluate:
             ev = subprocess.run([sys.executable, a.evaluate, gp, os.path.join(a.out, 'poses.csv')],
                                 capture_output=True, text=True)
@@ -166,7 +174,6 @@ def main():
               f"< 1 m {e['within_1m']:.1f} %", flush=True)
     if 'boot' in S['localizer']:
         print(f"[run] boot: {S['localizer']['boot']}", flush=True)
-    loc.close()
 
 
 if __name__ == '__main__':

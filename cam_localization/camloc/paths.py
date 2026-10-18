@@ -3,6 +3,7 @@
 
     features/db_<cam>.npz       keyframe map: per keyframe the SuperPoint keypoints, descriptors and 3D points
     features/global_<cam>.npy   DINOv2 global descriptor of every frame of the training run (keyframe rows used)
+    features/set_stamps.npy     camera-set stamps of the training run (row order of global_<cam>.npy)
     masks/<cam>.png             car-body masks
     kf_poses.npz                pose of every map keyframe
     motion_calib.json           car state -> base_link motion calibration

@@ -1,9 +1,10 @@
-#!/usr/bin/env python3
-"""Causal EKF: car-state dead reckoning + absolute pose corrections from the keyframe map (PnP).
+"""Causal EKF: car-state dead reckoning + absolute pose corrections from the keyframe map.
 
-State [x, y, yaw, k, bw]: pose in `map`, speed scale factor k (v_true = k * v_mps) and yaw-rate bias bw
-(w_true = wz_radps - bw). Predict with every whitelisted car-state message with stamp <= t; at each camera
-set stamp t optionally update with a PnP pose computed from images at t; output one pose per camera set.
+TrackEKF  state [x, y, yaw, k, bw]: pose in `map`, speed scale factor k (v_true = k * v, v = car-state body velocity)
+          and yaw-rate bias bw (w_true = wz_radps - bw). Predicted with every car-state message with stamp <= t,
+          updated with the pose measured from the camera set at t.
+CalibEKF  TrackEKF with the calibrated car state -> base_link motion model (model/motion_calib.json).
+CVEKF     no car state: constant velocity / turn rate.
 """
 import numpy as np
 
@@ -94,24 +95,88 @@ class TrackEKF:
         return True
 
 
-def run(cs, stamps, meas, x0, y0, yaw0, ekf_cls=TrackEKF):
-    """cs: car state (stamp_ns, v_mps, wz_radps); stamps: camera set stamps (sorted);
-    meas: dict stamp -> (x, y, yaw, inliers). Returns (N,3) poses at the stamps."""
-    f = ekf_cls(x0, y0, yaw0)
-    ts, vx, vy, wz = cs.stamp_ns.values, cs.vx_mps.values, cs.vy_mps.values, cs.wz_radps.values
-    j = max(0, np.searchsorted(ts, stamps[0], side='right') - 1)
-    t_cur = stamps[0]
-    out = np.zeros((len(stamps), 3))
-    f.meas_log = []          # (stamp, accepted, inliers) for every measurement offered to the filter
-    for n, t in enumerate(stamps):
-        # integrate car-state messages up to t (each message holds until the next one)
-        while j + 1 < len(ts) and ts[j + 1] <= t:
-            f.predict(vx[j], vy[j], wz[j], (ts[j + 1] - t_cur) / 1e9)
-            t_cur = ts[j + 1]; j += 1
-        f.predict(vx[j], vy[j], wz[j], (t - t_cur) / 1e9)
-        t_cur = t
-        if t in meas:
-            f.meas_log.append((t, f.update(*meas[t]), meas[t][3]))
-        out[n] = f.X[:3]
-    return out, f
+class CalibEKF(TrackEKF):
+    """TrackEKF with the car state -> base_link motion model calibrated on the training run: vx_eff = vx_k * vx,
+    vy_eff = vy_a * vy + vy_b * wz + vy_c (lateral velocity at base_link), wz_eff = wz_s * wz + wz_d."""
 
+    def __init__(self, x, y, yaw, cal):
+        super().__init__(x, y, yaw)
+        self.cal = cal
+
+    def predict(self, vx, vy, wz, dt):
+        c = self.cal
+        super().predict(c['vx_k'] * vx, c['vy_a'] * vy + c['vy_b'] * wz + c['vy_c'], c['wz_s'] * wz + c['wz_d'], dt)
+
+
+class CVEKF:
+    """No car state: X = [x, y, yaw, vx, vy, w] (body-frame velocity, yaw rate), white-noise accelerations.
+    Same measurement model / gate / recovery rule as TrackEKF."""
+    A_LON, A_LAT, A_YAW = 8.0, 3.0, 0.8           # m/s^2, m/s^2, rad/s^2 (1 sigma, white noise)
+    Q_POS_T, Q_YAW_T = 0.05, 0.002
+    R_LAT, R_LON, R_YAW = TrackEKF.R_LAT, TrackEKF.R_LON, TrackEKF.R_YAW
+    MIN_SCALE, GATE_CHI2, MIN_INLIERS = TrackEKF.MIN_SCALE, TrackEKF.GATE_CHI2, TrackEKF.MIN_INLIERS
+    RECOVER_POS, RECOVER_YAW = 1.0, np.radians(1.0)
+
+    def __init__(self, x, y, yaw):
+        self.X = np.array([x, y, yaw, 0.0, 0.0, 0.0])
+        self.P = np.diag([0.1 ** 2, 0.1 ** 2, np.radians(0.3) ** 2, 30.0 ** 2, 3.0 ** 2, 0.5 ** 2])
+        self.n_upd = self.n_rej = self.n_recover = 0
+        self.since_upd = 0.0
+        self.last_rej = None
+
+    @staticmethod
+    def f(X, dt):
+        x, y, yaw, vx, vy, w = X
+        ym = yaw + 0.5 * w * dt
+        c, s = np.cos(ym), np.sin(ym)
+        return np.array([x + (vx * c - vy * s) * dt, y + (vx * s + vy * c) * dt, yaw + w * dt, vx, vy, w])
+
+    def predict(self, dt):
+        if dt <= 0:
+            return
+        X0 = self.X
+        F = np.zeros((6, 6))
+        for i in range(6):
+            d = np.zeros(6); d[i] = 1e-5
+            F[:, i] = (self.f(X0 + d, dt) - self.f(X0 - d, dt)) / 2e-5
+        self.X = self.f(X0, dt)
+        self.X[2] = wrap(self.X[2])
+        Q = np.diag([self.Q_POS_T ** 2 * dt, self.Q_POS_T ** 2 * dt, self.Q_YAW_T ** 2 * dt,
+                     self.A_LON ** 2 * dt, self.A_LAT ** 2 * dt, self.A_YAW ** 2 * dt])
+        self.P = F @ self.P @ F.T + Q
+        self.since_upd += dt
+
+    def update(self, zx, zy, zyaw, inliers):
+        n = len(self.X)
+        if inliers < self.MIN_INLIERS:
+            self.n_rej += 1
+            return False
+        c, s = np.cos(zyaw), np.sin(zyaw)
+        sc = max(self.MIN_SCALE, np.sqrt(100.0 / inliers))
+        Rot = np.array([[c, -s], [s, c]])
+        R = np.zeros((3, 3))
+        R[:2, :2] = Rot @ np.diag([(self.R_LON * sc) ** 2, (self.R_LAT * sc) ** 2]) @ Rot.T
+        R[2, 2] = (self.R_YAW * sc) ** 2
+        Hm = np.zeros((3, n)); Hm[0, 0] = Hm[1, 1] = Hm[2, 2] = 1
+        r = np.array([zx - self.X[0], zy - self.X[1], wrap(zyaw - self.X[2])])
+        S = Hm @ self.P @ Hm.T + R
+        if r @ np.linalg.solve(S, r) > self.GATE_CHI2:
+            prev, self.last_rej = self.last_rej, r
+            if prev is not None and np.hypot(*(r[:2] - prev[:2])) < self.RECOVER_POS \
+                    and abs(wrap(r[2] - prev[2])) < self.RECOVER_YAW:
+                self.P[:3, :3] += np.diag(r ** 2) * 4
+                S = Hm @ self.P @ Hm.T + R
+                self.n_recover += 1
+            else:
+                self.n_rej += 1
+                if self.since_upd > 2.0:
+                    self.P[:3, :3] *= 2.0
+                return False
+        self.last_rej = None
+        K = self.P @ Hm.T @ np.linalg.inv(S)
+        self.X = self.X + K @ r
+        self.X[2] = wrap(self.X[2])
+        self.P = (np.eye(n) - K @ Hm) @ self.P
+        self.n_upd += 1
+        self.since_upd = 0.0
+        return True

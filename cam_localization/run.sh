@@ -14,4 +14,4 @@ export TORCH_HOME="${TORCH_HOME:-$HERE/.torch}"          # DINOv2 / SuperPoint /
 [ -f "${CAMLOC_MODEL:-$HERE/model}/features/db_fl.npz" ] || "$HERE/download_model.sh"
 FP=()
 [ $# -eq 3 ] && FP=(--first-pose "$1" "$2" "$3")
-"$PYBIN" -W ignore "$HERE/tools/run.py" --mcap "$MCAP" --out "$OUT" "${FP[@]}"
+"$PYBIN" -W ignore "$HERE/tools/run.py" --mcap "$MCAP" --out "$OUT" ${FP[@]+"${FP[@]}"}   # bash < 4.4: empty array + set -u

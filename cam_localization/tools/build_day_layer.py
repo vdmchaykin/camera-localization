@@ -25,12 +25,11 @@ sys.path.insert(0, PROJECT)
 from lightglue import SuperPoint  # noqa: E402
 from lightglue.superpoint import sample_descriptors  # noqa: E402
 from camloc.camera_model import CAMS, H, W  # noqa: E402
-from camloc.fast_sp import _backbone  # noqa: E402  same FP16 backbone as the localizer
+from camloc.localizer import GAMMA_MAX, GAMMA_MIN, _backbone  # noqa: E402  same query path as the localizer
 from camloc.paths import CONFIGS, DAY, FEAT, MASKS, MODEL  # noqa: E402
 
 SET_TOL_NS = 5_000_000
-GAMMA_MIN, GAMMA_MAX = 0.35, 2.5            # as camloc/daylight.py
-CLAHE = cv2.createCLAHE(2.0, (8, 8))        # sim/my_loc.py _CLAHE
+CLAHE = cv2.createCLAHE(2.0, (8, 8))        # as camloc/localizer.py
 
 
 def cdr_stamp(raw):
