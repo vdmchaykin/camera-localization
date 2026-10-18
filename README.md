@@ -23,9 +23,17 @@ from the [Google Drive folder](https://drive.google.com/drive/folders/1MiI1nSciC
 MODEL_TAR=/path/to/cam_localization_model.tar ./download_model.sh      # checks the sha256, unpacks into model/
 ```
 
-`out/RUN/poses.csv` is the submission file: `timestamp_ns,x,y,yaw` (one row per camera set, `timestamp_ns` = header
-stamp of the newest image of the set, metres / radians, track frame). `frames.csv` has the measured time per set, `summary.json` the
-runtime statistics, the hardware and the localizer statistics.
+`out/RUN/poses.csv` is the pose file of the run: `timestamp_ns,x,y,yaw,confidence,status`, one row per camera set
+(`timestamp_ns` = header stamp of the newest image of the set; `x`, `y` in metres and `yaw` in radians in the track
+frame; `confidence` in [0, 1] = 1 - filter position std / 1.5 m; `status` `ok` or `lost` - `lost` while the
+localizer has no pose yet (start without a first pose, first second) or has lost track (position std > 1.5 m or
+10 failed corrections in a row)). The organisers' `tools/evaluate.py` reads it as it is (extra columns are ignored).
+`frames.csv` has the measured time per set, `summary.json` the runtime statistics, the hardware and the localizer
+statistics.
+
+[submission/](submission/) holds the pose file of the only test-format run we have, the organisers' day lap
+`rosbag_2026-10-13_16-08-46_cameras_lap` (`./run.sh` on it, no first pose; 730 of 739 poses `ok`, the first 9 `lost`
+during the start). The pose file of the hidden test run is made the same way: `./run.sh TEST.mcap out/TEST`.
 
 Inputs read from the mcap: `/constructor0/sensor/camera_*/compressed_image` and `camera_info`, `/tf_static`,
 `/constructor0/track_bounds` (if missing, the bundled borders of the same circuit are used), and the car state from

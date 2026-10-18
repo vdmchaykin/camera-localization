@@ -651,6 +651,17 @@ class Localizer:
         return self.guess
 
     # ------------------------------------------------------------ statistics
+    def quality(self):
+        """(confidence in [0, 1], status 'ok' / 'lost') of the pose step() returned last. Lost: no pose yet (start
+        without a first pose), filter position std > LOST_SIGMA, or LOST_FAILS failed corrections in a row - the same
+        conditions that trigger the global relocalization. Confidence: 1 - position std / LOST_SIGMA (0 when lost)."""
+        if self.booting or self.f is None:
+            return 0.0, 'lost'
+        sig = float(np.sqrt(max(self.f.P[0, 0], self.f.P[1, 1])))
+        if sig > LOST_SIGMA or self.fails >= LOST_FAILS:
+            return 0.0, 'lost'
+        return float(np.clip(1.0 - sig / LOST_SIGMA, 0.0, 1.0)), 'ok'
+
     def summary(self):
         mean = lambda v: round(float(np.mean(v)), 1) if v else None
         p95 = lambda v: round(float(np.percentile(v, 95)), 1) if v else None

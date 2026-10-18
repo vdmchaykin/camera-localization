@@ -11,7 +11,8 @@ Processing is causal: camera sets are fed in stamp order, the pose for set t use
 Every set is processed (no drops); the time per set (decode + step) is measured and reported.
 
 Output in --out:
-  poses.csv      timestamp_ns,x,y,yaw - the submission file (one pose per camera set, track frame, yaw in rad)
+  poses.csv      timestamp_ns,x,y,yaw,confidence,status - the submission file (one pose per camera set, track
+                 frame, yaw in rad; confidence 0-1, status ok / lost: camloc.localizer.Localizer.quality)
   frames.csv     per set: timestamp_ns, decode_ms, step_ms, n_cams
   summary.json   runtime statistics, hardware, localizer statistics; with GT in the bag also the errors
   gt_window.csv, evaluate.txt   (only if the bag has GT /tf) GT of the window (format of the organisers'
@@ -94,7 +95,8 @@ def main():
         tb = time.perf_counter()
         x, y, yaw = loc.step(int(stamp), ims, cs if state_src else None)     # None: no car state in this run
         tc = time.perf_counter()
-        poses.append((int(stamp), x, y, float(np.angle(np.exp(1j * yaw)))))
+        conf, status = loc.quality()
+        poses.append((int(stamp), x, y, float(np.angle(np.exp(1j * yaw))), conf, status))
         frames.append((int(stamp), (tb - ta) * 1e3, (tc - tb) * 1e3, len(jpegs)))
 
     process(first)
@@ -105,9 +107,9 @@ def main():
             print(f'[run] {len(poses)} sets, step mean {np.mean([f[2] for f in frames]):.1f} ms', flush=True)
 
     with open(os.path.join(a.out, 'poses.csv'), 'w') as f:
-        f.write('timestamp_ns,x,y,yaw\n')
-        for t, x, y, yaw in poses:
-            f.write(f'{t},{x:.4f},{y:.4f},{yaw:.6f}\n')
+        f.write('timestamp_ns,x,y,yaw,confidence,status\n')
+        for t, x, y, yaw, conf, status in poses:
+            f.write(f'{t},{x:.4f},{y:.4f},{yaw:.6f},{conf:.3f},{status}\n')
     with open(os.path.join(a.out, 'frames.csv'), 'w') as f:
         f.write('timestamp_ns,decode_ms,step_ms,n_cams\n')
         for t, d, s, n in frames:
@@ -117,6 +119,7 @@ def main():
     S = dict(mcap=os.path.abspath(a.mcap), window_s=[a.start_s, a.max_s], map_config=os.path.basename(a.map_config),
              first_pose=dict(given=a.first_pose is not None, from_gt=a.first_pose_from_gt),
              car_state=state_src, track_bounds=bounds_src, sets=len(poses),
+             status={k: sum(p[5] == k for p in poses) for k in ('ok', 'lost')},
              hardware=dict(gpu=torch.cuda.get_device_name(0), cpu=platform.processor() or platform.machine(),
                            torch=torch.__version__, python=platform.python_version()),
              init_s=round(t_init, 1),
@@ -128,7 +131,7 @@ def main():
         # as the organisers' tools/evaluate.py: GT interpolated at each pose stamp (yaw unwrapped); poses outside the
         # GT or in a GT gap > 50 ms are skipped; errors split into the GT car frame
         pt = np.array([p[0] for p in poses], np.int64)
-        P = np.array([p[1:] for p in poses])                       # x, y, yaw
+        P = np.array([p[1:4] for p in poses])                      # x, y, yaw
         i = np.searchsorted(gt_t, pt)
         ok = (i > 0) & (i < len(gt_t))
         i = np.clip(i, 1, len(gt_t) - 1)
