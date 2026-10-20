@@ -117,26 +117,27 @@ CAMLOC_MODEL=model_val .venv/bin/python tools/run.py --mcap TRAIN.mcap --out out
 
 | file | content | built by |
 |---|---|---|
-| `features/db_<cam>.npz` | map keyframes: SuperPoint keypoints, descriptors, 3D points | map builder (not in this repository yet) |
-| `features/global_<cam>.npy`, `set_stamps.npy` | DINOv2 global descriptors of the training-run frames | with the map (`camloc/global_desc.py`) |
-| `masks/<cam>.png` | car-body masks | with the map |
-| `kf_poses.npz` | GT pose of every map keyframe | `tools/build_model.py` |
-| `motion_calib.json` | car state -> body motion calibration | `tools/build_model.py` |
-| `night_stats.json` | median grey of the night keyframes per camera | `tools/build_model.py` |
-| `track_bounds.npz` | track / pit-lane borders | `tools/build_model.py` |
-| `day/day_<cam>.npy`, `day/day_meta.json` | day descriptor layer | `tools/build_day_layer.py` |
+| `features/db_<cam>.npz` | map keyframes: SuperPoint keypoints, descriptors, 3D points | [`map_builder/`](map_builder/README.md) (`db_build.py`) |
+| `features/global_<cam>.npy`, `set_stamps.npy` | DINOv2 global descriptors of the training-run frames | `map_builder/global_desc.py`, `write_set_stamps.py` |
+| `masks/<cam>.png` | car-body masks | `map_builder/make_masks.py` |
+| `kf_poses.npz` | GT pose of every map keyframe | `map_builder/build_model.py` |
+| `motion_calib.json` | car state -> body motion calibration | `map_builder/build_model.py` |
+| `night_stats.json` | median grey of the night keyframes per camera | `map_builder/build_model.py` |
+| `track_bounds.npz` | track / pit-lane borders | `map_builder/build_model.py` |
+| `day/day_<cam>.npy`, `day/day_meta.json` | day descriptor layer | `map_builder/build_day_layer.py` |
 
 ## Building the model
 
 Inputs: the training run `TRAIN.mcap` (with GT `/tf`) and a day-styled copy of it (`DAY*.mcap`: the same bag with
 every image re-lit night -> day, here with a Qwen image editing model; it may come in several files). The map
-(`features/`, `masks/`) comes from the model archive: its builder is not part of this repository yet.
+(`features/`, `masks/`) comes from the model archive; it is rebuilt from `TRAIN.mcap` by
+`map_builder/build_map.sh TRAIN.mcap model` (~3 h, GPU, see [map_builder/](map_builder/README.md)).
 
 ```bash
 # 1. keyframe poses, motion calibration (complete laps 1-7), night brightness, track borders   (~30 s, CPU)
-.venv/bin/python tools/build_model.py --mcap TRAIN.mcap
+.venv/bin/python map_builder/build_model.py --mcap TRAIN.mcap
 # 2. day descriptor layer from all laps                                        (~2 min per 8 GB of day bags, GPU)
-.venv/bin/python tools/build_day_layer.py --mcap DAY_part1.mcap DAY_part2.mcap
+.venv/bin/python map_builder/build_day_layer.py --mcap DAY_part1.mcap DAY_part2.mcap
 # 3. pack for distribution (download_model.sh unpacks it into model/)
 tar -cf cam_localization_model.tar model && sha256sum cam_localization_model.tar
 ```
@@ -152,8 +153,8 @@ held-out check on K3 / K6 needs a validation model in which neither the calibrat
 
 ```bash
 cp -al model model_val                                                 # hard-linked copy (no extra disk space)
-.venv/bin/python tools/build_model.py --mcap TRAIN.mcap --laps 1 2 4 5 7 --out model_val
-.venv/bin/python tools/build_day_layer.py --mcap DAY.mcap --map-config configs/map_val_k3k6.json --out model_val/day
+.venv/bin/python map_builder/build_model.py --mcap TRAIN.mcap --laps 1 2 4 5 7 --out model_val
+.venv/bin/python map_builder/build_day_layer.py --mcap DAY.mcap --map-config configs/map_val_k3k6.json --out model_val/day
 ```
 
 `tools/reproduce.sh` does all of it (both models, then every run in `results/`):

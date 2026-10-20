@@ -1,0 +1,5 @@
+# work files of the map builder (derived from the dataset, not redistributed)
+export/
+frames/
+features/
+masks/
