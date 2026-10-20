@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Training-time artefact: the day descriptor layer of the map, from a day-styled copy of the training run.
 
-    python3 tools/build_day_layer.py --mcap DAY.mcap [DAY2.mcap ...]                   # all laps (submission model)
-    python3 tools/build_day_layer.py --mcap DAY.mcap --map-config configs/map_val_k3k6.json --out model/day_val
+    python3 map_builder/build_day_layer.py --mcap DAY.mcap [DAY2.mcap ...]                   # all laps (submission model)
+    python3 map_builder/build_day_layer.py --mcap DAY.mcap --map-config configs/map_val_k3k6.json --out model/day_val
       -> <out>/day_<cam>.npy   (N, 256) float16, aligned with model/features/db_<cam>.npz['desc'] (same points, order)
       -> <out>/day_meta.json   source bag, keyframes used / skipped
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Training-time artefacts derived from the training run (needs its GT /tf; run once after the map exists):
 
-    python3 tools/build_model.py --mcap TRAIN.mcap                     # motion calibration from all laps
-    python3 tools/build_model.py --mcap TRAIN.mcap --laps 1 2 4 5 7    # validation build (K3 / K6 held out)
+    python3 map_builder/build_model.py --mcap TRAIN.mcap                     # motion calibration from all laps
+    python3 map_builder/build_model.py --mcap TRAIN.mcap --laps 1 2 4 5 7    # validation build (K3 / K6 held out)
 
 Writes into model/ (or $CAMLOC_MODEL):
   kf_poses.npz       GT pose (T_map_base 4x4, x, y, yaw) of every map keyframe (features/db_fl.npz kf_stamp)

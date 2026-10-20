@@ -10,12 +10,12 @@ R="${1:-out/val}"; mkdir -p "$R"
 : "${TRAIN:?training mcap}" "${DAY:?day-styled copy of the training mcap}" "${EVAL:?organisers tools/evaluate.py}"
 set -e
 # 1. submission model: all laps
-$PY -W ignore tools/build_model.py --mcap "$TRAIN"
-$PY -W ignore tools/build_day_layer.py --mcap "$DAY"
+$PY -W ignore map_builder/build_model.py --mcap "$TRAIN"
+$PY -W ignore map_builder/build_day_layer.py --mcap "$DAY"
 # 2. validation model: K3 / K6 held out of the motion calibration and the day layer
 rm -rf model_val && cp -al model model_val
-$PY -W ignore tools/build_model.py --mcap "$TRAIN" --laps 1 2 4 5 7 --out model_val
-$PY -W ignore tools/build_day_layer.py --mcap "$DAY" --map-config configs/map_val_k3k6.json --out model_val/day
+$PY -W ignore map_builder/build_model.py --mcap "$TRAIN" --laps 1 2 4 5 7 --out model_val
+$PY -W ignore map_builder/build_day_layer.py --mcap "$DAY" --map-config configs/map_val_k3k6.json --out model_val/day
 set +e
 # 3. validation on K3 / K6 (map without their keyframes)
 val() { tag=$1; mcap=$2; s=$3; l=$4; shift 4
