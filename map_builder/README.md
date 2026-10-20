@@ -1,4 +1,4 @@
-# Map builder: night map and day descriptor layer
+# Map builder: synthetic day data, night map and day descriptor layer
 
 All the code that builds the model (`model/`) from the data: the night keyframe map (keyframes, SuperPoint keypoints,
 descriptors, 3D points, DINOv2 global descriptors, car-body masks), the keyframe poses / motion calibration / night
@@ -11,8 +11,13 @@ map_builder/build_map.sh TRAIN.mcap DAY.mcap               # ~3 h on one GPU, wr
 
 * `TRAIN.mcap`: the training run `c0_2026-10-13_22-53-42_camloc_0.mcap` (night, with GT `/tf`).
 * `DAY.mcap`: a day-styled copy of the training run: the same bag with every camera image re-lit night -> day by
-  Qwen-Image-Edit-2511 (geometry and header stamps unchanged). It was made outside this repository; several parts
-  may be given (`DAY_part1.mcap DAY_part2.mcap`).
+  Qwen-Image-Edit-2511 + the Lightning 4-step LoRA (geometry, header stamps and all other messages unchanged).
+  Made by `qwen_day.py` (own environment, see its docstring); several parts may be given
+  (`DAY_part1.mcap DAY_part2.mcap`).
+
+```bash
+python map_builder/qwen_day.py TRAIN.mcap DAY.mcap         # step 0: synthetic day copy (GPU, resumable)
+```
 
 ## Steps
 

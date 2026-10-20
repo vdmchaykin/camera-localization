@@ -1,5 +1,9 @@
 # cam_localization: camera-only localization on a race track
 
+**Update (2026-10-20):** all code that builds the model is now in [`map_builder/`](map_builder/README.md):
+`qwen_day.py` makes the synthetic day copy of the training run (Qwen-Image-Edit-2511), `build_map.sh` builds the
+night map descriptors (SuperPoint, DINOv2), the keyframe poses / motion calibration and the day descriptor layer.
+
 Constructor Labs challenge "Camera-based localization on a race track" (National AI Hackathon 2026).
 At every camera set (7 cameras, 10 Hz) the localizer estimates the car pose `(x, y, yaw)` in the track frame from
 the images, the camera calibration, the track borders and the car's motion state (speeds, yaw rate). It is causal:
