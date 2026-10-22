@@ -9,7 +9,7 @@ At every camera set (7 cameras, 10 Hz) the localizer estimates the car pose `(x,
 the images, the camera calibration, the track borders and the car's motion state (speeds, yaw rate). It is causal:
 the pose for set *t* uses only data up to *t*. GT is never read at inference.
 
-![Video](v14_vs_gt_night_K3.mp4)
+![Video](Validation_Visualization.gif)
 
 ## Quick start
 
